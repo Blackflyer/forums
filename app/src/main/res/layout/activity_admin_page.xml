@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminPage">
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="123dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="31dp"
+        android:text="דף פעולות מנהלים"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoUsersList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnGoUsersList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="דף משתמשים"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoAddAdmin"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <Button
+        android:id="@+id/btnGoAddAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="הוספת מנהל"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoAddExercise"
+        app:layout_constraintStart_toStartOf="@+id/btnGoUsersList"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoUsersList" />
+
+    <Button
+        android:id="@+id/btnGoAddExercise"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="467dp"
+        android:text="הוספת תרגיל"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnGoAddAdmin"
+        app:layout_constraintStart_toStartOf="@+id/btnGoAddAdmin"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoAddAdmin" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

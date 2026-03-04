@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429560477205",
+    "project_id": "gymcalender-7f723",
+    "storage_bucket": "gymcalender-7f723.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429560477205:android:d68a674eba3312f60e401c",
+        "android_client_info": {
+          "package_name": "com.erel.gym_calender10"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDToUTrOcNRLfggLT9p9gmMjtKTb5L8d4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

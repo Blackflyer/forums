@@ -1,0 +1,50 @@
+package com.erel.gym_calender10.module;
+
+import java.util.ArrayList;
+
+public class ListOfPlans {
+    private String UserId;
+    private ArrayList<Plan> planArray;
+
+    // 1. בנאי ריק - חובה עבור Firebase!
+    public ListOfPlans() {
+        this.planArray = new ArrayList<>();
+    }
+
+    // 2. בנאי חדש שמקבל רק את ה-ID (לזה שקראת לו בקוד שלך)
+    public ListOfPlans(String userId) {
+        this.UserId = userId;
+        this.planArray = new ArrayList<>(); // חובה לאתחל את הרשימה שלא תהיה null
+    }
+
+    public ListOfPlans(String userId, ArrayList<Plan> planArray) {
+        this.UserId = userId;
+        this.planArray = planArray;
+    }
+
+    // 3. פונקציית ההוספה שחסרה לך (addPlan)
+    public void addPlan(Plan plan) {
+        // נוודא שהרשימה קיימת לפני שמוסיפים אליה
+        if (this.planArray == null) {
+            this.planArray = new ArrayList<>();
+        }
+        this.planArray.add(plan);
+    }
+
+    // --- Getters & Setters ---
+    public String getUserId() {
+        return UserId;
+    }
+
+    public void setUserId(String userId) {
+        UserId = userId;
+    }
+
+    public ArrayList<Plan> getPlanArray() {
+        return planArray;
+    }
+
+    public void setPlanArray(ArrayList<Plan> planArray) {
+        this.planArray = planArray;
+    }
+}

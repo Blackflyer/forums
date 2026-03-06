@@ -21,12 +21,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CreatePlanActivity extends AppCompatActivity {
     private RecyclerView rvExercises;
     private EditText etSearch, etPlanName;
-    private MaterialButton btnSavePlan; // שימוש ב-MaterialButton לעיצוב המודרני
+    private MaterialButton btnSavePlan;
     private ExerciseSelectAdapter adapter;
     private String selectedDate;
 
@@ -35,8 +36,20 @@ public class CreatePlanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_plan);
 
-        // קבלת התאריך מה-Intent
+        // 1. קבלת התאריך בשתי הדרכים האפשריות כדי למנוע פספוסים
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
+        if (selectedDate == null) {
+            selectedDate = getIntent().getStringExtra("date");
+        }
+
+        // 2. מנגנון אל-כשל: אם התאריך עדיין ריק, ניקח את התאריך של היום!
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            Calendar calendar = Calendar.getInstance();
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            int year = calendar.get(Calendar.YEAR);
+            selectedDate = day + "/" + month + "/" + year;
+        }
 
         initViews();
         loadExercisesFromDB();
@@ -58,7 +71,6 @@ public class CreatePlanActivity extends AppCompatActivity {
         DatabaseService.getInstance().getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
             @Override
             public void onCompleted(List<Exercise> exercises) {
-                // אתחול ה-Adapter עם רשימת התרגילים
                 adapter = new ExerciseSelectAdapter(exercises);
                 rvExercises.setAdapter(adapter);
             }
@@ -72,7 +84,6 @@ public class CreatePlanActivity extends AppCompatActivity {
     private void saveNewPlan() {
         String name = etPlanName.getText().toString().trim();
 
-        // בדיקת תקינות - שם ותפיסת תרגילים
         if (name.isEmpty()) {
             etPlanName.setError("חובה להזין שם לתוכנית");
             return;
@@ -94,12 +105,10 @@ public class CreatePlanActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
         String planId = DatabaseService.getInstance().generatePlanId();
 
-        // יצירת אובייקט ה-Plan
-        // שים לב: הסרתי את המשתנה 'type' שלא היה מוגדר בקוד שלך, ושלחתי מחרוזת ריקה או סוג ברירת מחדל
+        // יצירת אובייקט ה-Plan - כעת אנו בטוחים ש-selectedDate אינו null
         Plan newPlan = new Plan(planId, userId, selectedDate, name, "General");
         newPlan.setPlan(new ArrayList<>(selected));
 
-        // הצגת אינדיקציה שהשמירה בביצוע
         btnSavePlan.setEnabled(false);
         btnSavePlan.setText("שומר...");
 
@@ -108,18 +117,19 @@ public class CreatePlanActivity extends AppCompatActivity {
             public void onCompleted(Void object) {
                 Toast.makeText(CreatePlanActivity.this, "התוכנית נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
 
-                // --- השינוי מתחיל כאן ---
-                // מעבר למסך המציג את תוכניות האימון לאותו יום
+                // חזרה למסך התוכניות של אותו יום עם התאריך המעודכן
                 Intent intent = new Intent(CreatePlanActivity.this, Plan_day.class);
-                intent.putExtra("SELECTED_DATE", selectedDate); // מעבירים את התאריך הלאה
+                intent.putExtra("SELECTED_DATE", selectedDate);
                 startActivity(intent);
 
-                finish(); // סוגרים את מסך היצירה כדי שהמשתמש לא יחזור אליו אם ילחץ על 'חזור'
+                finish();
             }
 
             @Override
             public void onFailed(Exception e) {
-                // ... (ללא שינוי)
+                btnSavePlan.setEnabled(true);
+                btnSavePlan.setText("שמור תוכנית");
+                Toast.makeText(CreatePlanActivity.this, "שגיאה בשמירה: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -130,6 +140,6 @@ public class CreatePlanActivity extends AppCompatActivity {
 
         etSearch = findViewById(R.id.etSearchExercise);
         etPlanName = findViewById(R.id.etPlanName);
-        btnSavePlan = findViewById(R.id.btnSavePlan); // מקושר ל-MaterialButton ב-XML המעוצב
+        btnSavePlan = findViewById(R.id.btnSavePlan);
     }
 }

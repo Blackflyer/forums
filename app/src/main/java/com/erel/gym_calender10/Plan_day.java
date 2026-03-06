@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class Plan_day extends AppCompatActivity {
@@ -32,10 +33,19 @@ public class Plan_day extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_day);
 
-        // קבלת התאריך מהמסך הקודם
+        // 1. קבלת התאריך מהמסך הקודם - בודק גם "SELECTED_DATE" וגם "date" למקרה ששונה באחד המסכים
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
         if (selectedDate == null) {
-            selectedDate = "תאריך לא ידוע";
+            selectedDate = getIntent().getStringExtra("date");
+        }
+
+        // 2. אם המשתמש נכנס בלי תאריך ספציפי (למשל מכפתור "התוכניות שלי"), ניקח את התאריך של היום
+        if (selectedDate == null || selectedDate.isEmpty()) {
+            Calendar calendar = Calendar.getInstance();
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int month = calendar.get(Calendar.MONTH) + 1; // בחודשים מתחילים מ-0, לכן נוסיף 1
+            int year = calendar.get(Calendar.YEAR);
+            selectedDate = day + "/" + month + "/" + year;
         }
 
         initViews();
@@ -48,16 +58,16 @@ public class Plan_day extends AppCompatActivity {
         rvPlans = findViewById(R.id.rvPlans);
         fabAddPlan = findViewById(R.id.fabAddPlan);
 
-        // הגדרת הכותרת
+        // הגדרת הכותרת עם התאריך התקין
         tvDateTitle.setText("אימונים ל-" + selectedDate);
 
         // הגדרת ה-RecyclerView
         rvPlans.setLayoutManager(new LinearLayoutManager(this));
 
-        // כפתור חזרה ליצירת אימון לאותו יום
+        // כפתור מעבר ליצירת אימון לאותו יום
         fabAddPlan.setOnClickListener(v -> {
             Intent intent = new Intent(Plan_day.this, CreatePlanActivity.class);
-            intent.putExtra("SELECTED_DATE", selectedDate);
+            intent.putExtra("date", selectedDate); // מעביר את התאריך גם למסך היצירה
             startActivity(intent);
         });
     }
@@ -71,19 +81,20 @@ public class Plan_day extends AppCompatActivity {
 
         String userId = currentUser.getUid();
 
-        // קריאה ל-Firebase להבאת התוכניות לפי תאריך (הפונקציה קיימת ב-DatabaseService שלך)
+        // קריאה ל-Firebase להבאת התוכניות לפי התאריך המדויק
         DatabaseService.getInstance().getPlansByDate(userId, selectedDate, new DatabaseService.DatabaseCallback<List<Plan>>() {
             @Override
             public void onCompleted(List<Plan> plans) {
                 if (plans == null || plans.isEmpty()) {
-                    // אם אין אימונים - נציג את הטקסט שאומר שאין
+                    // אם אין אימונים
                     rvPlans.setVisibility(View.GONE);
                     tvEmptyState.setVisibility(View.VISIBLE);
                 } else {
-                    // אם יש אימונים - נציג אותם ברשימה
+                    // אם יש אימונים - מציגים ברשימה
                     tvEmptyState.setVisibility(View.GONE);
                     rvPlans.setVisibility(View.VISIBLE);
 
+                    // 3. תיקון האדפטר - הוספנו את 'Plan_day.this' כ-Context, שהיה חסר בקוד הקודם!
                     adapter = new PlanAdapter(plans);
                     rvPlans.setAdapter(adapter);
                 }

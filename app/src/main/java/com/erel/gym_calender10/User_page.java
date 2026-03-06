@@ -2,6 +2,9 @@ package com.erel.gym_calender10;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.applandeo.materialcalendarview.CalendarView;
@@ -29,7 +32,30 @@ public class User_page extends AppCompatActivity {
         calendarView.setEvents(events);
         // --------------------------------------------------------
 
-        // מאזין ללחיצה על תאריך
+        Button btnProfile = findViewById(R.id.button);
+        Button btnUserPlans = findViewById(R.id.btn_user_plans);
+
+        // 1. מאזין לחיצה לכפתור "דף פרופיל" (צד שמאל)
+        btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // תוקן ל- User_page.this
+                Intent profileIntent = new Intent(User_page.this, item_plan.class);
+                startActivity(profileIntent);
+            }
+        });
+
+        // 2. מאזין לחיצה לכפתור "התוכניות שלי" (צד ימין)
+        btnUserPlans.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // תוקן ל- User_page.this
+                Intent plansIntent = new Intent(User_page.this, Plan_day.class);
+                startActivity(plansIntent);
+            }
+        }); // <--- כאן היו חסרים הסוגריים שסוגרים את הפעולה!
+
+        // 3. מאזין ללחיצה על תאריך
         calendarView.setOnDayClickListener(new OnDayClickListener() {
             @Override
             public void onDayClick(EventDay eventDay) {

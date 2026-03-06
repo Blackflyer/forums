@@ -6,10 +6,43 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="בחר תאריך לתוכנית"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:textColor="#333333" />
+
     <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:eventsEnabled="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layoutDirection="ltr">
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="דף פרופיל" />
+
+        <Button
+            android:id="@+id/btn_user_plans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="התוכניות שלי" />
+
+    </RelativeLayout>
 
 </LinearLayout>

@@ -34,7 +34,8 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
             startActivity(intent);
         }
         if (v.getId() == btnAddAdmin.getId()) {
-            Intent intent = new Intent(AdminPage.this, LoginActivity.class);
+            // הקישור תוקן - כעת מוביל למסך הוספת מנהל
+            Intent intent = new Intent(AdminPage.this, AddAdmin.class);
             startActivity(intent);
         }
         if (v.getId() == btnUsersList.getId()) {

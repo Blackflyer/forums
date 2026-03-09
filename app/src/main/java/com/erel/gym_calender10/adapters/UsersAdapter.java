@@ -24,10 +24,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     }
 
     private final List<User> userList;
+    private List<User> userListFull; // <--- הוספנו: רשימה מלאה עבור החיפוש
     private final OnUserClickListener onUserClickListener;
 
     public UsersAdapter(@Nullable final OnUserClickListener onUserClickListener) {
-        userList = new ArrayList<>();
+        this.userList = new ArrayList<>();
+        this.userListFull = new ArrayList<>(); // <--- הוספנו: אתחול
         this.onUserClickListener = onUserClickListener;
     }
 
@@ -79,8 +81,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         });
     }
 
-    // --- הפונקציות שהיו חסרות ---
-
     @Override
     public int getItemCount() {
         return userList.size();
@@ -89,11 +89,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     public void setUserList(List<User> users) {
         userList.clear();
         userList.addAll(users);
+        userListFull = new ArrayList<>(users); // <--- הוספנו: שומר עותק מלא של הנתונים בכל טעינה
         notifyDataSetChanged();
     }
 
     public void addUser(User user) {
         userList.add(user);
+        userListFull.add(user); // גיבוי
         notifyItemInserted(userList.size() - 1);
     }
 
@@ -101,6 +103,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         int index = userList.indexOf(user);
         if (index == -1) return;
         userList.set(index, user);
+
+        // עדכון גם ברשימה המלאה
+        int fullIndex = userListFull.indexOf(user);
+        if (fullIndex != -1) {
+            userListFull.set(fullIndex, user);
+        }
         notifyItemChanged(index);
     }
 
@@ -108,10 +116,32 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         int index = userList.indexOf(user);
         if (index == -1) return;
         userList.remove(index);
+        userListFull.remove(user); // מחיקה מהגיבוי
         notifyItemRemoved(index);
     }
 
-    // ---------------------------
+    // --- הפונקציה החדשה לסינון (חיפוש) ---
+    public void filter(String text) {
+        userList.clear();
+        if (text == null || text.isEmpty()) {
+            // אם שורת החיפוש ריקה, מציגים את כולם
+            userList.addAll(userListFull);
+        } else {
+            String filterPattern = text.toLowerCase().trim();
+            for (User item : userListFull) {
+                // בדיקה אם הטקסט נמצא באימייל או בשם הפרטי/משפחה
+                boolean matchesEmail = item.getEmail() != null && item.getEmail().toLowerCase().contains(filterPattern);
+                boolean matchesFName = item.getFname() != null && item.getFname().toLowerCase().contains(filterPattern);
+                boolean matchesLName = item.getLname() != null && item.getLname().toLowerCase().contains(filterPattern);
+
+                if (matchesEmail || matchesFName || matchesLName) {
+                    userList.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+    // -----------------------------------
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvEmail, tvPhone, tvInitials;

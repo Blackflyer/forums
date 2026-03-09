@@ -1,8 +1,12 @@
 package com.erel.gym_calender10;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -26,6 +30,7 @@ public class Users_list extends AppCompatActivity {
     private UsersAdapter userAdapter;
     private DatabaseService databaseService;
     private RecyclerView usersList;
+    private EditText etSearchUser; // שורת החיפוש
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,24 @@ public class Users_list extends AppCompatActivity {
     private void initViews() {
         databaseService = DatabaseService.getInstance();
         usersList = findViewById(R.id.rcUsers);
+        etSearchUser = findViewById(R.id.etSearchUser); // חיבור ה-EditText מה-XML
+
+        // הוספת מאזין לשורת החיפוש
+        etSearchUser.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // קריאה לפונקציית הסינון באדפטר בכל פעם שמוקלדת אות
+                if (userAdapter != null) {
+                    userAdapter.filter(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void setupRecyclerView() {
@@ -58,17 +81,47 @@ public class Users_list extends AppCompatActivity {
             @Override
             public void onUserClick(User user) {
                 Log.d(TAG, "User clicked: " + user.getFname());
-                // כאן תוכל להוסיף מעבר לפרופיל המשתמש
+                // כאן תוכל להוסיף מעבר לפרופיל המשתמש כדי לראות את האימונים שלו
+                Toast.makeText(Users_list.this, "נבחר: " + user.getEmail(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onLongUserClick(User user) {
-                // לדוגמה: אפשרות למחוק משתמש בלחיצה ארוכה
-                Toast.makeText(Users_list.this, "עריכת משתמש: " + user.getFname(), Toast.LENGTH_SHORT).show();
+                // לחיצה ארוכה - פותחת חלון אישור מחיקה
+                showDeleteConfirmationDialog(user);
             }
         });
 
         usersList.setAdapter(userAdapter);
+    }
+
+    // פונקציה להצגת דיאלוג "האם אתה בטוח?"
+    private void showDeleteConfirmationDialog(User user) {
+        new AlertDialog.Builder(this)
+                .setTitle("מחיקת מתאמן")
+                .setMessage("האם אתה בטוח שברצונך למחוק את המתאמן " + user.getEmail() + "?\nפעולה זו אינה ניתנת לביטול.")
+                .setPositiveButton("כן, מחק", (dialog, which) -> {
+                    deleteUserFromDatabase(user);
+                })
+                .setNegativeButton("ביטול", null) // סוגר את הדיאלוג ללא פעולה
+                .show();
+    }
+
+    // פונקציה למחיקת המשתמש מהדאטה-בייס
+    private void deleteUserFromDatabase(User user) {
+        databaseService.deleteUser(user.getId(), new DatabaseService.DatabaseCallback<Void>() {
+            @Override
+            public void onCompleted(Void object) {
+                Toast.makeText(Users_list.this, "משתמש נמחק בהצלחה", Toast.LENGTH_SHORT).show();
+                loadUsers(); // טוען מחדש את הרשימה כדי להעלים את המשתמש שנמחק
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Log.e(TAG, "שגיאה במחיקת משתמש", e);
+                Toast.makeText(Users_list.this, "שגיאה במחיקת משתמש", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

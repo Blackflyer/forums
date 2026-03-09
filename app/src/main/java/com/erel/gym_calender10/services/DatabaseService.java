@@ -128,6 +128,30 @@ public class DatabaseService {
                     }
                 });
     }
+    public void createNewAdmin(@NotNull final User user, @Nullable final DatabaseCallback<String> callback) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && mAuth.getCurrentUser() != null) {
+                        String uid = mAuth.getCurrentUser().getUid();
+                        user.setId(uid);
+                        // כאן ההבדל: מגדירים את המשתמש כמנהל!
+                        user.setAdmin(true);
+                        writeData(USERS_PATH + "/" + uid, user, new DatabaseCallback<Void>() {
+                            @Override
+                            public void onCompleted(Void v) {
+                                if (callback != null) callback.onCompleted(uid);
+                            }
+                            @Override
+                            public void onFailed(Exception e) {
+                                if (callback != null) callback.onFailed(e);
+                            }
+                        });
+                    } else {
+                        if (callback != null) callback.onFailed(task.getException());
+                    }
+                });
+    }
 
     public void LoginUser(@NotNull final String email, final String password, @Nullable final DatabaseCallback<String> callback) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)

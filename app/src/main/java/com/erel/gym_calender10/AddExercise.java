@@ -94,52 +94,55 @@ public class AddExercise extends AppCompatActivity {
         btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String ExerciseName = etExerciseName.getText().toString();
-                String Description = etDescription.getText().toString();
-                String Equipment = etEquipment.getText().toString();
-                String MuscleGroup = etMuscleGroup.getText().toString();
-                String sets = etSets.getText().toString();
-                String times = etTimes.getText().toString();
+                String exerciseName = etExerciseName.getText().toString().trim();
+                String description = etDescription.getText().toString().trim();
+                String equipment = etEquipment.getText().toString().trim();
+                String muscleGroup = etMuscleGroup.getText().toString().trim();
+                String setsStr = etSets.getText().toString().trim();
+                String timesStr = etTimes.getText().toString().trim();
 
-
-
-                if (ExerciseName.isEmpty() || Description.isEmpty() || Equipment.isEmpty() ||
-                        MuscleGroup.isEmpty() || sets.isEmpty() || times.isEmpty()) {
+                // 1. בדיקה שכל השדות מלאים
+                if (exerciseName.isEmpty() || description.isEmpty() || equipment.isEmpty() ||
+                        muscleGroup.isEmpty() || setsStr.isEmpty() || timesStr.isEmpty()) {
                     Toast.makeText(AddExercise.this, "אנא מלא את כל השדות", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(AddExercise.this, "התרגיל נוסף בהצלחה!", Toast.LENGTH_SHORT).show();
+                    return; // <<-- חובה להוסיף return כדי לעצור את ההמשך ולא לשמור תרגיל ריק
                 }
 
-                /// generate a new id for the item
+                // 2. בדיקת תקינות: סטים וחזרות חייבים להיות מספרים חיוביים
+                try {
+                    int sets = Integer.parseInt(setsStr);
+                    int times = Integer.parseInt(timesStr);
+                    if (sets <= 0 || times <= 0) {
+                        Toast.makeText(AddExercise.this, "סטים וחזרות חייבים להיות מספרים גדולים מאפס", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(AddExercise.this, "אנא הזן מספרים תקינים בשדות הסטים והחזרות", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // 3. יצירת מזהה ושמירה ל-Firebase
                 String id = databaseService.generateExerciseId();
+                Exercise newExercise = new Exercise(id, exerciseName, equipment, muscleGroup, description, setsStr, timesStr);
 
-
-                Exercise newExercise = new Exercise(id, ExerciseName , Equipment, MuscleGroup, Description, sets,times);
-
-                /// save the item to the database and get the result in the callback
                 databaseService.createNewExercise(newExercise, new DatabaseService.DatabaseCallback<Void>() {
                     @Override
                     public void onCompleted(Void object) {
-                        Log.d("TAG", "Item added successfully");
-                        Toast.makeText(AddExercise.this, "Item added successfully", Toast.LENGTH_SHORT).show();
-                        /// clear the input fields after adding the item for the next item
-                        Log.d("TAG", "Clearing input fields");
+                        Toast.makeText(AddExercise.this, "התרגיל נוסף בהצלחה!", Toast.LENGTH_SHORT).show();
 
+                        // מעבר חזרה למסך המנהל לאחר הצלחה
                         Intent intent = new Intent(AddExercise.this, AdminPage.class);
                         startActivity(intent);
-
-
+                        finish();
                     }
 
                     @Override
                     public void onFailed(Exception e) {
                         Log.e("TAG", "Failed to add item", e);
-                        Toast.makeText(AddExercise.this, "Failed to add Exercise", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddExercise.this, "שגיאה בהוספת התרגיל", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
-
-
         });
     }
 

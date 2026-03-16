@@ -5,50 +5,79 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".AdminPage">
-
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="123dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="31dp"
+        android:layout_marginTop="48dp"
         android:text="דף פעולות מנהלים"
-        app:layout_constraintBottom_toTopOf="@+id/btnGoUsersList"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnGoUsersList"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="דף משתמשים"
-        app:layout_constraintBottom_toTopOf="@+id/btnGoAddAdmin"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
-
-    <Button
-        android:id="@+id/btnGoAddAdmin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="הוספת מנהל"
-        app:layout_constraintBottom_toTopOf="@+id/btnGoAddExercise"
-        app:layout_constraintStart_toStartOf="@+id/btnGoUsersList"
-        app:layout_constraintTop_toBottomOf="@+id/btnGoUsersList" />
-
-    <Button
-        android:id="@+id/btnGoAddExercise"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="11dp"
-        android:layout_marginEnd="11dp"
-        android:layout_marginBottom="467dp"
-        android:text="הוספת תרגיל"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btnGoAddAdmin"
-        app:layout_constraintStart_toStartOf="@+id/btnGoAddAdmin"
-        app:layout_constraintTop_toBottomOf="@+id/btnGoAddAdmin" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title">
+
+        <Button
+            android:id="@+id/btnGoUsersList"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="דף משתמשים" />
+
+        <Button
+            android:id="@+id/btnGoAddAdmin"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="הוספת מנהל" />
+
+        <Button
+            android:id="@+id/btnGoAddExercise"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="הוספת תרגיל" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginVertical="24dp"
+            android:background="#D3D3D3"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="פעולות משתמש רגיל:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#333333"/>
+
+        <Button
+            android:id="@+id/btnGoCalendar"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="לוח שנה (יומן אימונים)"
+            app:backgroundTint="#4CAF50" /> <Button
+        android:id="@+id/btnGoProfile"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="פרופיל אישי"
+        app:backgroundTint="#2196F3" /> </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

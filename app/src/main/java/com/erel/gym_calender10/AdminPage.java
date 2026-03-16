@@ -7,41 +7,59 @@ import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class AdminPage extends AppCompatActivity implements View.OnClickListener {
-    Button btnAddExercise, btnAddAdmin, btnUsersList;
+
+    // הגדרת כל הכפתורים
+    Button btnAddExercise, btnAddAdmin, btnUsersList, btnGoCalendar, btnGoProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_page);
+
+        // קישור הכפתורים ל-XML
         btnAddExercise = findViewById(R.id.btnGoAddExercise);
-        btnUsersList= findViewById(R.id.btnGoUsersList);
+        btnUsersList = findViewById(R.id.btnGoUsersList);
         btnAddAdmin = findViewById(R.id.btnGoAddAdmin);
+        btnGoCalendar = findViewById(R.id.btnGoCalendar);
+        btnGoProfile = findViewById(R.id.btnGoProfile);
+
+        // הגדרת מאזיני לחיצה
         btnAddExercise.setOnClickListener(this);
         btnUsersList.setOnClickListener(this);
         btnAddAdmin.setOnClickListener(this);
+        btnGoCalendar.setOnClickListener(this);
+        btnGoProfile.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
+        // שימוש ב-if/else if כדי לנווט למסכים המתאימים
         if (v.getId() == btnAddExercise.getId()) {
             Intent intent = new Intent(AdminPage.this, AddExercise.class);
             startActivity(intent);
         }
-        if (v.getId() == btnAddAdmin.getId()) {
-            // הקישור תוקן - כעת מוביל למסך הוספת מנהל
-            Intent intent = new Intent(AdminPage.this, AddAdmin.class);
+        else if (v.getId() == btnAddAdmin.getId()) {
+            // שים לב: כרגע זה מעביר ל-LoginActivity לפי הקוד המקורי שלך.
+            // אם יש לך דף יעודי כמו AddAdmin.class, שנה את זה כאן.
+            Intent intent = new Intent(AdminPage.this, LoginActivity.class);
             startActivity(intent);
         }
-        if (v.getId() == btnUsersList.getId()) {
+        else if (v.getId() == btnUsersList.getId()) {
             Intent intent = new Intent(AdminPage.this, Users_list.class);
+            startActivity(intent);
+        }
+        else if (v.getId() == btnGoCalendar.getId()) {
+            // מעבר למסך לוח השנה (המסך הראשי של האפליקציה)
+            Intent intent = new Intent(AdminPage.this, MainActivity.class);
+            startActivity(intent);
+        }
+        else if (v.getId() == btnGoProfile.getId()) {
+            // מעבר למסך הפרופיל האישי
+            Intent intent = new Intent(AdminPage.this, User_page.class);
             startActivity(intent);
         }
     }
 }
-

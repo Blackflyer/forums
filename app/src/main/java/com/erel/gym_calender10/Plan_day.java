@@ -3,6 +3,7 @@ package com.erel.gym_calender10;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ public class Plan_day extends AppCompatActivity {
     private FloatingActionButton fabAddPlan;
     private PlanAdapter adapter;
     private String selectedDate;
+    Button btnBackToCalendar = findViewById(R.id.btnBackTocalender);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,17 +60,26 @@ public class Plan_day extends AppCompatActivity {
         rvPlans = findViewById(R.id.rvPlans);
         fabAddPlan = findViewById(R.id.fabAddPlan);
 
-        // הגדרת הכותרת עם התאריך התקין
+        // הוספת הכפתור השמאלי שחוזר ללוח השנה
+        Button btnBackToCalendar = findViewById(R.id.btnBackTocalender);
+
+        // הגדרת הכותרת
         tvDateTitle.setText("אימונים ל-" + selectedDate);
 
         // הגדרת ה-RecyclerView
         rvPlans.setLayoutManager(new LinearLayoutManager(this));
 
-        // כפתור מעבר ליצירת אימון לאותו יום
+        // כפתור חזרה ליצירת אימון לאותו יום
         fabAddPlan.setOnClickListener(v -> {
             Intent intent = new Intent(Plan_day.this, CreatePlanActivity.class);
-            intent.putExtra("date", selectedDate); // מעביר את התאריך גם למסך היצירה
+            intent.putExtra("SELECTED_DATE", selectedDate);
             startActivity(intent);
+        });
+
+        // פעולת הלחיצה על כפתור החזרה ללוח השנה
+        btnBackToCalendar.setOnClickListener(v -> {
+            // אם המסך הקודם הוא לוח השנה, אפשר פשוט לסגור את המסך הנוכחי
+            finish();
         });
     }
 

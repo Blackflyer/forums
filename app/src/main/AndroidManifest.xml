@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gym_calender10">
         <activity
+            android:name=".track_workout"
+            android:exported="false" />
+        <activity
+            android:name=".Progress_graph"
+            android:exported="false" />
+        <activity
             android:name=".Users_Profile"
             android:exported="false" />
         <activity

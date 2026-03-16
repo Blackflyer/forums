@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.erel.gym_calender10.R;
+import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.module.Plan;
 
 import java.util.List;
@@ -38,6 +39,31 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         // מציג כמה תרגילים יש בתוכנית (אם הרשימה לא ריקה)
         int exerciseCount = (plan.getPlan() != null) ? plan.getPlan().size() : 0;
         holder.tvExercisesCount.setText(exerciseCount + " תרגילים");
+
+        // --- הוספנו את הקוד הבא: מאזין ללחיצה על התוכנית ---
+        holder.itemView.setOnClickListener(v -> {
+
+            // אנחנו מוודאים שיש לפחות תרגיל אחד בתוכנית הזו כדי שלא נקבל שגיאה
+            if (plan.getPlan() != null && !plan.getPlan().isEmpty()) {
+
+                // לוקחים את התרגיל הראשון מהתוכנית
+                // (בהמשך תוכל לעשות מסך שבוחרים איזה תרגיל בדיוק מתוך התוכנית רוצים לעשות)
+                Exercise firstExercise = plan.getPlan().get(0);
+
+                // יוצרים את המעבר למסך המעקב
+                android.content.Intent intent = new android.content.Intent(v.getContext(), com.erel.gym_calender10.TrackWorkoutActivity.class);
+
+                // שולחים למסך המעקב את הנתונים האמיתיים מתוך התרגיל!
+                intent.putExtra("EXERCISE_ID", firstExercise.getId());
+                intent.putExtra("EXERCISE_NAME", firstExercise.getName());
+
+                // פותחים את המסך
+                v.getContext().startActivity(intent);
+
+            } else {
+                android.widget.Toast.makeText(v.getContext(), "אין תרגילים בתוכנית זו", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

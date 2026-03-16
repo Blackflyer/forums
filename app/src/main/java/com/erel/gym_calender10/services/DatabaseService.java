@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.erel.gym_calender10.module.ListOfPlans;
 import com.erel.gym_calender10.module.Plan;
+import com.erel.gym_calender10.module.ProgressRecord;
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.module.Exercise;
 import com.google.firebase.auth.FirebaseAuth;
@@ -258,4 +259,41 @@ public class DatabaseService {
         return generateNewId(PLANS_PATH);
     }
     // endregion
+    // --- אזור מעקב התקדמות (Progress Tracking) ---
+
+    // שמירת משקל של תרגיל שבוצע
+    public void saveExerciseProgress(String userId, String exerciseId, ProgressRecord record, @Nullable final DatabaseCallback<Void> callback) {
+        // נייצר ID ייחודי לביצוע הזה
+        String recordId = databaseReference.child(USERS_PATH).child(userId).child("progressLogs").child(exerciseId).push().getKey();
+        if (recordId != null) {
+            record.setId(recordId);
+            databaseReference.child(USERS_PATH).child(userId).child("progressLogs").child(exerciseId).child(recordId)
+                    .setValue(record, (error, ref) -> {
+                        if (error != null) {
+                            if (callback != null) callback.onFailed(error.toException());
+                        } else {
+                            if (callback != null) callback.onCompleted(null);
+                        }
+                    });
+        }
+    }
+
+    // שליפת היסטוריית המשקלים של תרגיל מסוים עבור משתמש
+    public void getExerciseProgress(String userId, String exerciseId, @NotNull final DatabaseCallback<List<ProgressRecord>> callback) {
+        databaseReference.child(USERS_PATH).child(userId).child("progressLogs").child(exerciseId)
+                .get().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        callback.onFailed(task.getException());
+                        return;
+                    }
+                    List<ProgressRecord> records = new ArrayList<>();
+                    for (DataSnapshot snapshot : task.getResult().getChildren()) {
+                        ProgressRecord record = snapshot.getValue(ProgressRecord.class);
+                        if (record != null) {
+                            records.add(record);
+                        }
+                    }
+                    callback.onCompleted(records);
+                });
+    }
 }

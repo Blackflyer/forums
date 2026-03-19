@@ -44,7 +44,7 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
         else if (v.getId() == btnAddAdmin.getId()) {
             // שים לב: כרגע זה מעביר ל-LoginActivity לפי הקוד המקורי שלך.
             // אם יש לך דף יעודי כמו AddAdmin.class, שנה את זה כאן.
-            Intent intent = new Intent(AdminPage.this, LoginActivity.class);
+            Intent intent = new Intent(AdminPage.this, AddAdmin.class);
             startActivity(intent);
         }
         else if (v.getId() == btnUsersList.getId()) {

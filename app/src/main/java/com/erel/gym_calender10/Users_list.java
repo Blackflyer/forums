@@ -1,13 +1,13 @@
 package com.erel.gym_calender10;
 
 import android.app.AlertDialog;
+import android.content.Intent; // חובה לייבא
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
+import android.widget.Button; // חובה לייבא
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -30,7 +30,8 @@ public class Users_list extends AppCompatActivity {
     private UsersAdapter userAdapter;
     private DatabaseService databaseService;
     private RecyclerView usersList;
-    private EditText etSearchUser; // שורת החיפוש
+    private EditText etSearchUser;
+    private Button btnBackToAdmin; // הוספת הכפתור
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,19 @@ public class Users_list extends AppCompatActivity {
     private void initViews() {
         databaseService = DatabaseService.getInstance();
         usersList = findViewById(R.id.rcUsers);
-        etSearchUser = findViewById(R.id.etSearchUser); // חיבור ה-EditText מה-XML
+        etSearchUser = findViewById(R.id.etSearchUser);
+        btnBackToAdmin = findViewById(R.id.btnBackToAdmin); // חיבור ה-Button מה-XML
+
+        // כפתור חזרה לעמוד מנהל
+        btnBackToAdmin.setOnClickListener(v -> {
+            // הדרך הטובה ביותר לחזור אחורה היא פשוט לסגור את ה-Activity הנוכחי:
+            finish();
+
+            // (אם מסיבה כלשהי זה לא עובד לך, אפשר להשתמש ב-Intent הבא במקום finish)
+            // Intent intent = new Intent(Users_list.this, AdminPage.class);
+            // startActivity(intent);
+            // finish();
+        });
 
         // הוספת מאזין לשורת החיפוש
         etSearchUser.addTextChangedListener(new TextWatcher() {
@@ -63,7 +76,6 @@ public class Users_list extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // קריאה לפונקציית הסינון באדפטר בכל פעם שמוקלדת אות
                 if (userAdapter != null) {
                     userAdapter.filter(s.toString());
                 }
@@ -81,13 +93,11 @@ public class Users_list extends AppCompatActivity {
             @Override
             public void onUserClick(User user) {
                 Log.d(TAG, "User clicked: " + user.getFname());
-                // כאן תוכל להוסיף מעבר לפרופיל המשתמש כדי לראות את האימונים שלו
                 Toast.makeText(Users_list.this, "נבחר: " + user.getEmail(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onLongUserClick(User user) {
-                // לחיצה ארוכה - פותחת חלון אישור מחיקה
                 showDeleteConfirmationDialog(user);
             }
         });
@@ -95,7 +105,6 @@ public class Users_list extends AppCompatActivity {
         usersList.setAdapter(userAdapter);
     }
 
-    // פונקציה להצגת דיאלוג "האם אתה בטוח?"
     private void showDeleteConfirmationDialog(User user) {
         new AlertDialog.Builder(this)
                 .setTitle("מחיקת מתאמן")
@@ -103,17 +112,16 @@ public class Users_list extends AppCompatActivity {
                 .setPositiveButton("כן, מחק", (dialog, which) -> {
                     deleteUserFromDatabase(user);
                 })
-                .setNegativeButton("ביטול", null) // סוגר את הדיאלוג ללא פעולה
+                .setNegativeButton("ביטול", null)
                 .show();
     }
 
-    // פונקציה למחיקת המשתמש מהדאטה-בייס
     private void deleteUserFromDatabase(User user) {
         databaseService.deleteUser(user.getId(), new DatabaseService.DatabaseCallback<Void>() {
             @Override
             public void onCompleted(Void object) {
                 Toast.makeText(Users_list.this, "משתמש נמחק בהצלחה", Toast.LENGTH_SHORT).show();
-                loadUsers(); // טוען מחדש את הרשימה כדי להעלים את המשתמש שנמחק
+                loadUsers();
             }
 
             @Override

@@ -53,12 +53,12 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
         }
         else if (v.getId() == btnGoCalendar.getId()) {
             // מעבר למסך לוח השנה (המסך הראשי של האפליקציה)
-            Intent intent = new Intent(AdminPage.this, MainActivity.class);
+            Intent intent = new Intent(AdminPage.this, User_page.class);
             startActivity(intent);
         }
         else if (v.getId() == btnGoProfile.getId()) {
             // מעבר למסך הפרופיל האישי
-            Intent intent = new Intent(AdminPage.this, User_page.class);
+            Intent intent = new Intent(AdminPage.this,Users_Profile.class);
             startActivity(intent);
         }
     }

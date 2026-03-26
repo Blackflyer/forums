@@ -50,6 +50,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="הוספת תרגיל" />
+        <Button
+            android:id="@+id/btnAdminTrackWorkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="מעקב אימון אישי" />
 
         <View
             android:layout_width="match_parent"
@@ -57,14 +63,7 @@
             android:layout_marginVertical="24dp"
             android:background="#D3D3D3"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="פעולות משתמש רגיל:"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#333333"/>
+
 
         <Button
             android:id="@+id/btnGoCalendar"

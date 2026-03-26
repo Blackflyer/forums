@@ -1,48 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
-    android:background="#F5F5F5">
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvExerciseNameTrack"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="שם התרגיל"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
+        android:hint="בחר אימון מתוכניות היום"
+        android:layout_marginBottom="16dp">
 
-    <EditText
-        android:id="@+id/etActualWeight"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:hint="משקל (קג)"
-        android:inputType="numberDecimal"
-        android:background="#FFFFFF"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"/>
+        <AutoCompleteTextView
+            android:id="@+id/autoCompletePlan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/etActualReps"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:hint="מספר חזרות שבוצעו"
-        android:inputType="number"
-        android:background="#FFFFFF"
-        android:padding="12dp"
-        android:layout_marginBottom="32dp"/>
+        android:layout_height="wrap_content"
+        android:hint="בחר תרגיל"
+        android:layout_marginBottom="16dp">
 
-    <Button
-        android:id="@+id/btnSaveProgress"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="שמור ביצוע!"
-        android:textSize="18sp"
-        android:backgroundTint="#4CAF50"
-        android:textColor="#FFFFFF"/>
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteExercise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" /> </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

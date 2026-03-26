@@ -34,7 +34,12 @@ Button btnLogin, btnRegister;
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
-
+// בתוך פונקציית onCreate:
+        Button btnGoToTrackWorkout = findViewById(R.id.btnGoToTrackWorkout);
+        btnGoToTrackWorkout.setOnClickListener(view -> {
+            Intent intent = new Intent(this, TrackWorkoutActivity.class);
+            startActivity(intent);
+        });
 
     }
 }

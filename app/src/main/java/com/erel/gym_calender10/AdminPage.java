@@ -32,6 +32,12 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
         btnAddAdmin.setOnClickListener(this);
         btnGoCalendar.setOnClickListener(this);
         btnGoProfile.setOnClickListener(this);
+        // בתוך פונקציית onCreate:
+        Button btnAdminTrackWorkout = findViewById(R.id.btnAdminTrackWorkout);
+        btnAdminTrackWorkout.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminPage.this, TrackWorkoutActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override

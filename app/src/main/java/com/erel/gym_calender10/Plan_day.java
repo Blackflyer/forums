@@ -20,6 +20,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Calendar;
 import java.util.List;
+import android.app.DatePickerDialog;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
 
 public class Plan_day extends AppCompatActivity {
 
@@ -52,6 +55,33 @@ public class Plan_day extends AppCompatActivity {
 
         initViews();
         loadPlansForDate();
+        ImageButton btnSearchDate = findViewById(R.id.btnSearchDate);
+
+        btnSearchDate.setOnClickListener(v -> {
+            // משיג את התאריך של היום כברירת מחדל לחלון שייפתח
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            // פותח חלון בחירת תאריך
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    Plan_day.this,
+                    (view, selectedYear, selectedMonth, selectedDay) -> {
+                        // התאריך שהמשתמש בחר
+                        String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+
+                        // עדכון הכותרת לתאריך החדש
+                        TextView tvDateTitle = findViewById(R.id.tvDateTitle);
+                        tvDateTitle.setText("אימונים ל: " + selectedDate);
+
+                        // TODO: קרא כאן לפונקציה ששולפת את הנתונים מהמסד נתונים לפי התאריך החדש (selectedDate)
+                        // למשל: loadPlansByDate(selectedDate);
+
+                    },
+                    year, month, day);
+            datePickerDialog.show();
+        });
     }
 
     private void initViews() {

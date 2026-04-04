@@ -71,7 +71,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="לוח שנה (יומן אימונים)"
-            app:backgroundTint="#4CAF50" /> <Button
+            app:backgroundTint="#4CAF50" />
+
+        <Button
         android:id="@+id/btnGoProfile"
         android:layout_width="220dp"
         android:layout_height="wrap_content"

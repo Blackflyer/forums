@@ -1,6 +1,8 @@
 package com.erel.gym_calender10;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -8,69 +10,112 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.erel.gym_calender10.adapters.UsersAdapter;
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.services.DatabaseService;
 
+import java.util.List;
+
 public class AddAdmin extends AppCompatActivity {
 
-    private EditText etAdminEmail, etAdminPassword;
-    private Button btnCreateAdmin, btnBackFromAdmin;
+    private EditText etSearchUser;
+    private RecyclerView rcUsers;
+    private Button btnPromoteAdmin, btnBackFromAdmin;
     private DatabaseService databaseService;
+    private UsersAdapter userAdapter;
+    private User selectedUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_admin);
 
-        // חיבור ל-Database
         databaseService = DatabaseService.getInstance();
 
-        // אתחול רכיבי התצוגה
-        etAdminEmail = findViewById(R.id.etAdminEmail);
-        etAdminPassword = findViewById(R.id.etAdminPassword);
-        btnCreateAdmin = findViewById(R.id.btnCreateAdmin);
+        etSearchUser = findViewById(R.id.etSearchUser);
+        rcUsers = findViewById(R.id.rcUsers);
+        btnPromoteAdmin = findViewById(R.id.btnPromoteAdmin);
         btnBackFromAdmin = findViewById(R.id.btnBackFromAdmin);
 
-        // כפתור חזור - מסיים את המסך הנוכחי וחוזר למסך הקודם
         btnBackFromAdmin.setOnClickListener(v -> finish());
 
-        // כפתור יצירת מנהל
-        btnCreateAdmin.setOnClickListener(v -> {
-            String email = etAdminEmail.getText().toString().trim();
-            String password = etAdminPassword.getText().toString().trim();
+        setupRecyclerView();
+        loadUsers();
 
-            // 1. וולידציה - בדיקה שהשדות לא ריקים
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(AddAdmin.this, "נא למלא אימייל וסיסמה", Toast.LENGTH_SHORT).show();
-                return;
+        etSearchUser.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (userAdapter != null) {
+                    userAdapter.filter(s.toString());
+                }
             }
 
-            // 2. וולידציה - פיירבייס דורש סיסמה של 6 תווים לפחות
-            if (password.length() < 6) {
-                Toast.makeText(AddAdmin.this, "הסיסמה חייבת להכיל לפחות 6 תווים", Toast.LENGTH_SHORT).show();
-                return;
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        btnPromoteAdmin.setOnClickListener(v -> {
+            if (selectedUser != null) {
+                promoteUserToAdmin(selectedUser);
+            }
+        });
+    }
+
+    private void setupRecyclerView() {
+        rcUsers.setLayoutManager(new LinearLayoutManager(this));
+        userAdapter = new UsersAdapter(new UsersAdapter.OnUserClickListener() {
+            @Override
+            public void onUserClick(User user) {
+                selectedUser = user;
+                btnPromoteAdmin.setVisibility(View.VISIBLE);
+                btnPromoteAdmin.setText("הפוך את " + user.getFname() + " למנהל");
             }
 
-            // יצירת אובייקט User (תלוי במבנה המחלקה שלך, אפשר גם להוסיף שם אם נדרש)
-            User newAdmin = new User();
-            newAdmin.setEmail(email);
-            newAdmin.setPassword(password);
+            @Override
+            public void onLongUserClick(User user) {
+                // לא רלוונטי כאן
+            }
+        });
+        rcUsers.setAdapter(userAdapter);
+    }
 
-            // קריאה לפונקציה החדשה שיצרנו
-            databaseService.createNewAdmin(newAdmin, new DatabaseService.DatabaseCallback<String>() {
-                @Override
-                public void onCompleted(String uid) {
-                    Toast.makeText(AddAdmin.this, "מנהל חדש נוצר בהצלחה!", Toast.LENGTH_LONG).show();
-                    finish(); // חזרה למסך ניהול לאחר ההצלחה
+    private void loadUsers() {
+        databaseService.getUserList(new DatabaseService.DatabaseCallback<List<User>>() {
+            @Override
+            public void onCompleted(List<User> users) {
+                if (users != null && !users.isEmpty()) {
+                    userAdapter.setUserList(users);
+                    userAdapter.notifyDataSetChanged();
                 }
+            }
 
-                @Override
-                public void onFailed(Exception e) {
-                    Log.e("AddAdmin", "שגיאה ביצירת מנהל", e);
-                    Toast.makeText(AddAdmin.this, "שגיאה: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
+            @Override
+            public void onFailed(Exception e) {
+                Log.e("AddAdmin", "Failed to load users", e);
+                Toast.makeText(AddAdmin.this, "שגיאה בטעינת משתמשים", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void promoteUserToAdmin(User user) {
+        databaseService.updateUserAdminStatus(user.getId(), true, new DatabaseService.DatabaseCallback<Void>() {
+            @Override
+            public void onCompleted(Void v) {
+                Toast.makeText(AddAdmin.this, user.getFname() + " קודם למנהל בהצלחה!", Toast.LENGTH_LONG).show();
+                finish();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Log.e("AddAdmin", "Failed to promote user", e);
+                Toast.makeText(AddAdmin.this, "שגיאה בקידום המשתמש", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

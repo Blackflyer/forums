@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="#F8F9FA">
 
     <TextView
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
         android:text="מעקב התקדמות"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#333"
+        android:textColor="#1A237E"
         android:gravity="center"
         android:layout_marginBottom="16dp"/>
 
@@ -20,17 +20,38 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="בחר תרגיל להצגה:"
+        android:textColor="#333333"
         android:layout_marginBottom="8dp"/>
 
     <Spinner
         android:id="@+id/spinnerExercises"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#E0E0E0"
+        android:background="@android:drawable/btn_dropdown"
         android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="מגמת התקדמות (גרף קווי):"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/lineChartProgress"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="חלוקת משקלים (גרף עוגה):"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChartProgress"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

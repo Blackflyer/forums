@@ -14,11 +14,16 @@ import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.module.ProgressRecord;
 import com.erel.gym_calender10.services.DatabaseService;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -29,6 +34,7 @@ public class Progress_Graph extends AppCompatActivity {
 
     private Spinner spinnerExercises;
     private LineChart lineChart;
+    private PieChart pieChart;
     private List<Exercise> exerciseList;
 
     @Override
@@ -38,32 +44,38 @@ public class Progress_Graph extends AppCompatActivity {
 
         spinnerExercises = findViewById(R.id.spinnerExercises);
         lineChart = findViewById(R.id.lineChartProgress);
+        pieChart = findViewById(R.id.pieChartProgress);
 
         setupChartAppearance();
         loadExercisesIntoSpinner();
     }
 
-    // עיצוב ראשוני של הגרף
     private void setupChartAppearance() {
         lineChart.setDrawGridBackground(false);
-        Description description = new Description();
-        description.setText("משקל מקסימלי (ק\"ג)");
-        lineChart.setDescription(description);
+        Description lineDescription = new Description();
+        lineDescription.setText("משקל מקסימלי (ק\"ג)");
+        lineChart.setDescription(lineDescription);
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1f); // קפיצות של 1 בציר ה-X
+        xAxis.setGranularity(1f);
+
+        Description pieDescription = new Description();
+        pieDescription.setText("התפלגות משקלים");
+        pieChart.setDescription(pieDescription);
+        pieChart.setHoleRadius(40f);
+        pieChart.setTransparentCircleRadius(45f);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setEntryLabelColor(Color.BLACK);
+        pieChart.setEntryLabelTextSize(12f);
     }
 
-    // טעינת רשימת התרגילים לתוך ה-Spinner
     private void loadExercisesIntoSpinner() {
         DatabaseService.getInstance().getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
             @Override
             public void onCompleted(List<Exercise> exercises) {
                 if (exercises != null && !exercises.isEmpty()) {
                     exerciseList = exercises;
-
-                    // יצירת רשימה של שמות תרגילים בלבד
                     List<String> exerciseNames = new ArrayList<>();
                     for (Exercise ex : exercises) {
                         exerciseNames.add(ex.getName());
@@ -77,7 +89,6 @@ public class Progress_Graph extends AppCompatActivity {
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerExercises.setAdapter(adapter);
 
-                    // האזנה לבחירת תרגיל
                     spinnerExercises.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -98,8 +109,6 @@ public class Progress_Graph extends AppCompatActivity {
         });
     }
 
-    // טעינת הנתונים מהפיירבייס לתרגיל הספציפי וציור הגרף
-    // טעינת הנתונים האמיתיים מהפיירבייס לתרגיל הספציפי וציור הגרף
     private void loadGraphDataForExercise(String exerciseId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
@@ -107,30 +116,43 @@ public class Progress_Graph extends AppCompatActivity {
         DatabaseService.getInstance().getExerciseProgress(user.getUid(), exerciseId, new DatabaseService.DatabaseCallback<List<ProgressRecord>>() {
             @Override
             public void onCompleted(List<ProgressRecord> records) {
-                ArrayList<Entry> entries = new ArrayList<>();
+                ArrayList<Entry> lineEntries = new ArrayList<>();
+                ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
                 if (records != null && !records.isEmpty()) {
-                    // יש נתונים! עוברים עליהם ומכניסים לגרף
                     for (int i = 0; i < records.size(); i++) {
-                        // ציר ה-X יהיה מספר האימון (1, 2, 3...), וציר ה-Y יהיה המשקל
-                        entries.add(new Entry(i + 1, records.get(i).getWeight()));
+                        float weight = records.get(i).getWeight();
+                        String date = records.get(i).getDate();
+
+                        lineEntries.add(new Entry(i + 1, weight));
+                        pieEntries.add(new PieEntry(weight, date != null ? date : "אימון " + (i + 1)));
                     }
                 } else {
                     Toast.makeText(Progress_Graph.this, "אין עדיין נתונים לתרגיל זה", Toast.LENGTH_SHORT).show();
                 }
 
-                // יצירת הקו של הגרף
-                LineDataSet dataSet = new LineDataSet(entries, "התקדמות במשקלים (ק\"ג)");
-                dataSet.setColor(Color.parseColor("#2196F3"));
-                dataSet.setValueTextColor(Color.BLACK);
-                dataSet.setValueTextSize(12f);
-                dataSet.setLineWidth(3f);
-                dataSet.setCircleColor(Color.parseColor("#2196F3"));
-                dataSet.setCircleRadius(5f);
+                // Update LineChart
+                LineDataSet lineDataSet = new LineDataSet(lineEntries, "התקדמות (ק\"ג)");
+                lineDataSet.setColor(Color.parseColor("#2196F3"));
+                lineDataSet.setLineWidth(3f);
+                lineDataSet.setCircleColor(Color.parseColor("#2196F3"));
+                lineDataSet.setCircleRadius(5f);
+                lineDataSet.setValueTextSize(10f);
 
-                LineData lineData = new LineData(dataSet);
+                LineData lineData = new LineData(lineDataSet);
                 lineChart.setData(lineData);
-                lineChart.invalidate(); // מצייר את הגרף מחדש
+                lineChart.invalidate();
+
+                // Update PieChart
+                PieDataSet pieDataSet = new PieDataSet(pieEntries, "משקלים לפי אימון");
+                pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                pieDataSet.setValueTextColor(Color.BLACK);
+                pieDataSet.setValueTextSize(12f);
+                pieDataSet.setSliceSpace(3f);
+
+                PieData pieData = new PieData(pieDataSet);
+                pieChart.setData(pieData);
+                pieChart.invalidate();
             }
 
             @Override

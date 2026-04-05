@@ -174,6 +174,16 @@ public class DatabaseService {
     public void deleteUser(@NotNull final String uid, @Nullable final DatabaseCallback<Void> callback) {
         deleteData(USERS_PATH + "/" + uid, callback);
     }
+
+    public void updateUserAdminStatus(@NotNull final String uid, final boolean isAdmin, @Nullable final DatabaseCallback<Void> callback) {
+        databaseReference.child(USERS_PATH).child(uid).child("admin").setValue(isAdmin, (error, ref) -> {
+            if (error != null) {
+                if (callback != null) callback.onFailed(error.toException());
+            } else {
+                if (callback != null) callback.onCompleted(null);
+            }
+        });
+    }
     // endregion
 
     // region Exercise Section

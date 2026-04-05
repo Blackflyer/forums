@@ -9,7 +9,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.erel.gym_calender10.adapters.PlanAdapter;
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.services.DatabaseService;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,29 +20,28 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Users_Profile extends AppCompatActivity {
 
-    private TextView tvProfileName, tvProfileEmail;
+    private TextView tvProfileName, tvProfileEmail, tvProfilePhone;
     private Button btnLogout;
     private ImageButton btnBack;
+    private RecyclerView rvProfilePlans;
+    private PlanAdapter planAdapter;
+    private DatabaseService databaseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_page);
+        setContentView(R.layout.activity_users_profile);
+
+        databaseService = DatabaseService.getInstance();
 
         initViews();
         loadUserData();
 
-        // כפתור חזרה (הנחתי שהוא חוזר למסך הראשי של היומן)
-        btnBack.setOnClickListener(v -> {
-            finish(); // סוגר את הפעילות הנוכחית וחוזר לקודמת
-        });
+        btnBack.setOnClickListener(v -> finish());
 
-        // כפתור התנתקות מ-Firebase
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(Users_Profile.this, "התנתקת בהצלחה", Toast.LENGTH_SHORT).show();
-
-            // מעבר למסך ההתחברות (נקה את היסטוריית המסכים כדי שלא יוכל לחזור אחורה בלי להתחבר)
             Intent intent = new Intent(Users_Profile.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -50,39 +52,48 @@ public class Users_Profile extends AppCompatActivity {
     private void initViews() {
         tvProfileName = findViewById(R.id.tvProfileName);
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
+        tvProfilePhone = findViewById(R.id.tvProfilePhone);
         btnLogout = findViewById(R.id.btnLogout);
         btnBack = findViewById(R.id.btnBackFromProfile);
+        rvProfilePlans = findViewById(R.id.rvProfilePlans);
+        Button btnViewProgress = findViewById(R.id.btnViewProgress);
+
+        rvProfilePlans.setLayoutManager(new LinearLayoutManager(this));
+        
+        btnViewProgress.setOnClickListener(v -> {
+            Intent intent = new Intent(Users_Profile.this, Progress_Graph.class);
+            startActivity(intent);
+        });
     }
 
     private void loadUserData() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
 
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
+        databaseService.getUser(currentUser.getUid(), new DatabaseService.DatabaseCallback<User>() {
+            @Override
+            public void onCompleted(User user) {
+                if (user != null) {
+                    tvProfileName.setText(user.getFname() + " " + (user.getLname() != null ? user.getLname() : ""));
+                    tvProfileEmail.setText(user.getEmail());
+                    tvProfilePhone.setText("טלפון: " + (user.getPhone() != null ? user.getPhone() : "לא הוזן"));
 
-            // שימוש בפונקציה שכבר קיימת אצלך ב-DatabaseService!
-            DatabaseService.getInstance().getUser(uid, new DatabaseService.DatabaseCallback<User>() {
-                @Override
-                public void onCompleted(User user) {
-                    if (user != null) {
-                        // מעדכן את ממשק המשתמש עם הנתונים שחזרו מהדאטה-בייס
-                        tvProfileName.setText(user.getFname() != null ? user.getFname() : "משתמש ללא שם");
-                        tvProfileEmail.setText(user.getEmail());
+                    if (user.getMaarachedPlans() != null && user.getMaarachedPlans().getPlanArray() != null) {
+                        planAdapter = new PlanAdapter(user.getMaarachedPlans().getPlanArray());
+                        rvProfilePlans.setAdapter(planAdapter);
                     }
                 }
+            }
 
-                @Override
-                public void onFailed(Exception e) {
-                    Log.e("User_page", "Failed to load user data: " + e.getMessage());
-                    Toast.makeText(Users_Profile.this, "שגיאה בטעינת נתונים", Toast.LENGTH_SHORT).show();
-                    // במקרה של שגיאה לפחות נציג את האימייל מ-Auth
-                    tvProfileEmail.setText(currentUser.getEmail());
-                }
-            });
-        } else {
-            // אם משום מה המשתמש לא מחובר, נזרוק אותו למסך הלוגין
-            startActivity(new Intent(Users_Profile.this, LoginActivity.class));
-            finish();
-        }
+            @Override
+            public void onFailed(Exception e) {
+                Log.e("Users_Profile", "Failed to load user data", e);
+                Toast.makeText(Users_Profile.this, "שגיאה בטעינת נתונים", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

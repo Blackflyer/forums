@@ -62,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         etLName = findViewById(R.id.et_lname);
         etPhone = findViewById(R.id.et_phone);
         btnRegister = findViewById(R.id.btnRegister);
-        tvLogin = findViewById(R.id.topic);
+        tvLogin = findViewById(R.id.btnToLogin);
 
         // הגדרת המאזין
         btnRegister.setOnClickListener(this);
@@ -71,12 +71,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == btnRegister.getId()) {
-            Log.d("RegisterActivity", "Button clicked! ID: " + v.getId()); // שורה לבדיקה
-            if (v.getId() == btnRegister.getId()) {
-                validateAndRegister();
-            }
-        } else if (v.getId() == tvLogin.getId()) {
+        int id = v.getId();
+        if (id == R.id.btnRegister) {
+            Log.d("RegisterActivity", "Register Button clicked!");
+            validateAndRegister();
+        } else if (id == R.id.btnToLogin) {
             // מעבר לדף התחברות אם כבר יש חשבון
             finish();
         }

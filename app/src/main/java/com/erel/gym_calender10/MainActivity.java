@@ -12,34 +12,45 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-Button btnLogin, btnRegister;
+    private Button btnLogin, btnRegister, btnGoToTrackWorkout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        initViews();
+    }
+
+    private void initViews() {
         btnLogin = findViewById(R.id.btnGoLogin);
         btnRegister = findViewById(R.id.btnGoRegister);
+        btnGoToTrackWorkout = findViewById(R.id.btnGoToTrackWorkout);
+
         btnRegister.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
+        btnGoToTrackWorkout.setOnClickListener(this);
+
+        View mainView = findViewById(android.R.id.content);
+        if (mainView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
+        }
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == btnRegister.getId()){
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-            startActivity(intent);
+        int id = v.getId();
+        if (id == R.id.btnGoRegister) {
+            startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+        } else if (id == R.id.btnGoLogin) {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        } else if (id == R.id.btnGoToTrackWorkout) {
+            startActivity(new Intent(MainActivity.this, TrackWorkoutActivity.class));
         }
-       if  (v.getId() == btnLogin.getId()){
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }
-// בתוך פונקציית onCreate:
-        Button btnGoToTrackWorkout = findViewById(R.id.btnGoToTrackWorkout);
-        btnGoToTrackWorkout.setOnClickListener(view -> {
-            Intent intent = new Intent(this, TrackWorkoutActivity.class);
-            startActivity(intent);
-        });
-
     }
 }

@@ -1,14 +1,17 @@
 package com.erel.gym_calender10.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.erel.gym_calender10.R;
+import com.erel.gym_calender10.TrackWorkoutActivity;
 import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.module.Plan;
 
@@ -25,7 +28,8 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
     @NonNull
     @Override
     public PlanViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item_plan, parent, false);
+        // Using the new item_plan layout
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_plan, parent, false);
         return new PlanViewHolder(view);
     }
 
@@ -34,34 +38,20 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         Plan plan = plansList.get(position);
 
         holder.tvPlanName.setText(plan.getPlanName());
-        holder.tvPlanType.setText("סוג: " + plan.getType());
+        holder.tvPlanDate.setText("תאריך: " + plan.getDate());
 
-        // מציג כמה תרגילים יש בתוכנית (אם הרשימה לא ריקה)
         int exerciseCount = (plan.getPlan() != null) ? plan.getPlan().size() : 0;
-        holder.tvExercisesCount.setText(exerciseCount + " תרגילים");
+        holder.tvExerciseCount.setText(exerciseCount + " תרגילים");
 
-        // --- הוספנו את הקוד הבא: מאזין ללחיצה על התוכנית ---
         holder.itemView.setOnClickListener(v -> {
-
-            // אנחנו מוודאים שיש לפחות תרגיל אחד בתוכנית הזו כדי שלא נקבל שגיאה
             if (plan.getPlan() != null && !plan.getPlan().isEmpty()) {
-
-                // לוקחים את התרגיל הראשון מהתוכנית
-                // (בהמשך תוכל לעשות מסך שבוחרים איזה תרגיל בדיוק מתוך התוכנית רוצים לעשות)
                 Exercise firstExercise = plan.getPlan().get(0);
-
-                // יוצרים את המעבר למסך המעקב
-                android.content.Intent intent = new android.content.Intent(v.getContext(), com.erel.gym_calender10.TrackWorkoutActivity.class);
-
-                // שולחים למסך המעקב את הנתונים האמיתיים מתוך התרגיל!
+                Intent intent = new Intent(v.getContext(), TrackWorkoutActivity.class);
                 intent.putExtra("EXERCISE_ID", firstExercise.getId());
                 intent.putExtra("EXERCISE_NAME", firstExercise.getName());
-
-                // פותחים את המסך
                 v.getContext().startActivity(intent);
-
             } else {
-                android.widget.Toast.makeText(v.getContext(), "אין תרגילים בתוכנית זו", android.widget.Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "אין תרגילים בתוכנית זו", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -71,14 +61,19 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         return plansList.size();
     }
 
+    public void updateList(List<Plan> newList) {
+        this.plansList = newList;
+        notifyDataSetChanged();
+    }
+
     static class PlanViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPlanName, tvPlanType, tvExercisesCount;
+        TextView tvPlanName, tvPlanDate, tvExerciseCount;
 
         public PlanViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPlanName = itemView.findViewById(R.id.tvPlanName);
-            tvPlanType = itemView.findViewById(R.id.tvPlanType);
-            tvExercisesCount = itemView.findViewById(R.id.tvExercisesCount);
+            tvPlanDate = itemView.findViewById(R.id.tvPlanDate);
+            tvExerciseCount = itemView.findViewById(R.id.tvExerciseCount);
         }
     }
 }

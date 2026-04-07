@@ -1,5 +1,8 @@
 package com.erel.gym_calender10.module;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
 
     String id;
@@ -8,11 +11,9 @@ public class User {
     String phone;
     String email;
     String password;
-   ListOfPlans MaarachedPlans;
+    ListOfPlans MaarachedPlans;
     Boolean isAdmin;
-
-
-
+    List<String> achievements = new ArrayList<>();
 
     public User(String id, String fname, String lname, String phone, String email, String password) {
         this.email = email;
@@ -22,19 +23,19 @@ public class User {
         this.password = password;
         this.phone = phone;
         this.isAdmin = false;
-        this.MaarachedPlans = new ListOfPlans(); // אתחול הרשימה
+        this.MaarachedPlans = new ListOfPlans();
+        this.achievements = new ArrayList<>();
     }
 
-    public User()
-    {
+    public User() {}
 
-    }
     public void addNewPlanToUser(Plan plan) {
         if (this.MaarachedPlans == null) {
             this.MaarachedPlans = new ListOfPlans();
         }
         this.MaarachedPlans.addPlan(plan);
     }
+
     public ListOfPlans getMaarachedPlans() {
         return MaarachedPlans;
     }
@@ -48,7 +49,22 @@ public class User {
     }
 
     public void setAdmin(Boolean admin) {
-        isAdmin =admin;
+        isAdmin = admin;
+    }
+
+    public List<String> getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(List<String> achievements) {
+        this.achievements = achievements;
+    }
+
+    public void addAchievement(String achievementId) {
+        if (this.achievements == null) this.achievements = new ArrayList<>();
+        if (!this.achievements.contains(achievementId)) {
+            this.achievements.add(achievementId);
+        }
     }
 
     public String getEmail() {
@@ -110,6 +126,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", MaarachedPlans=" + MaarachedPlans +
                 ", isAdmin=" + isAdmin +
+                ", achievements=" + achievements +
                 '}';
     }
 }

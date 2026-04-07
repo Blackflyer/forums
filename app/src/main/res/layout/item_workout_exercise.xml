@@ -21,26 +21,57 @@
             android:textColor="#333333"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tilWeight"
+            app:layout_constraintEnd_toStartOf="@+id/llEntryTrigger"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilWeight"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="120dp"
+        <LinearLayout
+            android:id="@+id/llEntryTrigger"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="משקל (קג)"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etWeight"
-                android:layout_width="match_parent"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginEnd="8dp"
+                app:cardBackgroundColor="#EEEEEE"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tvWeightDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="--"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#EEEEEE"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tvRepsDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="--"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

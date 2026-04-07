@@ -20,15 +20,38 @@ import java.util.Map;
 
 public class WorkoutExerciseAdapter extends RecyclerView.Adapter<WorkoutExerciseAdapter.ViewHolder> {
 
+    public interface OnExerciseClickListener {
+        void onExerciseClick(Exercise exercise, float currentWeight, int currentReps);
+    }
+
     private List<Exercise> exercises;
     private Map<String, Float> weights = new HashMap<>();
+    private Map<String, Integer> reps = new HashMap<>();
+    private OnExerciseClickListener clickListener;
 
-    public WorkoutExerciseAdapter(List<Exercise> exercises) {
+    public WorkoutExerciseAdapter(List<Exercise> exercises, OnExerciseClickListener clickListener) {
         this.exercises = exercises;
+        this.clickListener = clickListener;
     }
 
     public Map<String, Float> getWeights() {
         return weights;
+    }
+
+    public Map<String, Integer> getReps() {
+        return reps;
+    }
+
+    public void updateExerciseData(String exerciseId, float weight, int repCount) {
+        weights.put(exerciseId, weight);
+        reps.put(exerciseId, repCount);
+        notifyDataSetChanged();
+    }
+
+    public void setInitialData(Map<String, Float> initialWeights, Map<String, Integer> initialReps) {
+        this.weights.putAll(initialWeights);
+        this.reps.putAll(initialReps);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -44,35 +67,17 @@ public class WorkoutExerciseAdapter extends RecyclerView.Adapter<WorkoutExercise
         Exercise ex = exercises.get(position);
         holder.tvExerciseName.setText(ex.getName());
 
-        // Remove previous listener to avoid infinite loop or wrong updates
-        if (holder.textWatcher != null) {
-            holder.etWeight.removeTextChangedListener(holder.textWatcher);
-        }
-
         Float currentWeight = weights.get(ex.getId());
-        holder.etWeight.setText(currentWeight != null ? String.valueOf(currentWeight) : "");
+        holder.tvWeightDisplay.setText(currentWeight != null ? String.valueOf(currentWeight) : "--");
 
-        holder.textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        Integer currentReps = reps.get(ex.getId());
+        holder.tvRepsDisplay.setText(currentReps != null ? String.valueOf(currentReps) : "--");
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                try {
-                    if (s.length() > 0) {
-                        weights.put(ex.getId(), Float.parseFloat(s.toString()));
-                    } else {
-                        weights.remove(ex.getId());
-                    }
-                } catch (NumberFormatException e) {
-                    weights.remove(ex.getId());
-                }
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onExerciseClick(ex, currentWeight != null ? currentWeight : 0, currentReps != null ? currentReps : 0);
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        };
-        holder.etWeight.addTextChangedListener(holder.textWatcher);
+        });
     }
 
     @Override
@@ -81,14 +86,13 @@ public class WorkoutExerciseAdapter extends RecyclerView.Adapter<WorkoutExercise
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvExerciseName;
-        TextInputEditText etWeight;
-        TextWatcher textWatcher;
+        TextView tvExerciseName, tvWeightDisplay, tvRepsDisplay;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvExerciseName = itemView.findViewById(R.id.tvExerciseName);
-            etWeight = itemView.findViewById(R.id.etWeight);
+            tvWeightDisplay = itemView.findViewById(R.id.tvWeightDisplay);
+            tvRepsDisplay = itemView.findViewById(R.id.tvRepsDisplay);
         }
     }
 }

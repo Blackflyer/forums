@@ -53,7 +53,7 @@ public class Progress_Graph extends AppCompatActivity {
     private void setupChartAppearance() {
         lineChart.setDrawGridBackground(false);
         Description lineDescription = new Description();
-        lineDescription.setText("משקל מקסימלי (ק\"ג)");
+        lineDescription.setText("התקדמות 1RM (ק\"ג)");
         lineChart.setDescription(lineDescription);
 
         XAxis xAxis = lineChart.getXAxis();
@@ -61,13 +61,72 @@ public class Progress_Graph extends AppCompatActivity {
         xAxis.setGranularity(1f);
 
         Description pieDescription = new Description();
-        pieDescription.setText("התפלגות משקלים");
+        pieDescription.setText("נפח אימונים לפי קבוצת שריר");
         pieChart.setDescription(pieDescription);
         pieChart.setHoleRadius(40f);
         pieChart.setTransparentCircleRadius(45f);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setEntryLabelColor(Color.BLACK);
         pieChart.setEntryLabelTextSize(12f);
+        
+        loadMuscleVolumeData();
+    }
+
+    private void loadMuscleVolumeData() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null || exerciseList == null) return;
+
+        Map<String, Float> volumeByMuscle = new HashMap<>();
+        final int[] fetchedCount = {0};
+
+        for (Exercise ex : exerciseList) {
+            DatabaseService.getInstance().getExerciseProgress(user.getUid(), ex.getId(), new DatabaseService.DatabaseCallback<List<ProgressRecord>>() {
+                @Override
+                public void onCompleted(List<ProgressRecord> records) {
+                    if (records != null) {
+                        float totalVolume = 0;
+                        for (ProgressRecord r : records) {
+                            totalVolume += (r.getWeight() * (r.getReps() > 0 ? r.getReps() : 1));
+                        }
+                        String muscle = ex.getMuscleGroup();
+                        if (muscle == null || muscle.isEmpty()) muscle = "אחר";
+                        volumeByMuscle.put(muscle, volumeByMuscle.getOrDefault(muscle, 0f) + totalVolume);
+                    }
+                    
+                    fetchedCount[0]++;
+                    if (fetchedCount[0] == exerciseList.size()) {
+                        updatePieChart(volumeByMuscle);
+                    }
+                }
+
+                @Override
+                public void onFailed(Exception e) {
+                    fetchedCount[0]++;
+                    if (fetchedCount[0] == exerciseList.size()) {
+                        updatePieChart(volumeByMuscle);
+                    }
+                }
+            });
+        }
+    }
+
+    private void updatePieChart(Map<String, Float> data) {
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        for (Map.Entry<String, Float> entry : data.entrySet()) {
+            if (entry.getValue() > 0) {
+                pieEntries.add(new PieEntry(entry.getValue(), entry.getKey()));
+            }
+        }
+
+        PieDataSet pieDataSet = new PieDataSet(pieEntries, "נפח לפי שריר");
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        pieDataSet.setValueTextColor(Color.BLACK);
+        pieDataSet.setValueTextSize(12f);
+        pieDataSet.setSliceSpace(3f);
+
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.invalidate();
     }
 
     private void loadExercisesIntoSpinner() {
@@ -99,6 +158,9 @@ public class Progress_Graph extends AppCompatActivity {
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {}
                     });
+
+                    // Load initial volume data
+                    loadMuscleVolumeData();
                 }
             }
 
@@ -117,22 +179,24 @@ public class Progress_Graph extends AppCompatActivity {
             @Override
             public void onCompleted(List<ProgressRecord> records) {
                 ArrayList<Entry> lineEntries = new ArrayList<>();
-                ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
                 if (records != null && !records.isEmpty()) {
                     for (int i = 0; i < records.size(); i++) {
                         float weight = records.get(i).getWeight();
-                        String date = records.get(i).getDate();
+                        int reps = records.get(i).getReps();
+                        
+                        // Brzycki formula: 1RM = weight * (36 / (37 - reps)) 
+                        // Simplified: weight * (1 + 0.0333 * reps)
+                        float estimated1RM = weight * (1 + 0.0333f * reps);
 
-                        lineEntries.add(new Entry(i + 1, weight));
-                        pieEntries.add(new PieEntry(weight, date != null ? date : "אימון " + (i + 1)));
+                        lineEntries.add(new Entry(i + 1, estimated1RM));
                     }
                 } else {
                     Toast.makeText(Progress_Graph.this, "אין עדיין נתונים לתרגיל זה", Toast.LENGTH_SHORT).show();
                 }
 
                 // Update LineChart
-                LineDataSet lineDataSet = new LineDataSet(lineEntries, "התקדמות (ק\"ג)");
+                LineDataSet lineDataSet = new LineDataSet(lineEntries, "1RM משוער (ק\"ג)");
                 lineDataSet.setColor(Color.parseColor("#2196F3"));
                 lineDataSet.setLineWidth(3f);
                 lineDataSet.setCircleColor(Color.parseColor("#2196F3"));
@@ -142,17 +206,6 @@ public class Progress_Graph extends AppCompatActivity {
                 LineData lineData = new LineData(lineDataSet);
                 lineChart.setData(lineData);
                 lineChart.invalidate();
-
-                // Update PieChart
-                PieDataSet pieDataSet = new PieDataSet(pieEntries, "משקלים לפי אימון");
-                pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-                pieDataSet.setValueTextColor(Color.BLACK);
-                pieDataSet.setValueTextSize(12f);
-                pieDataSet.setSliceSpace(3f);
-
-                PieData pieData = new PieData(pieDataSet);
-                pieChart.setData(pieData);
-                pieChart.invalidate();
             }
 
             @Override

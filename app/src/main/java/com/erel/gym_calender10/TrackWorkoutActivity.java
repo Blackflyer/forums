@@ -1,11 +1,13 @@
 package com.erel.gym_calender10;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,26 +19,41 @@ import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.module.Plan;
 import com.erel.gym_calender10.module.ProgressRecord;
 import com.erel.gym_calender10.module.User;
+import com.erel.gym_calender10.services.AchievementService;
 import com.erel.gym_calender10.services.DatabaseService;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-public class TrackWorkoutActivity extends AppCompatActivity {
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
+
+public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutExerciseAdapter.OnExerciseClickListener, SetEntryBottomSheetFragment.OnEntryConfirmedListener {
 
     private AutoCompleteTextView autoCompletePlan;
     private RecyclerView rvWorkoutExercises;
     private Button btnSaveWorkout;
+    private TextView tvTimer;
+    private View cvTimer;
+    private KonfettiView konfettiView;
 
     private List<Plan> allPlans = new ArrayList<>();
     private Plan selectedPlan = null;
     private WorkoutExerciseAdapter workoutAdapter;
     private DatabaseService databaseService;
+    private CountDownTimer countDownTimer;
+    private Map<String, Float> personalBests = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +65,9 @@ public class TrackWorkoutActivity extends AppCompatActivity {
         autoCompletePlan = findViewById(R.id.autoCompletePlan);
         rvWorkoutExercises = findViewById(R.id.rvWorkoutExercises);
         btnSaveWorkout = findViewById(R.id.btnSaveWorkout);
+        tvTimer = findViewById(R.id.tvTimer);
+        cvTimer = findViewById(R.id.cvTimer);
+        konfettiView = findViewById(R.id.konfettiView);
 
         rvWorkoutExercises.setLayoutManager(new LinearLayoutManager(this));
 
@@ -99,9 +119,110 @@ public class TrackWorkoutActivity extends AppCompatActivity {
 
     private void displayPlanExercises(Plan plan) {
         if (plan.getPlan() != null) {
-            workoutAdapter = new WorkoutExerciseAdapter(plan.getPlan());
+            workoutAdapter = new WorkoutExerciseAdapter(plan.getPlan(), this);
             rvWorkoutExercises.setAdapter(workoutAdapter);
+            loadPreviousData(plan);
         }
+    }
+
+    private void loadPreviousData(Plan plan) {
+        String userId = FirebaseAuth.getInstance().getUid();
+        if (userId == null || plan.getPlan() == null) return;
+
+        Map<String, Float> lastWeights = new HashMap<>();
+        Map<String, Integer> lastReps = new HashMap<>();
+        final int[] fetchedCount = {0};
+        int totalExercises = plan.getPlan().size();
+
+        for (Exercise ex : plan.getPlan()) {
+            databaseService.getExerciseProgress(userId, ex.getId(), new DatabaseService.DatabaseCallback<List<ProgressRecord>>() {
+                @Override
+                public void onCompleted(List<ProgressRecord> records) {
+                    float maxWeight = 0;
+                    if (records != null && !records.isEmpty()) {
+                        ProgressRecord last = records.get(records.size() - 1);
+                        lastWeights.put(ex.getId(), last.getWeight());
+                        lastReps.put(ex.getId(), last.getReps());
+
+                        for (ProgressRecord r : records) {
+                            if (r.getWeight() > maxWeight) maxWeight = r.getWeight();
+                        }
+                    }
+                    personalBests.put(ex.getId(), maxWeight);
+                    
+                    fetchedCount[0]++;
+                    if (fetchedCount[0] == totalExercises) {
+                        workoutAdapter.setInitialData(lastWeights, lastReps);
+                    }
+                }
+
+                @Override
+                public void onFailed(Exception e) {
+                    fetchedCount[0]++;
+                    if (fetchedCount[0] == totalExercises) {
+                        workoutAdapter.setInitialData(lastWeights, lastReps);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onExerciseClick(Exercise exercise, float currentWeight, int currentReps) {
+        SetEntryBottomSheetFragment bottomSheet = SetEntryBottomSheetFragment.newInstance(exercise.getId(), currentWeight, currentReps);
+        bottomSheet.setOnEntryConfirmedListener(this);
+        bottomSheet.show(getSupportFragmentManager(), "SetEntryBottomSheet");
+    }
+
+    @Override
+    public void onEntryConfirmed(String exerciseId, float weight, int reps) {
+        workoutAdapter.updateExerciseData(exerciseId, weight, reps);
+        
+        // PR Celebration
+        Float best = personalBests.get(exerciseId);
+        if (weight > 0 && (best == null || weight > best)) {
+            celebratePR();
+            personalBests.put(exerciseId, weight); // Update local PB
+        }
+
+        // Auto Rest Timer
+        startRestTimer(60); // 60 seconds default
+    }
+
+    private void celebratePR() {
+        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(100);
+        konfettiView.start(
+                new PartyFactory(emitterConfig)
+                        .spread(360)
+                        .shapes(Arrays.asList(Shape.Square.INSTANCE, Shape.Circle.INSTANCE))
+                        .colors(Arrays.asList(0xFFfce18a, 0xFFff726d, 0xFFf4306d, 0xFFb48def))
+                        .setSpeedBetween(0f, 30f)
+                        .position(0.5, 0.3) // Slightly higher than center
+                        .build()
+        );
+        Toast.makeText(this, "שיא אישי חדש! כל הכבוד!", Toast.LENGTH_LONG).show();
+    }
+
+    private void startRestTimer(int seconds) {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        cvTimer.setVisibility(View.VISIBLE);
+        countDownTimer = new CountDownTimer(seconds * 1000L, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long sec = millisUntilFinished / 1000;
+                tvTimer.setText(String.format(Locale.getDefault(), "%02d:%02d", sec / 60, sec % 60));
+            }
+
+            @Override
+            public void onFinish() {
+                tvTimer.setText("00:00");
+                Toast.makeText(TrackWorkoutActivity.this, "המנוחה נגמרה! חזרה לעבודה", Toast.LENGTH_SHORT).show();
+                // Optionally hide after some time
+            }
+        }.start();
     }
 
     private void saveWorkoutProgress() {
@@ -109,6 +230,7 @@ public class TrackWorkoutActivity extends AppCompatActivity {
 
         String userId = FirebaseAuth.getInstance().getUid();
         Map<String, Float> weights = workoutAdapter.getWeights();
+        Map<String, Integer> reps = workoutAdapter.getReps();
         String todayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
         if (weights.isEmpty()) {
@@ -119,18 +241,22 @@ public class TrackWorkoutActivity extends AppCompatActivity {
         int totalToSave = weights.size();
         final int[] savedCount = {0};
         final boolean[] failed = {false};
+        final float[] maxWeightEntered = {0};
 
         for (Map.Entry<String, Float> entry : weights.entrySet()) {
             String exerciseId = entry.getKey();
             float weight = entry.getValue();
+            if (weight > maxWeightEntered[0]) maxWeightEntered[0] = weight;
+            int repCount = reps.containsKey(exerciseId) ? reps.get(exerciseId) : 0;
 
-            ProgressRecord record = new ProgressRecord(todayDate, weight, 0); // Reps default to 0 for now
+            ProgressRecord record = new ProgressRecord(todayDate, weight, repCount);
 
             databaseService.saveExerciseProgress(userId, exerciseId, record, new DatabaseService.DatabaseCallback<Void>() {
                 @Override
                 public void onCompleted(Void v) {
                     savedCount[0]++;
                     if (savedCount[0] == totalToSave && !failed[0]) {
+                        checkForAchievements(userId, maxWeightEntered[0]);
                         Toast.makeText(TrackWorkoutActivity.this, "האימון נשמר בהצלחה!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
@@ -145,5 +271,25 @@ public class TrackWorkoutActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void checkForAchievements(String userId, float maxWeight) {
+        databaseService.getUser(userId, new DatabaseService.DatabaseCallback<User>() {
+            @Override
+            public void onCompleted(User user) {
+                if (user != null) {
+                    List<String> newOnes = AchievementService.checkAchievements(user, maxWeight);
+                    if (!newOnes.isEmpty()) {
+                        for (String id : newOnes) {
+                            user.addAchievement(id);
+                            Toast.makeText(TrackWorkoutActivity.this, "הישג חדש: " + AchievementService.getAchievementName(id), Toast.LENGTH_LONG).show();
+                        }
+                        databaseService.updateUserAchievements(userId, user.getAchievements(), null);
+                    }
+                }
+            }
+            @Override
+            public void onFailed(Exception e) {}
+        });
     }
 }

@@ -133,8 +133,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 Toast.makeText(getApplicationContext(), "נרשמת בהצלחה!", Toast.LENGTH_LONG).show();
 
                 // 2. מעבר למסך האמיתי של האפליקציה (כמו עמוד המשתמש) ולא למסך הפתיחה:
-                // הערה: החלף את User_page.class במסך שתרצה שהמשתמש יראה אחרי התחברות
-                Intent mainIntent = new Intent(RegisterActivity.this, User_page.class);
+                // הערה: החלף את UserDashboardActivity.class במסך שתרצה שהמשתמש יראה אחרי התחברות
+                Intent mainIntent = new Intent(RegisterActivity.this, UserDashboardActivity.class);
                 mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(mainIntent);
             }

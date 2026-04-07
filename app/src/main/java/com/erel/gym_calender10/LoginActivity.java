@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (Boolean.TRUE.equals(user.getAdmin())) {
                                 intent = new Intent(LoginActivity.this, AdminPage.class);
                             } else {
-                                intent = new Intent(LoginActivity.this, User_page.class);
+                                intent = new Intent(LoginActivity.this, UserDashboardActivity.class);
                             }
 
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

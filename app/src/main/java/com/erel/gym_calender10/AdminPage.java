@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class AdminPage extends AppCompatActivity implements View.OnClickListener {
 
     // הגדרת כל הכפתורים
-    Button btnAddExercise, btnAddAdmin, btnUsersList, btnGoCalendar, btnGoProfile;
+    Button btnAddExercise, btnAddAdmin, btnUsersList, btnGoCalendar, btnGoProfile, btnAdminAnalytics, btnAdminHeatmap, btnAdminMyPlans;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,9 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
         btnAddAdmin = findViewById(R.id.btnGoAddAdmin);
         btnGoCalendar = findViewById(R.id.btnGoCalendar);
         btnGoProfile = findViewById(R.id.btnGoProfile);
+        btnAdminAnalytics = findViewById(R.id.btnAdminAnalytics);
+        btnAdminHeatmap = findViewById(R.id.btnAdminHeatmap);
+        btnAdminMyPlans = findViewById(R.id.btnAdminMyPlans);
 
         // הגדרת מאזיני לחיצה
         btnAddExercise.setOnClickListener(this);
@@ -32,6 +35,9 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
         btnAddAdmin.setOnClickListener(this);
         btnGoCalendar.setOnClickListener(this);
         btnGoProfile.setOnClickListener(this);
+        btnAdminAnalytics.setOnClickListener(this);
+        btnAdminHeatmap.setOnClickListener(this);
+        btnAdminMyPlans.setOnClickListener(this);
         // בתוך פונקציית onCreate:
         Button btnAdminTrackWorkout = findViewById(R.id.btnAdminTrackWorkout);
         btnAdminTrackWorkout.setOnClickListener(v -> {
@@ -48,8 +54,6 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
             startActivity(intent);
         }
         else if (v.getId() == btnAddAdmin.getId()) {
-            // שים לב: כרגע זה מעביר ל-LoginActivity לפי הקוד המקורי שלך.
-            // אם יש לך דף יעודי כמו AddAdmin.class, שנה את זה כאן.
             Intent intent = new Intent(AdminPage.this, AddAdmin.class);
             startActivity(intent);
         }
@@ -58,13 +62,23 @@ public class AdminPage extends AppCompatActivity implements View.OnClickListener
             startActivity(intent);
         }
         else if (v.getId() == btnGoCalendar.getId()) {
-            // מעבר למסך לוח השנה (המסך הראשי של האפליקציה)
             Intent intent = new Intent(AdminPage.this, User_page.class);
             startActivity(intent);
         }
         else if (v.getId() == btnGoProfile.getId()) {
-            // מעבר למסך הפרופיל האישי
             Intent intent = new Intent(AdminPage.this,Users_Profile.class);
+            startActivity(intent);
+        }
+        else if (v.getId() == btnAdminAnalytics.getId()) {
+            Intent intent = new Intent(AdminPage.this, Progress_Graph.class);
+            startActivity(intent);
+        }
+        else if (v.getId() == btnAdminHeatmap.getId()) {
+            Intent intent = new Intent(AdminPage.this, ActivityHeatmap.class);
+            startActivity(intent);
+        }
+        else if (v.getId() == btnAdminMyPlans.getId()) {
+            Intent intent = new Intent(AdminPage.this, item_plan.class);
             startActivity(intent);
         }
     }

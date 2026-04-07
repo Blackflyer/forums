@@ -51,13 +51,8 @@ public class User_page extends AppCompatActivity {
         planAdapter = new PlanAdapter(upcomingPlansList);
         rvUpcomingPlans.setAdapter(planAdapter);
 
-        findViewById(R.id.btn_profile).setOnClickListener(v -> {
-            startActivity(new Intent(User_page.this, Users_Profile.class));
-        });
-
-        findViewById(R.id.btn_user_plans).setOnClickListener(v -> {
-            // Can open a dedicated list of all plans if needed
-            Toast.makeText(this, "מציג את כל התוכניות שלך", Toast.LENGTH_SHORT).show();
+        findViewById(R.id.btn_go_dashboard).setOnClickListener(v -> {
+            startActivity(new Intent(User_page.this, UserDashboardActivity.class));
         });
     }
 

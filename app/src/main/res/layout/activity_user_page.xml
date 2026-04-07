@@ -67,29 +67,15 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_go_dashboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="24dp"
-        android:orientation="horizontal"
-        android:padding="8dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_profile"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:text="פרופיל"
-            app:icon="@drawable/ic_launcher_foreground" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_user_plans"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="התוכניות שלי"
-            app:icon="@drawable/ic_launcher_foreground" />
-    </LinearLayout>
+        android:text="מרכז אימונים"
+        android:paddingHorizontal="32dp"
+        app:cornerRadius="24dp"
+        app:icon="@drawable/ic_launcher_foreground" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

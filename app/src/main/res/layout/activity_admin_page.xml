@@ -50,12 +50,34 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="הוספת תרגיל" />
+            
         <Button
             android:id="@+id/btnAdminTrackWorkout"
-            android:layout_width="match_parent"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="מעקב אימון אישי" />
+
+        <Button
+            android:id="@+id/btnAdminAnalytics"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="גרפים והתקדמות" />
+
+        <Button
+            android:id="@+id/btnAdminHeatmap"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="מפת חום" />
+
+        <Button
+            android:id="@+id/btnAdminMyPlans"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="התוכניות שלי" />
 
         <View
             android:layout_width="match_parent"

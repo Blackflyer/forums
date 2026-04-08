@@ -1,5 +1,7 @@
 package com.erel.gym_calender10;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -63,6 +65,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         btnSaveWorkout = findViewById(R.id.btnSaveWorkout);
         tvTimer = findViewById(R.id.tvTimer);
         cvTimer = findViewById(R.id.cvTimer);
+        findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
 
 
         rvWorkoutExercises.setLayoutManager(new LinearLayoutManager(this));
@@ -275,5 +278,19 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
             @Override
             public void onFailed(Exception e) {}
         });
+    }
+
+    private void navigateToDashboard() {
+        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+        boolean isAdmin = prefs.getBoolean("isAdmin", false);
+        Intent intent;
+        if (isAdmin) {
+            intent = new Intent(this, AdminPage.class);
+        } else {
+            intent = new Intent(this, UserDashboardActivity.class);
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 }

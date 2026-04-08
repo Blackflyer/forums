@@ -1,5 +1,7 @@
 package com.erel.gym_calender10;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -40,6 +42,21 @@ public class EditProfileActivity extends AppCompatActivity {
         loadUserData();
 
         btnSaveProfile.setOnClickListener(v -> saveProfileChanges());
+        findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
+    }
+
+    private void navigateToDashboard() {
+        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+        boolean isAdmin = prefs.getBoolean("isAdmin", false);
+        Intent intent;
+        if (isAdmin) {
+            intent = new Intent(this, AdminPage.class);
+        } else {
+            intent = new Intent(this, UserDashboardActivity.class);
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void loadUserData() {

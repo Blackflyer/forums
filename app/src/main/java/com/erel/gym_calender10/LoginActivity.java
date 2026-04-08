@@ -95,12 +95,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onCompleted(User user) {
                         if (user != null) {
+                            boolean isAdmin = Boolean.TRUE.equals(user.getAdmin());
                             // שמירה רק לאחר הצלחה מלאה
-                            saveToPrefs(email, password, uid);
+                            saveToPrefs(email, password, uid, isAdmin);
 
                             Intent intent;
                             // בדיקה אם המשתמש הוא אדמין (וודא שאין NullPointerException)
-                            if (Boolean.TRUE.equals(user.getAdmin())) {
+                            if (isAdmin) {
                                 intent = new Intent(LoginActivity.this, AdminPage.class);
                             } else {
                                 intent = new Intent(LoginActivity.this, UserDashboardActivity.class);
@@ -131,11 +132,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void saveToPrefs(String email, String password, String uid) {
+    private void saveToPrefs(String email, String password, String uid, boolean isAdmin) {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("email", email);
         editor.putString("password", password);
         editor.putString("uid", uid);
+        editor.putBoolean("isAdmin", isAdmin);
         editor.apply();
     }
 }

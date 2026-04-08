@@ -97,8 +97,17 @@
         android:padding="12dp"
         android:text="שמור שינויים"
         android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@+id/tilEmail"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintTop_toBottomOf="@+id/tilEmail" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBackToDashboard"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="חזרה לאזור האישי"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSaveProfile" />
 
     <ProgressBar
         android:id="@+id/progressBar"

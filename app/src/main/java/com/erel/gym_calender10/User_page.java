@@ -1,5 +1,6 @@
 package com.erel.gym_calender10;
 
+import android.content.SharedPreferences;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -51,13 +52,25 @@ public class User_page extends AppCompatActivity {
         planAdapter = new PlanAdapter(upcomingPlansList);
         rvUpcomingPlans.setAdapter(planAdapter);
 
-        findViewById(R.id.btn_go_dashboard).setOnClickListener(v -> {
-            startActivity(new Intent(User_page.this, UserDashboardActivity.class));
-        });
+        findViewById(R.id.btn_go_dashboard).setOnClickListener(v -> navigateToDashboard());
 
         findViewById(R.id.btnEditProfile).setOnClickListener(v -> {
             startActivity(new Intent(User_page.this, EditProfileActivity.class));
         });
+    }
+
+    private void navigateToDashboard() {
+        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+        boolean isAdmin = prefs.getBoolean("isAdmin", false);
+        Intent intent;
+        if (isAdmin) {
+            intent = new Intent(this, AdminPage.class);
+        } else {
+            intent = new Intent(this, UserDashboardActivity.class);
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void setupCalendar() {

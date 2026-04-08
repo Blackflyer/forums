@@ -1,7 +1,8 @@
 package com.erel.gym_calender10;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,6 +77,21 @@ public class CreatePlanActivity extends AppCompatActivity {
 
         btnSelectTime.setOnClickListener(v -> showTimePicker());
         btnSavePlan.setOnClickListener(v -> saveNewPlan());
+        findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
+    }
+
+    private void navigateToDashboard() {
+        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+        boolean isAdmin = prefs.getBoolean("isAdmin", false);
+        Intent intent;
+        if (isAdmin) {
+            intent = new Intent(this, AdminPage.class);
+        } else {
+            intent = new Intent(this, UserDashboardActivity.class);
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void checkNotificationPermission() {

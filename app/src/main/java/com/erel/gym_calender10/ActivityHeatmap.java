@@ -1,5 +1,6 @@
 package com.erel.gym_calender10;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.erel.gym_calender10.module.Plan;
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.services.DatabaseService;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.ParseException;
@@ -46,6 +48,13 @@ public class ActivityHeatmap extends AppCompatActivity {
         tvBestStreak = findViewById(R.id.tvBestStreak);
 
         databaseService = DatabaseService.getInstance();
+
+        MaterialButton btnBackToDashboard = findViewById(R.id.btnBackToDashboard);
+        btnBackToDashboard.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityHeatmap.this, UserDashboardActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        });
 
         loadWorkoutData();
     }

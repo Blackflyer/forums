@@ -1,6 +1,9 @@
 package com.erel.gym_calender10;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +21,7 @@ import com.erel.gym_calender10.adapters.ExerciseSelectAdapter;
 import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.module.Plan;
 import com.erel.gym_calender10.services.DatabaseService;
+import com.erel.gym_calender10.services.NotificationHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,22 +33,25 @@ import java.util.List;
 public class CreatePlanActivity extends AppCompatActivity {
     private RecyclerView rvExercises;
     private EditText etSearch, etPlanName;
-    private MaterialButton btnSavePlan;
+    private MaterialButton btnSavePlan, btnSelectTime;
     private ExerciseSelectAdapter adapter;
     private String selectedDate;
+    private String selectedTime = "12:00"; // default
+
+    private static final int NOTIFICATION_PERMISSION_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_plan);
 
-        // 1. קבלת התאריך בשתי הדרכים האפשריות כדי למנוע פספוסים
+        // 1. Get the date
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
         if (selectedDate == null) {
             selectedDate = getIntent().getStringExtra("date");
         }
 
-        // 2. מנגנון אל-כשל: אם התאריך עדיין ריק, ניקח את התאריך של היום!
+        // 2. Fallback
         if (selectedDate == null || selectedDate.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -53,8 +62,9 @@ public class CreatePlanActivity extends AppCompatActivity {
 
         initViews();
         loadExercisesFromDB();
+        checkNotificationPermission();
 
-        // מאזין לחיפוש תרגילים
+        // Search listener
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -64,7 +74,29 @@ public class CreatePlanActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) {}
         });
 
+        btnSelectTime.setOnClickListener(v -> showTimePicker());
         btnSavePlan.setOnClickListener(v -> saveNewPlan());
+    }
+
+    private void checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE);
+            }
+        }
+    }
+
+    private void showTimePicker() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                (view, hourOfDay, minuteOfHour) -> {
+                    selectedTime = String.format("%02d:%02d", hourOfDay, minuteOfHour);
+                    btnSelectTime.setText("בחר שעת אימון: " + selectedTime);
+                }, hour, minute, true);
+        timePickerDialog.show();
     }
 
     private void loadExercisesFromDB() {
@@ -105,8 +137,8 @@ public class CreatePlanActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
         String planId = DatabaseService.getInstance().generatePlanId();
 
-        // יצירת אובייקט ה-Plan - כעת אנו בטוחים ש-selectedDate אינו null
-        Plan newPlan = new Plan(planId, userId, selectedDate, name, "General");
+        // Create Plan object with time
+        Plan newPlan = new Plan(planId, userId, selectedDate, name, "General", selectedTime);
         newPlan.setPlan(new ArrayList<>(selected));
 
         btnSavePlan.setEnabled(false);
@@ -117,7 +149,10 @@ public class CreatePlanActivity extends AppCompatActivity {
             public void onCompleted(Void object) {
                 Toast.makeText(CreatePlanActivity.this, "התוכנית נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
 
-                // חזרה למסך התוכניות של אותו יום עם התאריך המעודכן
+                // Schedule push notifications for the upcoming workout
+                NotificationHelper.scheduleWorkoutNotifications(CreatePlanActivity.this, name, selectedDate, selectedTime);
+
+                // Return to Plan_day
                 Intent intent = new Intent(CreatePlanActivity.this, Plan_day.class);
                 intent.putExtra("SELECTED_DATE", selectedDate);
                 startActivity(intent);
@@ -141,5 +176,6 @@ public class CreatePlanActivity extends AppCompatActivity {
         etSearch = findViewById(R.id.etSearchExercise);
         etPlanName = findViewById(R.id.etPlanName);
         btnSavePlan = findViewById(R.id.btnSavePlan);
+        btnSelectTime = findViewById(R.id.btnSelectTime);
     }
 }

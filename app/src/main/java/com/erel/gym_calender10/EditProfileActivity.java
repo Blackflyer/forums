@@ -1,0 +1,117 @@
+package com.erel.gym_calender10;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.erel.gym_calender10.module.User;
+import com.erel.gym_calender10.services.DatabaseService;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+
+public class EditProfileActivity extends AppCompatActivity {
+
+    private TextInputEditText etFirstName, etLastName, etPhone, etEmail;
+    private Button btnSaveProfile;
+    private ProgressBar progressBar;
+    
+    private DatabaseService databaseService;
+    private User currentUser;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_profile);
+
+        databaseService = DatabaseService.getInstance();
+
+        etFirstName = findViewById(R.id.etFirstName);
+        etLastName = findViewById(R.id.etLastName);
+        etPhone = findViewById(R.id.etPhone);
+        etEmail = findViewById(R.id.etEmail);
+        btnSaveProfile = findViewById(R.id.btnSaveProfile);
+        progressBar = findViewById(R.id.progressBar);
+
+        loadUserData();
+
+        btnSaveProfile.setOnClickListener(v -> saveProfileChanges());
+    }
+
+    private void loadUserData() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            Toast.makeText(this, "שגיאה: משתמש לא מחובר", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        progressBar.setVisibility(View.VISIBLE);
+        databaseService.getUser(uid, new DatabaseService.DatabaseCallback<User>() {
+            @Override
+            public void onCompleted(User user) {
+                progressBar.setVisibility(View.GONE);
+                if (user != null) {
+                    currentUser = user;
+                    etFirstName.setText(user.getFname());
+                    etLastName.setText(user.getLname());
+                    etPhone.setText(user.getPhone());
+                    etEmail.setText(user.getEmail());
+                } else {
+                    Toast.makeText(EditProfileActivity.this, "לא נמצאו נתוני משתמש", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(EditProfileActivity.this, "שגיאה בטעינת נתונים: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+    }
+
+    private void saveProfileChanges() {
+        if (currentUser == null) return;
+
+        String firstName = etFirstName.getText().toString().trim();
+        String lastName = etLastName.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
+
+        if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) || TextUtils.isEmpty(phone)) {
+            Toast.makeText(this, "נא למלא את כל השדות", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Update the current user object
+        currentUser.setFname(firstName);
+        currentUser.setLname(lastName);
+        currentUser.setPhone(phone);
+        // Note: Email is not updated here to avoid syncing issues with Firebase Auth
+
+        progressBar.setVisibility(View.VISIBLE);
+        btnSaveProfile.setEnabled(false);
+
+        databaseService.updateUser(currentUser, new DatabaseService.DatabaseCallback<Void>() {
+            @Override
+            public void onCompleted(Void object) {
+                progressBar.setVisibility(View.GONE);
+                btnSaveProfile.setEnabled(true);
+                Toast.makeText(EditProfileActivity.this, "הפרופיל עודכן בהצלחה", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                progressBar.setVisibility(View.GONE);
+                btnSaveProfile.setEnabled(true);
+                Toast.makeText(EditProfileActivity.this, "שגיאה בעדכון הפרופיל: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}

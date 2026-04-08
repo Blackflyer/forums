@@ -12,6 +12,7 @@ public class Plan {
     private String planName;
     private ArrayList<Exercise> plan;
     private String type;
+    private String time;
 
     public Plan(String planId, String userId, String date, String planName,String type) {
         this.planId = planId;
@@ -20,10 +21,29 @@ public class Plan {
         this.planName = planName;
         this.plan = new ArrayList<Exercise>();
         this.type = type;
+        this.time = "12:00"; // default
+    }
+
+    public Plan(String planId, String userId, String date, String planName,String type, String time) {
+        this.planId = planId;
+        this.userId = userId;
+        this.date = date;
+        this.planName = planName;
+        this.plan = new ArrayList<Exercise>();
+        this.type = type;
+        this.time = time;
     }
 
     public Plan(){
 
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getDate() {

@@ -33,11 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import nl.dionsegijn.konfetti.core.PartyFactory;
-import nl.dionsegijn.konfetti.core.emitter.Emitter;
-import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
-import nl.dionsegijn.konfetti.core.models.Shape;
-import nl.dionsegijn.konfetti.xml.KonfettiView;
+
 
 public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutExerciseAdapter.OnExerciseClickListener, SetEntryBottomSheetFragment.OnEntryConfirmedListener {
 
@@ -46,7 +42,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
     private Button btnSaveWorkout;
     private TextView tvTimer;
     private View cvTimer;
-    private KonfettiView konfettiView;
+
 
     private List<Plan> allPlans = new ArrayList<>();
     private Plan selectedPlan = null;
@@ -67,7 +63,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         btnSaveWorkout = findViewById(R.id.btnSaveWorkout);
         tvTimer = findViewById(R.id.tvTimer);
         cvTimer = findViewById(R.id.cvTimer);
-        konfettiView = findViewById(R.id.konfettiView);
+
 
         rvWorkoutExercises.setLayoutManager(new LinearLayoutManager(this));
 
@@ -181,7 +177,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         // PR Celebration
         Float best = personalBests.get(exerciseId);
         if (weight > 0 && (best == null || weight > best)) {
-            celebratePR();
+
             personalBests.put(exerciseId, weight); // Update local PB
         }
 
@@ -189,19 +185,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         startRestTimer(60); // 60 seconds default
     }
 
-    private void celebratePR() {
-        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(100);
-        konfettiView.start(
-                new PartyFactory(emitterConfig)
-                        .spread(360)
-                        .shapes(Arrays.asList(Shape.Square.INSTANCE, Shape.Circle.INSTANCE))
-                        .colors(Arrays.asList(0xFFfce18a, 0xFFff726d, 0xFFf4306d, 0xFFb48def))
-                        .setSpeedBetween(0f, 30f)
-                        .position(0.5, 0.3) // Slightly higher than center
-                        .build()
-        );
-        Toast.makeText(this, "שיא אישי חדש! כל הכבוד!", Toast.LENGTH_LONG).show();
-    }
+
 
     private void startRestTimer(int seconds) {
         if (countDownTimer != null) {

@@ -175,6 +175,14 @@ public class DatabaseService {
         deleteData(USERS_PATH + "/" + uid, callback);
     }
 
+    public void updateUser(@NotNull final User user, @Nullable final DatabaseCallback<Void> callback) {
+        if (user.getId() != null) {
+            writeData(USERS_PATH + "/" + user.getId(), user, callback);
+        } else {
+            if (callback != null) callback.onFailed(new Exception("User ID cannot be null"));
+        }
+    }
+
     public void updateUserAchievements(@NotNull final String uid, final List<String> achievements, @Nullable final DatabaseCallback<Void> callback) {
         databaseReference.child(USERS_PATH).child(uid).child("achievements").setValue(achievements, (error, ref) -> {
             if (error != null) {

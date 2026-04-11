@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Primary Colors (Kept for accents and buttons) -->
+    <color name="primaryColor">#1A237E</color>
+    <color name="primaryLightColor">#534bae</color>
+    <color name="primaryDarkColor">#000051</color>
+    
+    <!-- Secondary Colors -->
+    <color name="secondaryColor">#E65100</color> <!-- Slightly deeper orange for contrast on light bg -->
+    <color name="secondaryLightColor">#FF8A65</color>
+
+    <!-- Theme Specific Accents (Deepened slightly for contrast on very light backgrounds) -->
+    <color name="workoutAccent">#2E7D32</color> 
+    <color name="planAccent">#1565C0</color>    
+    <color name="profileAccent">#7B1FA2</color> 
+    <color name="analyticsAccent">#F9A825</color>
+
+    <!-- NEW: Extra Light Backgrounds for readability -->
+    <color name="backgroundColor">#F8F9FA</color>
+    <color name="bg_welcome_start">#F8F9FA</color>
+    <color name="bg_welcome_end">#E9ECEF</color>
+    
+    <color name="bg_login">#FFFFFF</color>
+    <color name="bg_dashboard">#F8F9FE</color>
+    <color name="bg_workout">#FAFAF0</color>
+    <color name="bg_plans">#F0F7FF</color>
+    <color name="bg_profile">#F9F0FF</color>
+
+    <!-- Text Colors (Deep dark for best readability) -->
+    <color name="primaryTextColor">#121212</color>
+    <color name="secondaryTextColor">#455A64</color>
+    <color name="whiteTextColor">#FFFFFF</color>
+
+    <!-- System Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

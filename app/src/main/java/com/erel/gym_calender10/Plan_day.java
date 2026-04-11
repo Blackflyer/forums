@@ -31,53 +31,47 @@ public class Plan_day extends AppCompatActivity {
     private FloatingActionButton fabAddPlan;
     private PlanAdapter adapter;
     private String selectedDate;
-    Button btnBackToCalendar = findViewById(R.id.btnBackTocalender);
+    private Button btnBackToCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_day);
 
-        // 1. קבלת התאריך מהמסך הקודם - בודק גם "SELECTED_DATE" וגם "date" למקרה ששונה באחד המסכים
+        // 1. קבלת התאריך מהמסך הקודם
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
         if (selectedDate == null) {
             selectedDate = getIntent().getStringExtra("date");
         }
 
-        // 2. אם המשתמש נכנס בלי תאריך ספציפי (למשל מכפתור "התוכניות שלי"), ניקח את התאריך של היום
+        // 2. ברירת מחדל לתאריך של היום
         if (selectedDate == null || selectedDate.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH) + 1; // בחודשים מתחילים מ-0, לכן נוסיף 1
+            int month = calendar.get(Calendar.MONTH) + 1;
             int year = calendar.get(Calendar.YEAR);
             selectedDate = day + "/" + month + "/" + year;
         }
 
         initViews();
         loadPlansForDate();
-        ImageButton btnSearchDate = findViewById(R.id.btnSearchDate);
 
+        ImageButton btnSearchDate = findViewById(R.id.btnSearchDate);
         btnSearchDate.setOnClickListener(v -> {
-            // משיג את התאריך של היום כברירת מחדל לחלון שייפתח
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            // פותח חלון בחירת תאריך
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     Plan_day.this,
                     (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // התאריך שהמשתמש בחר
-                        String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                        // עדכון התאריך הנבחר
+                        selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
 
-                        // עדכון הכותרת לתאריך החדש
-                        TextView tvDateTitle = findViewById(R.id.tvDateTitle);
+                        // עדכון הכותרת וטעינה מחדש של הנתונים
                         tvDateTitle.setText("אימונים ל: " + selectedDate);
-
-                        // TODO: קרא כאן לפונקציה ששולפת את הנתונים מהמסד נתונים לפי התאריך החדש (selectedDate)
-                        // למשל: loadPlansByDate(selectedDate);
-
+                        loadPlansForDate();
                     },
                     year, month, day);
             datePickerDialog.show();
@@ -89,28 +83,25 @@ public class Plan_day extends AppCompatActivity {
         tvEmptyState = findViewById(R.id.tvEmptyState);
         rvPlans = findViewById(R.id.rvPlans);
         fabAddPlan = findViewById(R.id.fabAddPlan);
-
-        // הוספת הכפתור השמאלי שחוזר ללוח השנה
-        Button btnBackToCalendar = findViewById(R.id.btnBackTocalender);
+        btnBackToCalendar = findViewById(R.id.btnBackTocalender);
 
         // הגדרת הכותרת
-        tvDateTitle.setText("אימונים ל-" + selectedDate);
+        tvDateTitle.setText("אימונים ל: " + selectedDate);
 
         // הגדרת ה-RecyclerView
         rvPlans.setLayoutManager(new LinearLayoutManager(this));
 
-        // כפתור חזרה ליצירת אימון לאותו יום
+        // כפתור הוספת אימון
         fabAddPlan.setOnClickListener(v -> {
             Intent intent = new Intent(Plan_day.this, CreatePlanActivity.class);
             intent.putExtra("SELECTED_DATE", selectedDate);
             startActivity(intent);
         });
 
-        // פעולת הלחיצה על כפתור החזרה ללוח השנה
-        btnBackToCalendar.setOnClickListener(v -> {
-            // אם המסך הקודם הוא לוח השנה, אפשר פשוט לסגור את המסך הנוכחי
-            finish();
-        });
+        // כפתור חזרה
+        if (btnBackToCalendar != null) {
+            btnBackToCalendar.setOnClickListener(v -> finish());
+        }
     }
 
     private void loadPlansForDate() {

@@ -45,10 +45,8 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
 
         holder.itemView.setOnClickListener(v -> {
             if (plan.getPlan() != null && !plan.getPlan().isEmpty()) {
-                Exercise firstExercise = plan.getPlan().get(0);
                 Intent intent = new Intent(v.getContext(), TrackWorkoutActivity.class);
-                intent.putExtra("EXERCISE_ID", firstExercise.getId());
-                intent.putExtra("EXERCISE_NAME", firstExercise.getName());
+                intent.putExtra("PLAN_ID", plan.getPlanId());
                 v.getContext().startActivity(intent);
             } else {
                 Toast.makeText(v.getContext(), "אין תרגילים בתוכנית זו", Toast.LENGTH_SHORT).show();

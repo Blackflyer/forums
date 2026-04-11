@@ -4,38 +4,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    android:background="#FFFFFF">
+    android:background="@color/bg_dashboard">
 
     <TextView
         android:id="@+id/tvDashboardTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="מרכז אימונים"
-        android:textSize="28sp"
+        android:textSize="32sp"
         android:fontFamily="sans-serif-black"
-        android:textColor="#1A237E"
+        android:textColor="@color/primaryColor"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDashboardSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="בחר פעולה להמשך"
+        android:textSize="16sp"
+        android:textColor="@color/secondaryTextColor"
+        app:layout_constraintTop_toBottomOf="@+id/tvDashboardTitle"
         app:layout_constraintStart_toStartOf="parent" />
 
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:columnCount="2"
         android:rowCount="3"
-        app:layout_constraintTop_toBottomOf="@+id/tvDashboardTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvDashboardSubtitle"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Track Workout -->
+        <!-- Track Workout (Very Light Green) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardTrackWorkout"
+            style="@style/AppCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="#F1F8E9">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -46,26 +56,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🏋️‍♂️"
-                    android:textSize="40sp" />
+                    android:textSize="44sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="בצע אימון"
+                    android:textColor="@color/workoutAccent"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- My Plans -->
+        <!-- My Plans (Very Light Blue) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardMyPlans"
+            style="@style/AppCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="#E3F2FD">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -76,26 +88,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📋"
-                    android:textSize="40sp" />
+                    android:textSize="44sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="התוכניות שלי"
+                    android:textColor="@color/planAccent"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Analytics -->
+        <!-- Analytics (Very Light Amber) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAnalytics"
+            style="@style/AppCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="#FFFDE7">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -106,26 +120,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📈"
-                    android:textSize="40sp" />
+                    android:textSize="44sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="גרפים"
+                    android:textColor="@color/analyticsAccent"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Heatmap -->
+        <!-- Heatmap (Very Light Orange) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardHeatmap"
+            style="@style/AppCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="#FFF3E0">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -136,26 +152,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📅"
-                    android:textSize="40sp" />
+                    android:textSize="44sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="מפת חום"
+                    android:textColor="@color/secondaryColor"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Profile -->
+        <!-- Profile (Very Light Purple) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardProfile"
+            style="@style/AppCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="#F3E5F5">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -166,26 +184,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="👤"
-                    android:textSize="40sp" />
+                    android:textSize="44sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="פרופיל"
+                    android:textColor="@color/profileAccent"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Calendar -->
+        <!-- Calendar (Very Light Indigo) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardCalendar"
+            style="@style/AppCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardBackgroundColor="#E8EAF6">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -196,11 +216,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🗓️"
-                    android:textSize="40sp" />
+                    android:textSize="44sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="יומן אימונים"
+                    android:textColor="@color/primaryColor"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp" />
             </LinearLayout>

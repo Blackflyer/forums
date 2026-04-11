@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="@color/backgroundColor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-black"
             android:text="מעקב אימון"
-            android:textColor="#1A237E"
+            android:textColor="@color/primaryColor"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPlan"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/AppTextInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -39,7 +39,8 @@
                 android:id="@+id/autoCompletePlan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:inputType="none"
+                android:textColor="@color/primaryTextColor" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -56,12 +57,11 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvTimer"
+            style="@style/AppCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="gone"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@+id/btnSaveWorkout"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-black"
                     android:text="00:60"
-                    android:textColor="#D32F2F"
+                    android:textColor="@color/errorColor"
                     android:textSize="18sp" />
 
                 <TextView
@@ -87,32 +87,32 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="מנוחה"
-                    android:textColor="#333333" />
+                    android:textColor="@color/secondaryTextColor" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveWorkout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:text="שמור אימון"
             android:visibility="gone"
+            app:cornerRadius="16dp"
             app:layout_constraintBottom_toTopOf="@+id/btnBackToDashboard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBackToDashboard"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="חזרה לאזור האישי"
+            android:textColor="@color/secondaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </FrameLayout>

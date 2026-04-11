@@ -5,15 +5,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="24dp"
+    android:background="?android:attr/windowBackground"
+    android:padding="32dp"
     tools:context=".LoginActivity">
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,50 +25,55 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="ברוכים הבאים"
-        android:textColor="#333333"
-        android:textSize="28sp"
-        android:textStyle="bold"
+        android:textColor="@color/primaryColor"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutEmail"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        style="@style/AppTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="40dp"
         android:hint="אימייל"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginTitle"
-        app:startIconDrawable="@drawable/ic_launcher_foreground">
+        app:startIconDrawable="@drawable/ic_launcher_foreground"
+        app:startIconTint="@color/primaryColor">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:textColor="@color/primaryTextColor" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutPassword"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        style="@style/AppTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="סיסמה"
         app:endIconMode="password_toggle"
+        app:endIconTint="@color/primaryColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutEmail"
-        app:startIconDrawable="@drawable/ic_launcher_foreground">
+        app:startIconDrawable="@drawable/ic_launcher_foreground"
+        app:startIconTint="@color/primaryColor">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColor="@color/primaryTextColor" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -79,7 +84,7 @@
         android:text="התחברות"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:cornerRadius="12dp"
+        app:cornerRadius="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
@@ -91,6 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="אין לך חשבון? הירשם כאן"
+        android:textColor="@color/secondaryColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
@@ -100,8 +106,9 @@
         style="@style/Widget.Material3.Button.IconButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:icon="@drawable/ic_launcher_foreground"
+        app:iconTint="@color/primaryColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

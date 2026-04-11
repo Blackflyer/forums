@@ -105,6 +105,20 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
                             planNames
                     );
                     autoCompletePlan.setAdapter(adapter);
+
+                    // Auto-select plan if PLAN_ID was passed
+                    String targetPlanId = getIntent().getStringExtra("PLAN_ID");
+                    if (targetPlanId != null) {
+                        for (int i = 0; i < allPlans.size(); i++) {
+                            if (targetPlanId.equals(allPlans.get(i).getPlanId())) {
+                                selectedPlan = allPlans.get(i);
+                                autoCompletePlan.setText(planNames.get(i), false);
+                                displayPlanExercises(selectedPlan);
+                                btnSaveWorkout.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 

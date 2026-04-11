@@ -62,9 +62,9 @@ public class AdminPage extends AppCompatActivity {
 
             String date = day + "/" + month + "/" + year;
 
-            // Navigate to CreatePlanActivity for the selected day
-            Intent intent = new Intent(AdminPage.this, CreatePlanActivity.class);
-            intent.putExtra("date", date);
+            // Navigate to Plan_day for the selected day
+            Intent intent = new Intent(AdminPage.this, Plan_day.class);
+            intent.putExtra("SELECTED_DATE", date);
             startActivity(intent);
         });
     }

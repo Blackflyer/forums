@@ -76,11 +76,6 @@ public class User_page extends AppCompatActivity {
     private void setupCalendar() {
         CalendarView calendarView = findViewById(R.id.calendarView);
 
-        // Add today as an event
-        List<EventDay> events = new ArrayList<>();
-        events.add(new EventDay(Calendar.getInstance(), R.drawable.ic_launcher_background));
-        calendarView.setEvents(events);
-
         calendarView.setOnDayClickListener(eventDay -> {
             Calendar clickedDayCalendar = eventDay.getCalendar();
             int day = clickedDayCalendar.get(Calendar.DAY_OF_MONTH);
@@ -89,8 +84,8 @@ public class User_page extends AppCompatActivity {
 
             String date = day + "/" + month + "/" + year;
 
-            Intent intent = new Intent(User_page.this, CreatePlanActivity.class);
-            intent.putExtra("date", date);
+            Intent intent = new Intent(User_page.this, Plan_day.class);
+            intent.putExtra("SELECTED_DATE", date);
             startActivity(intent);
         });
     }
@@ -106,6 +101,7 @@ public class User_page extends AppCompatActivity {
                     List<Plan> allPlans = user.getMaarachedPlans().getPlanArray();
                     if (allPlans != null) {
                         filterAndSortPlans(allPlans);
+                        updateCalendarWithPlans(allPlans);
                     }
                 }
             }
@@ -115,6 +111,29 @@ public class User_page extends AppCompatActivity {
                 Toast.makeText(User_page.this, "שגיאה בטעינת תוכניות", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateCalendarWithPlans(List<Plan> allPlans) {
+        CalendarView calendarView = findViewById(R.id.calendarView);
+        List<EventDay> events = new ArrayList<>();
+
+        // Add today as a special event
+        events.add(new EventDay(Calendar.getInstance(), R.drawable.ic_launcher_background));
+
+        for (Plan plan : allPlans) {
+            try {
+                Date date = sdf.parse(plan.getDate());
+                if (date != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    // Add an icon for each plan day
+                    events.add(new EventDay(calendar, R.drawable.ic_launcher_foreground));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        calendarView.setEvents(events);
     }
 
     private void filterAndSortPlans(List<Plan> allPlans) {

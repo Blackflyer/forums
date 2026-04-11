@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:background="#FFFFFF">
+        android:background="@color/backgroundColor">
 
         <TextView
             android:id="@+id/tvPlanName"
@@ -21,7 +21,7 @@
             android:text="שם התוכנית"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#333333"/>
+            android:textColor="@color/primaryTextColor"/>
 
         <TextView
             android:id="@+id/tvPlanDate"
@@ -30,6 +30,6 @@
             android:layout_marginTop="4dp"
             android:text="תאריך: 01/01/2026"
             android:textSize="14sp"
-            android:textColor="#666666"/>
+            android:textColor="@color/secondaryTextColor"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

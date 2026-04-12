@@ -8,6 +8,7 @@
     <!-- Secondary Colors -->
     <color name="secondaryColor">#E65100</color> <!-- Slightly deeper orange for contrast on light bg -->
     <color name="secondaryLightColor">#FF8A65</color>
+    <color name="secondaryDarkColor">#BF360C</color>
 
     <!-- Theme Specific Accents (Deepened slightly for contrast on very light backgrounds) -->
     <color name="workoutAccent">#2E7D32</color> 
@@ -17,6 +18,8 @@
 
     <!-- NEW: Extra Light Backgrounds for readability -->
     <color name="backgroundColor">#F8F9FA</color>
+    <color name="surfaceColor">#FFFFFF</color>
+    <color name="cardBackground">#FFFFFF</color>
     <color name="bg_welcome_start">#F8F9FA</color>
     <color name="bg_welcome_end">#E9ECEF</color>
     

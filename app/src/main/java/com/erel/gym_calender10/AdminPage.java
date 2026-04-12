@@ -79,7 +79,7 @@ public class AdminPage extends AppCompatActivity {
         });
 
         btnGoAddExercise.setOnClickListener(v -> {
-            startActivity(new Intent(AdminPage.this, AddExercise.class));
+            startActivity(new Intent(AdminPage.this, ExerciseListActivity.class));
         });
 
         btnGoAddAdmin.setOnClickListener(v -> {

@@ -5,14 +5,12 @@ plugins {
 
 android {
     namespace 'com.erel.gym_calender10'
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.erel.gym_calender10"
-        minSdk 32
-        targetSdk 36
+        minSdk 26
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 

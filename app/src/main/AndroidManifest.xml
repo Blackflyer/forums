@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gym_calender10">
         <activity
+            android:name=".ExerciseListActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
         <activity

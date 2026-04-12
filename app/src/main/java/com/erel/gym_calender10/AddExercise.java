@@ -43,20 +43,9 @@ public class AddExercise extends AppCompatActivity {
 
     private Button  btnAddExercise, btnBackpage;
 
-
-
-
+    private String editingExerciseId = null;
 
     private DatabaseService databaseService;
-
-
-    /// Activity result launcher for capturing image from camera
-
-
-
-
-    // constant to compare
-    // the activity result code
 
 
     @Override
@@ -75,15 +64,24 @@ public class AddExercise extends AppCompatActivity {
         databaseService = DatabaseService.getInstance();
 
 
+        // Check if we are in edit mode
+        Intent intent = getIntent();
+        if (intent.hasExtra("EXERCISE_ID")) {
+            editingExerciseId = intent.getStringExtra("EXERCISE_ID");
+            etExerciseName.setText(intent.getStringExtra("EXERCISE_NAME"));
+            etDescription.setText(intent.getStringExtra("EXERCISE_DESCRIPTION"));
+            etEquipment.setText(intent.getStringExtra("EXERCISE_EQUIPMENT"));
+            etMuscleGroup.setText(intent.getStringExtra("EXERCISE_MUSCLE_GROUP"));
+            etSets.setText(intent.getStringExtra("EXERCISE_SETS"));
+            etTimes.setText(intent.getStringExtra("EXERCISE_TIMES"));
 
-
+            btnAddExercise.setText("עדכן תרגיל");
+        }
 
 
         btnBackpage = findViewById(R.id.btnBack);
 
         btnBackpage.setOnClickListener(v -> {
-            Intent intent = new Intent(AddExercise.this, AdminPage.class);
-            startActivity(intent);
             finish();
         });
 
@@ -122,24 +120,23 @@ public class AddExercise extends AppCompatActivity {
                 }
 
                 // 3. יצירת מזהה ושמירה ל-Firebase
-                String id = databaseService.generateExerciseId();
+                String id = (editingExerciseId != null) ? editingExerciseId : databaseService.generateExerciseId();
                 Exercise newExercise = new Exercise(id, exerciseName, equipment, muscleGroup, description, setsStr, timesStr);
 
                 databaseService.createNewExercise(newExercise, new DatabaseService.DatabaseCallback<Void>() {
                     @Override
                     public void onCompleted(Void object) {
-                        Toast.makeText(AddExercise.this, "התרגיל נוסף בהצלחה!", Toast.LENGTH_SHORT).show();
+                        String msg = (editingExerciseId != null) ? "התרגיל עודכן בהצלחה!" : "התרגיל נוסף בהצלחה!";
+                        Toast.makeText(AddExercise.this, msg, Toast.LENGTH_SHORT).show();
 
-                        // מעבר חזרה למסך המנהל לאחר הצלחה
-                        Intent intent = new Intent(AddExercise.this, AdminPage.class);
-                        startActivity(intent);
+                        // מעבר חזרה למסך הקודם לאחר הצלחה
                         finish();
                     }
 
                     @Override
                     public void onFailed(Exception e) {
-                        Log.e("TAG", "Failed to add item", e);
-                        Toast.makeText(AddExercise.this, "שגיאה בהוספת התרגיל", Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "Failed to add/update item", e);
+                        Toast.makeText(AddExercise.this, "שגיאה בשמירת התרגיל", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

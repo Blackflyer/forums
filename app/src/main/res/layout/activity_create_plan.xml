@@ -8,29 +8,41 @@
     android:background="#F5F5F5"
     android:padding="16dp">
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBackToDashboard"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="חזרה לאזור האישי"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="יצירת תוכנית אימון"
         android:textColor="#333333"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/btnBackToDashboard"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBackToDashboard"/>
 
     <EditText
         android:id="@+id/etPlanName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:background="@android:drawable/editbox_background"
         android:hint="שם התוכנית (למשל: אימון A)"
         android:inputType="textCapSentences"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/btnBackToDashboard" />
 
     <EditText
         android:id="@+id/etPlanDescription"
@@ -83,18 +95,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etSearchExercise"
         tools:listitem="@android:layout/simple_list_item_1" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBackToDashboard"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="608dp"
-        android:text="חזרה לאזור האישי"
-        app:layout_constraintBottom_toTopOf="@+id/btnSavePlan"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.908"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSavePlan"

@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Button btnLogin, btnRegister, btnGoToTrackWorkout;
+    private Button btnLogin, btnRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +26,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initViews() {
         btnLogin = findViewById(R.id.btnGoLogin);
         btnRegister = findViewById(R.id.btnGoRegister);
-        btnGoToTrackWorkout = findViewById(R.id.btnGoToTrackWorkout);
 
-        btnRegister.setOnClickListener(this);
-        btnLogin.setOnClickListener(this);
-        btnGoToTrackWorkout.setOnClickListener(this);
+        if (btnRegister != null) {
+            btnRegister.setOnClickListener(this);
+        }
+        if (btnLogin != null) {
+            btnLogin.setOnClickListener(this);
+        }
 
         View mainView = findViewById(android.R.id.content);
         if (mainView != null) {
@@ -49,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(MainActivity.this, RegisterActivity.class));
         } else if (id == R.id.btnGoLogin) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        } else if (id == R.id.btnGoToTrackWorkout) {
-            startActivity(new Intent(MainActivity.this, TrackWorkoutActivity.class));
         }
     }
 }

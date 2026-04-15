@@ -127,6 +127,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString("email", user.getEmail());
                 editor.putString("uid", uid);
+                editor.putBoolean("isAdmin", false); // משתמש חדש הוא לא אדמין כברירת מחדל
                 editor.apply();
 
                 // 1. תיקון ה-Toast כדי שישרוד את מעבר המסך:

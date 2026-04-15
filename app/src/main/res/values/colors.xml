@@ -34,6 +34,12 @@
     <color name="secondaryTextColor">#455A64</color>
     <color name="whiteTextColor">#FFFFFF</color>
 
+    <!-- Semantic Colors -->
+    <color name="errorColor">#D32F2F</color>
+    <color name="successColor">#388E3C</color>
+    <color name="warningColor">#FBC02D</color>
+    <color name="infoColor">#1976D2</color>
+
     <!-- System Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

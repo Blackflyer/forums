@@ -6,7 +6,7 @@ public class Achievement {
     private String description;
     private String icon; // emoji or resource name
     private boolean isUnlocked;
-
+   public  Achievement() {}
     public Achievement(String id, String name, String description, String icon, boolean isUnlocked) {
         this.id = id;
         this.name = name;

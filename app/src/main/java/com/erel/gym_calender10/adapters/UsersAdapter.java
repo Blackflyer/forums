@@ -24,12 +24,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     }
 
     private final List<User> userList;
-    private List<User> userListFull; // <--- הוספנו: רשימה מלאה עבור החיפוש
+    private List<User> userListFull;
     private final OnUserClickListener onUserClickListener;
 
     public UsersAdapter(@Nullable final OnUserClickListener onUserClickListener) {
         this.userList = new ArrayList<>();
-        this.userListFull = new ArrayList<>(); // <--- הוספנו: אתחול
+        this.userListFull = new ArrayList<>();
         this.onUserClickListener = onUserClickListener;
     }
 

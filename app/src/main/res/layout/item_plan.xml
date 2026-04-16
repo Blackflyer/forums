@@ -49,18 +49,36 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvExerciseCount"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="5 תרגילים"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="@color/primaryColor"
-            android:background="@drawable/ic_launcher_background"
-            android:backgroundTint="@color/backgroundColor"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp" />
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tvExerciseCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 תרגילים"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/primaryColor"
+                android:background="@drawable/ic_launcher_background"
+                android:backgroundTint="@color/backgroundColor"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditPlan"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ערוך"
+                android:textColor="@color/primaryColor"
+                android:textSize="12sp"
+                app:icon="@android:drawable/ic_menu_edit"
+                app:iconSize="16dp" />
+        </LinearLayout>
 
     </LinearLayout>
 

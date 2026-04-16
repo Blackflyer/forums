@@ -283,6 +283,29 @@ public class DatabaseService {
                 });
     }
 
+    public void getAllPlans(@NotNull final String userId, @NotNull final DatabaseCallback<List<Plan>> callback) {
+        databaseReference.child(USERS_PATH).child(userId).child("maarachedPlans").child("planArray")
+                .get().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        callback.onFailed(task.getException());
+                        return;
+                    }
+
+                    List<Plan> allPlans = new ArrayList<>();
+                    for (DataSnapshot snapshot : task.getResult().getChildren()) {
+                        Plan p = snapshot.getValue(Plan.class);
+                        if (p != null) {
+                            allPlans.add(p);
+                        }
+                    }
+                    callback.onCompleted(allPlans);
+                });
+    }
+
+    public void getPlanById(@NotNull final String planId, @NotNull final DatabaseCallback<Plan> callback) {
+        getData(PLANS_PATH + "/" + planId, Plan.class, callback);
+    }
+
     public String generatePlanId() {
         return generateNewId(PLANS_PATH);
     }

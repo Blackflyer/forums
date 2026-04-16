@@ -40,4 +40,35 @@ public class AchievementService {
             default: return "הישג חדש!";
         }
     }
+
+    public static List<com.erel.gym_calender10.module.Achievement> getAllAchievements(List<String> unlockedIds) {
+        List<com.erel.gym_calender10.module.Achievement> list = new ArrayList<>();
+        if (unlockedIds == null) unlockedIds = new ArrayList<>();
+
+        list.add(new com.erel.gym_calender10.module.Achievement(
+                "first_workout",
+                "אימון ראשון!",
+                "בצע את האימון הראשון שלך באפליקציה",
+                "💪",
+                unlockedIds.contains("first_workout")
+        ));
+
+        list.add(new com.erel.gym_calender10.module.Achievement(
+                "100kg_club",
+                "מועדון ה-100 ק\"ג!",
+                "הרם משקל של 100 ק\"ג ומעלה בתרגיל כלשהו",
+                "🏋️",
+                unlockedIds.contains("100kg_club")
+        ));
+
+        list.add(new com.erel.gym_calender10.module.Achievement(
+                "consistency_king",
+                "מלך העקביות",
+                "צור לפחות 5 תוכניות אימון",
+                "👑",
+                unlockedIds.contains("consistency_king")
+        ));
+
+        return list;
+    }
 }

@@ -28,6 +28,16 @@ public class ListOfPlans {
         if (this.planArray == null) {
             this.planArray = new ArrayList<>();
         }
+        
+        // בדיקה אם התוכנית כבר קיימת לפי ה-ID, ואם כן - החלפה שלה (בשביל עריכה)
+        for (int i = 0; i < planArray.size(); i++) {
+            if (planArray.get(i).getPlanId() != null && 
+                planArray.get(i).getPlanId().equals(plan.getPlanId())) {
+                planArray.set(i, plan);
+                return;
+            }
+        }
+        
         this.planArray.add(plan);
     }
 

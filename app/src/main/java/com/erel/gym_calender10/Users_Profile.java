@@ -57,12 +57,22 @@ public class Users_Profile extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBackFromProfile);
         rvProfilePlans = findViewById(R.id.rvProfilePlans);
         Button btnViewProgress = findViewById(R.id.btnViewProgress);
+        ImageButton btnEditProfile = findViewById(R.id.btnEditProfile);
 
         rvProfilePlans.setLayoutManager(new LinearLayoutManager(this));
         
         btnViewProgress.setOnClickListener(v -> {
             Intent intent = new Intent(Users_Profile.this, Progress_Graph.class);
             startActivity(intent);
+        });
+
+        findViewById(R.id.btnViewAchievements).setOnClickListener(v -> {
+            Intent intent = new Intent(Users_Profile.this, AchievementsActivity.class);
+            startActivity(intent);
+        });
+
+        btnEditProfile.setOnClickListener(v -> {
+            startActivity(new Intent(Users_Profile.this, EditProfileActivity.class));
         });
     }
 

@@ -46,6 +46,20 @@ public class ExerciseSelectAdapter extends RecyclerView.Adapter<ExerciseSelectAd
         return selectedExercises;
     }
 
+    public void setSelectedExercises(List<Exercise> selected) {
+        this.selectedExercises.clear();
+        if (selected == null) return;
+        for (Exercise s : selected) {
+            for (Exercise f : fullList) {
+                if (f.getId() != null && f.getId().equals(s.getId())) {
+                    selectedExercises.add(f);
+                    break;
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

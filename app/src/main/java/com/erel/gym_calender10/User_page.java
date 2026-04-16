@@ -53,10 +53,6 @@ public class User_page extends AppCompatActivity {
         rvUpcomingPlans.setAdapter(planAdapter);
 
         findViewById(R.id.btn_go_dashboard).setOnClickListener(v -> navigateToDashboard());
-
-        findViewById(R.id.btnEditProfile).setOnClickListener(v -> {
-            startActivity(new Intent(User_page.this, EditProfileActivity.class));
-        });
     }
 
     private void navigateToDashboard() {

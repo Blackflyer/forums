@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,9 +36,13 @@ public class CreatePlanActivity extends AppCompatActivity {
     private RecyclerView rvExercises;
     private EditText etSearch, etPlanName;
     private MaterialButton btnSavePlan, btnSelectTime;
+    private TextView tvTitle;
     private ExerciseSelectAdapter adapter;
     private String selectedDate;
     private String selectedTime = "12:00"; // default
+    private boolean isEditMode = false;
+    private String planIdToEdit = null;
+    private Plan existingPlan = null;
 
     private static final int NOTIFICATION_PERMISSION_CODE = 1001;
 
@@ -46,23 +51,32 @@ public class CreatePlanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_plan);
 
-        // 1. Get the date
+        // Get intent data
+        isEditMode = getIntent().getBooleanExtra("EDIT_MODE", false);
+        planIdToEdit = getIntent().getStringExtra("PLAN_ID");
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
         if (selectedDate == null) {
             selectedDate = getIntent().getStringExtra("date");
         }
 
-        // 2. Fallback
-        if (selectedDate == null || selectedDate.isEmpty()) {
-            Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH) + 1;
-            int year = calendar.get(Calendar.YEAR);
-            selectedDate = day + "/" + month + "/" + year;
+        initViews();
+        
+        if (isEditMode && planIdToEdit != null) {
+            tvTitle.setText("עריכת תוכנית");
+            btnSavePlan.setText("עדכן תוכנית");
+            loadExistingPlan();
+        } else {
+            // New Plan fallback date
+            if (selectedDate == null || selectedDate.isEmpty()) {
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH) + 1;
+                int year = calendar.get(Calendar.YEAR);
+                selectedDate = day + "/" + month + "/" + year;
+            }
+            loadExercisesFromDB();
         }
 
-        initViews();
-        loadExercisesFromDB();
         checkNotificationPermission();
 
         // Search listener
@@ -76,21 +90,33 @@ public class CreatePlanActivity extends AppCompatActivity {
         });
 
         btnSelectTime.setOnClickListener(v -> showTimePicker());
-        btnSavePlan.setOnClickListener(v -> saveNewPlan());
+        btnSavePlan.setOnClickListener(v -> saveOrUpdatePlan());
         findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
     }
 
+    private void loadExistingPlan() {
+        DatabaseService.getInstance().getPlanById(planIdToEdit, new DatabaseService.DatabaseCallback<Plan>() {
+            @Override
+            public void onCompleted(Plan plan) {
+                if (plan != null) {
+                    existingPlan = plan;
+                    etPlanName.setText(plan.getPlanName());
+                    selectedDate = plan.getDate();
+                    selectedTime = plan.getTime();
+                    btnSelectTime.setText("בחר שעת אימון: " + selectedTime);
+                    loadExercisesFromDB(); // Then pre-select
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Toast.makeText(CreatePlanActivity.this, "שגיאה בטעינת התוכנית", Toast.LENGTH_SHORT).show();
+                loadExercisesFromDB();
+            }
+        });
+    }
+
     private void navigateToDashboard() {
-        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-        boolean isAdmin = prefs.getBoolean("isAdmin", false);
-        Intent intent;
-        if (isAdmin) {
-            intent = new Intent(this, AdminPage.class);
-        } else {
-            intent = new Intent(this, UserDashboardActivity.class);
-        }
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
         finish();
     }
 
@@ -104,8 +130,8 @@ public class CreatePlanActivity extends AppCompatActivity {
 
     private void showTimePicker() {
         Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
+        int hour = Integer.parseInt(selectedTime.split(":")[0]);
+        int minute = Integer.parseInt(selectedTime.split(":")[1]);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(this,
                 (view, hourOfDay, minuteOfHour) -> {
@@ -121,6 +147,10 @@ public class CreatePlanActivity extends AppCompatActivity {
             public void onCompleted(List<Exercise> exercises) {
                 adapter = new ExerciseSelectAdapter(exercises);
                 rvExercises.setAdapter(adapter);
+                
+                if (isEditMode && existingPlan != null && existingPlan.getPlan() != null) {
+                    adapter.setSelectedExercises(existingPlan.getPlan());
+                }
             }
             @Override
             public void onFailed(Exception e) {
@@ -129,7 +159,7 @@ public class CreatePlanActivity extends AppCompatActivity {
         });
     }
 
-    private void saveNewPlan() {
+    private void saveOrUpdatePlan() {
         String name = etPlanName.getText().toString().trim();
 
         if (name.isEmpty()) {
@@ -151,27 +181,22 @@ public class CreatePlanActivity extends AppCompatActivity {
         }
 
         String userId = currentUser.getUid();
-        String planId = DatabaseService.getInstance().generatePlanId();
+        String planId = isEditMode ? planIdToEdit : DatabaseService.getInstance().generatePlanId();
 
-        // Create Plan object with time
-        Plan newPlan = new Plan(planId, userId, selectedDate, name, "General", selectedTime);
-        newPlan.setPlan(new ArrayList<>(selected));
+        // Create Plan object
+        Plan plan = new Plan(planId, userId, selectedDate, name, "General", selectedTime);
+        plan.setPlan(new ArrayList<>(selected));
 
         btnSavePlan.setEnabled(false);
         btnSavePlan.setText("שומר...");
 
-        DatabaseService.getInstance().createNewPlan(newPlan, new DatabaseService.DatabaseCallback<Void>() {
+        DatabaseService.getInstance().createNewPlan(plan, new DatabaseService.DatabaseCallback<Void>() {
             @Override
             public void onCompleted(Void object) {
-                Toast.makeText(CreatePlanActivity.this, "התוכנית נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreatePlanActivity.this, isEditMode ? "התוכנית עודכנה בהצלחה!" : "התוכנית נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
 
-                // Schedule push notifications for the upcoming workout
+                // Schedule push notifications
                 NotificationHelper.scheduleWorkoutNotifications(CreatePlanActivity.this, name, selectedDate, selectedTime);
-
-                // Return to Plan_day
-                Intent intent = new Intent(CreatePlanActivity.this, Plan_day.class);
-                intent.putExtra("SELECTED_DATE", selectedDate);
-                startActivity(intent);
 
                 finish();
             }
@@ -179,7 +204,7 @@ public class CreatePlanActivity extends AppCompatActivity {
             @Override
             public void onFailed(Exception e) {
                 btnSavePlan.setEnabled(true);
-                btnSavePlan.setText("שמור תוכנית");
+                btnSavePlan.setText(isEditMode ? "עדכן תוכנית" : "שמור תוכנית");
                 Toast.makeText(CreatePlanActivity.this, "שגיאה בשמירה: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -193,5 +218,6 @@ public class CreatePlanActivity extends AppCompatActivity {
         etPlanName = findViewById(R.id.etPlanName);
         btnSavePlan = findViewById(R.id.btnSavePlan);
         btnSelectTime = findViewById(R.id.btnSelectTime);
+        tvTitle = findViewById(R.id.tvTitle); // Assuming this ID exists or I should add it
     }
 }

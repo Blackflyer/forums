@@ -3,6 +3,7 @@ package com.erel.gym_calender10;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -58,7 +59,6 @@ public class item_plan extends AppCompatActivity {
     }
 
     private void setupFilters() {
-        // האזנה לשינויים בטקסט החיפוש
         etSearchPlan.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -73,7 +73,6 @@ public class item_plan extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        // האזנה לשינויים בבחירת יום
         cgDays.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.chipSun) selectedDayOfWeek = Calendar.SUNDAY;
             else if (checkedId == R.id.chipMon) selectedDayOfWeek = Calendar.MONDAY;
@@ -82,7 +81,7 @@ public class item_plan extends AppCompatActivity {
             else if (checkedId == R.id.chipThu) selectedDayOfWeek = Calendar.THURSDAY;
             else if (checkedId == R.id.chipFri) selectedDayOfWeek = Calendar.FRIDAY;
             else if (checkedId == R.id.chipSat) selectedDayOfWeek = Calendar.SATURDAY;
-            else selectedDayOfWeek = -1; // chipAll or none
+            else selectedDayOfWeek = -1; 
 
             applyFilters();
         });
@@ -109,7 +108,7 @@ public class item_plan extends AppCompatActivity {
                     plansList.clear();
                     plansList.addAll(plans);
                     planAdapter.updateList(plansList);
-                    applyFilters(); // שמירה על הפילטרים הקיימים אם יש
+                    applyFilters(); 
                 }
             }
 

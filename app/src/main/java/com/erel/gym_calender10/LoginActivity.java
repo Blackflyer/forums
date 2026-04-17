@@ -10,11 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.services.DatabaseService;
@@ -32,25 +28,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.login);
-
-        // מניעת חיתוך על ידי הסטטוס בר
-        View mainView = findViewById(R.id.main);
-        if (mainView != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
-                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                return insets;
-            });
-        }
 
         initViews();
 
         databaseService = DatabaseService.getInstance();
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
-        // מילוי אוטומטי של פרטים שמורים (אם קיימים)
         etEmail.setText(sharedpreferences.getString("email", ""));
         etPassword.setText(sharedpreferences.getString("password", ""));
     }
@@ -61,8 +45,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
 
-        btnLogin.setOnClickListener(this);
-        btnRegister.setOnClickListener(this);
+        if (btnLogin != null) btnLogin.setOnClickListener(this);
+        if (btnRegister != null) btnRegister.setOnClickListener(this);
     }
 
     @Override
@@ -77,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 return;
             }
 
-            btnLogin.setEnabled(false); // מניעת לחיצות כפולות
+            btnLogin.setEnabled(false); 
             loginUser(email, password);
         } else if (id == R.id.btnRegister) {
             startActivity(new Intent(this, RegisterActivity.class));
@@ -88,19 +72,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         databaseService.LoginUser(email, password, new DatabaseService.DatabaseCallback<String>() {
             @Override
             public void onCompleted(String uid) {
-                Log.d(TAG, "Login success, UID: " + uid);
-
-                // שליפת אובייקט המשתמש המלא מה-Database
                 databaseService.getUser(uid, new DatabaseService.DatabaseCallback<User>() {
                     @Override
                     public void onCompleted(User user) {
                         if (user != null) {
                             boolean isAdmin = Boolean.TRUE.equals(user.getAdmin());
-                            // שמירה רק לאחר הצלחה מלאה
                             saveToPrefs(email, password, uid, isAdmin);
 
                             Intent intent;
-                            // בדיקה אם המשתמש הוא אדמין (וודא שאין NullPointerException)
                             if (isAdmin) {
                                 intent = new Intent(LoginActivity.this, AdminPage.class);
                             } else {
@@ -110,13 +89,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                         } else {
-                            onFailed(new Exception("User data not found in database"));
+                            onFailed(new Exception("User data not found"));
                         }
                     }
 
                     @Override
                     public void onFailed(Exception e) {
-                        btnLogin.setEnabled(true);
+                        if (btnLogin != null) btnLogin.setEnabled(true);
                         Toast.makeText(LoginActivity.this, "טעינת נתוני משתמש נכשלה", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -124,9 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onFailed(Exception e) {
-                btnLogin.setEnabled(true);
-                Log.e(TAG, "Login failed", e);
-                etPassword.setError("אימייל או סיסמה שגויים");
+                if (btnLogin != null) btnLogin.setEnabled(true);
+                if (etPassword != null) etPassword.setError("אימייל או סיסמה שגויים");
                 Toast.makeText(LoginActivity.this, "התחברות נכשלה", Toast.LENGTH_SHORT).show();
             }
         });

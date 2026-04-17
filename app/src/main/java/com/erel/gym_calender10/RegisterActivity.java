@@ -11,15 +11,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.services.DatabaseService;
-import com.google.android.material.button.MaterialButton;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -27,7 +22,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public static final String MyPREFERENCES = "myPrefs";
 
     private EditText etEmail, etPassword, etFName, etLName, etPhone;
-    private Button btnRegister; // שימוש ב-Material
+    private Button btnRegister; 
     private TextView tvLogin;
 
     private DatabaseService databaseService;
@@ -36,18 +31,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
-
-        // טיפול במרווחי מערכת (סטטוס בר)
-        View mainView = findViewById(R.id.main);
-        if (mainView != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
-                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-                return insets;
-            });
-        }
 
         initViews();
 
@@ -64,19 +48,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         btnRegister = findViewById(R.id.btnRegister);
         tvLogin = findViewById(R.id.btnToLogin);
 
-        // הגדרת המאזין
-        btnRegister.setOnClickListener(this);
-        tvLogin.setOnClickListener(this);
+        if (btnRegister != null) btnRegister.setOnClickListener(this);
+        if (tvLogin != null) tvLogin.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.btnRegister) {
-            Log.d("RegisterActivity", "Register Button clicked!");
             validateAndRegister();
         } else if (id == R.id.btnToLogin) {
-            // מעבר לדף התחברות אם כבר יש חשבון
             finish();
         }
     }
@@ -89,29 +70,24 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String lName = etLName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
 
-        // בדיקת שדות ריקים
         if (email.isEmpty() || password.isEmpty() || fName.isEmpty() || lName.isEmpty() || phone.isEmpty()) {
             Toast.makeText(this, "חובה למלא את כל השדות", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // בדיקת פורמט אימייל
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("אימייל לא תקין");
+            if (etEmail != null) etEmail.setError("אימייל לא תקין");
             return;
         }
 
-        // בדיקת אורך סיסמה (Firebase דורש לפחות 6)
         if (password.length() < 6) {
-            etPassword.setError("הסיסמה חייבת להכיל לפחות 6 תווים");
+            if (etPassword != null) etPassword.setError("הסיסמה חייבת להכיל לפחות 6 תווים");
             return;
         }
 
-        // השבתת כפתור למניעת לחיצות כפולות
         btnRegister.setEnabled(false);
         btnRegister.setText("רושם משתמש...");
 
-        // יצירת אובייקט זמני (ה-ID יתעדכן לאחר הרישום)
         User newUser = new User("", fName, lName, phone, email, password);
         createUserInDatabase(newUser);
     }
@@ -120,21 +96,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         databaseService.createNewUser(user, new DatabaseService.DatabaseCallback<String>() {
             @Override
             public void onCompleted(String uid) {
-                Log.d(TAG, "User created successfully with UID: " + uid);
-
                 user.setId(uid);
 
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString("email", user.getEmail());
                 editor.putString("uid", uid);
-                editor.putBoolean("isAdmin", false); // משתמש חדש הוא לא אדמין כברירת מחדל
+                editor.putBoolean("isAdmin", false); 
                 editor.apply();
 
-                // 1. תיקון ה-Toast כדי שישרוד את מעבר המסך:
                 Toast.makeText(getApplicationContext(), "נרשמת בהצלחה!", Toast.LENGTH_LONG).show();
 
-                // 2. מעבר למסך האמיתי של האפליקציה (כמו עמוד המשתמש) ולא למסך הפתיחה:
-                // הערה: החלף את UserDashboardActivity.class במסך שתרצה שהמשתמש יראה אחרי התחברות
                 Intent mainIntent = new Intent(RegisterActivity.this, UserDashboardActivity.class);
                 mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(mainIntent);
@@ -142,9 +113,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailed(Exception e) {
-                Log.e(TAG, "Failed to create user", e);
-                btnRegister.setEnabled(true);
-                btnRegister.setText("הרשמה");
+                if (btnRegister != null) {
+                    btnRegister.setEnabled(true);
+                    btnRegister.setText("הרשמה");
+                }
                 Toast.makeText(RegisterActivity.this, "שגיאה ברישום: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

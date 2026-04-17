@@ -1,9 +1,11 @@
 package com.erel.gym_calender10;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Calendar;
 import java.util.List;
-import android.app.DatePickerDialog;
-import android.widget.DatePicker;
-import android.widget.ImageButton;
 
 public class Plan_day extends AppCompatActivity {
 
@@ -38,13 +37,11 @@ public class Plan_day extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_day);
 
-        // 1. קבלת התאריך מהמסך הקודם
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
         if (selectedDate == null) {
             selectedDate = getIntent().getStringExtra("date");
         }
 
-        // 2. ברירת מחדל לתאריך של היום
         if (selectedDate == null || selectedDate.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -55,27 +52,6 @@ public class Plan_day extends AppCompatActivity {
 
         initViews();
         loadPlansForDate();
-
-        ImageButton btnSearchDate = findViewById(R.id.btnSearchDate);
-        btnSearchDate.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    Plan_day.this,
-                    (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // עדכון התאריך הנבחר
-                        selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-
-                        // עדכון הכותרת וטעינה מחדש של הנתונים
-                        tvDateTitle.setText("אימונים ל: " + selectedDate);
-                        loadPlansForDate();
-                    },
-                    year, month, day);
-            datePickerDialog.show();
-        });
     }
 
     private void initViews() {
@@ -84,23 +60,38 @@ public class Plan_day extends AppCompatActivity {
         rvPlans = findViewById(R.id.rvPlans);
         fabAddPlan = findViewById(R.id.fabAddPlan);
         btnBackToCalendar = findViewById(R.id.btnBackTocalender);
+        ImageButton btnSearchDate = findViewById(R.id.btnSearchDate);
 
-        // הגדרת הכותרת
         tvDateTitle.setText("אימונים ל: " + selectedDate);
-
-        // הגדרת ה-RecyclerView
         rvPlans.setLayoutManager(new LinearLayoutManager(this));
 
-        // כפתור הוספת אימון
         fabAddPlan.setOnClickListener(v -> {
             Intent intent = new Intent(Plan_day.this, CreatePlanActivity.class);
             intent.putExtra("SELECTED_DATE", selectedDate);
             startActivity(intent);
         });
 
-        // כפתור חזרה
         if (btnBackToCalendar != null) {
             btnBackToCalendar.setOnClickListener(v -> finish());
+        }
+
+        if (btnSearchDate != null) {
+            btnSearchDate.setOnClickListener(v -> {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                        Plan_day.this,
+                        (view, selectedYear, selectedMonth, selectedDay) -> {
+                            selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                            tvDateTitle.setText("אימונים ל: " + selectedDate);
+                            loadPlansForDate();
+                        },
+                        year, month, day);
+                datePickerDialog.show();
+            });
         }
     }
 
@@ -113,20 +104,15 @@ public class Plan_day extends AppCompatActivity {
 
         String userId = currentUser.getUid();
 
-        // קריאה ל-Firebase להבאת התוכניות לפי התאריך המדויק
         DatabaseService.getInstance().getPlansByDate(userId, selectedDate, new DatabaseService.DatabaseCallback<List<Plan>>() {
             @Override
             public void onCompleted(List<Plan> plans) {
                 if (plans == null || plans.isEmpty()) {
-                    // אם אין אימונים
                     rvPlans.setVisibility(View.GONE);
                     tvEmptyState.setVisibility(View.VISIBLE);
                 } else {
-                    // אם יש אימונים - מציגים ברשימה
                     tvEmptyState.setVisibility(View.GONE);
                     rvPlans.setVisibility(View.VISIBLE);
-
-                    // 3. תיקון האדפטר - הוספנו את 'Plan_day.this' כ-Context, שהיה חסר בקוד הקודם!
                     adapter = new PlanAdapter(plans);
                     rvPlans.setAdapter(adapter);
                 }

@@ -27,8 +27,12 @@ public class AchievementService {
             }
         }
 
-        // 3. 10 Tons Lifted (placeholder for volume)
-        // This would require more complex calculation, skipping for now.
+        // 3. Consistency King (5 plans)
+        if (!current.contains("consistency_king")) {
+            if (user.getMaarachedPlans() != null && user.getMaarachedPlans().getPlanArray() != null && user.getMaarachedPlans().getPlanArray().size() >= 5) {
+                newAchievements.add("consistency_king");
+            }
+        }
 
         return newAchievements;
     }
@@ -37,6 +41,7 @@ public class AchievementService {
         switch (id) {
             case "first_workout": return "אימון ראשון!";
             case "100kg_club": return "מועדון ה-100 ק\"ג!";
+            case "consistency_king": return "מלך העקביות!";
             default: return "הישג חדש!";
         }
     }

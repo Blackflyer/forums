@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.erel.gym_calender10.adapters.ExerciseSelectAdapter;
 import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.module.Plan;
+import com.erel.gym_calender10.services.AchievementService;
 import com.erel.gym_calender10.services.DatabaseService;
 import com.erel.gym_calender10.services.NotificationHelper;
 import com.google.android.material.button.MaterialButton;
@@ -198,7 +199,12 @@ public class CreatePlanActivity extends AppCompatActivity {
                 // Schedule push notifications
                 NotificationHelper.scheduleWorkoutNotifications(CreatePlanActivity.this, name, selectedDate, selectedTime);
 
-                finish();
+                // Check for achievements
+                if (!isEditMode) {
+                    checkForAchievements(userId);
+                } else {
+                    finish();
+                }
             }
 
             @Override
@@ -206,6 +212,42 @@ public class CreatePlanActivity extends AppCompatActivity {
                 btnSavePlan.setEnabled(true);
                 btnSavePlan.setText(isEditMode ? "עדכן תוכנית" : "שמור תוכנית");
                 Toast.makeText(CreatePlanActivity.this, "שגיאה בשמירה: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkForAchievements(String userId) {
+        DatabaseService.getInstance().getUser(userId, new DatabaseService.DatabaseCallback<com.erel.gym_calender10.module.User>() {
+            @Override
+            public void onCompleted(com.erel.gym_calender10.module.User user) {
+                if (user != null) {
+                    List<String> newAchievements = AchievementService.checkAchievements(user, 0);
+                    if (!newAchievements.isEmpty()) {
+                        for (String achievementId : newAchievements) {
+                            user.addAchievement(achievementId);
+                            Toast.makeText(CreatePlanActivity.this, "🏆 הישג חדש: " + AchievementService.getAchievementName(achievementId), Toast.LENGTH_LONG).show();
+                        }
+                        DatabaseService.getInstance().updateUserAchievements(userId, user.getAchievements(), new DatabaseService.DatabaseCallback<Void>() {
+                            @Override
+                            public void onCompleted(Void object) {
+                                finish();
+                            }
+                            @Override
+                            public void onFailed(Exception e) {
+                                finish();
+                            }
+                        });
+                    } else {
+                        finish();
+                    }
+                } else {
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                finish();
             }
         });
     }

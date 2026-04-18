@@ -72,6 +72,11 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
 
         loadAllPlans();
 
+        autoCompletePlan.setOnClickListener(v -> autoCompletePlan.showDropDown());
+        autoCompletePlan.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) autoCompletePlan.showDropDown();
+        });
+
         autoCompletePlan.setOnItemClickListener((parent, view, position, id) -> {
             selectedPlan = allPlans.get(position);
             displayPlanExercises(selectedPlan);
@@ -88,7 +93,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         databaseService.getUser(userId, new DatabaseService.DatabaseCallback<User>() {
             @Override
             public void onCompleted(User user) {
-                if (user != null && user.getMaarachedPlans() != null && user.getMaarachedPlans().getPlanArray() != null) {
+                if (user != null && user.getMaarachedPlans() != null && user.getMaarachedPlans().getPlanArray() != null && !user.getMaarachedPlans().getPlanArray().isEmpty()) {
                     allPlans = user.getMaarachedPlans().getPlanArray();
                     List<String> planNames = new ArrayList<>();
                     for (Plan plan : allPlans) {
@@ -105,6 +110,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
                             planNames
                     );
                     autoCompletePlan.setAdapter(adapter);
+                    autoCompletePlan.setThreshold(0); // Show results from the first character or focus
 
                     // Auto-select plan if PLAN_ID was passed
                     String targetPlanId = getIntent().getStringExtra("PLAN_ID");
@@ -119,13 +125,15 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
                             }
                         }
                     }
+                } else {
+                    Toast.makeText(TrackWorkoutActivity.this, "לא נמצאו תוכניות אימון. אנא צור תוכנית חדשה.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailed(Exception e) {
                 Log.e("TrackWorkout", "Failed to load plans", e);
-                Toast.makeText(TrackWorkoutActivity.this, "שגיאה בטעינת תוכניות", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TrackWorkoutActivity.this, "שגיאה בחיבור לשרת", Toast.LENGTH_SHORT).show();
             }
         });
     }

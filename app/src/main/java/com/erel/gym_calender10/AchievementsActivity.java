@@ -49,6 +49,16 @@ public class AchievementsActivity extends AppCompatActivity {
             @Override
             public void onCompleted(User user) {
                 if (user != null) {
+                    // Check for any new achievements that might have been missed
+                    List<String> newAchievements = AchievementService.checkAchievements(user, 0);
+                    if (!newAchievements.isEmpty()) {
+                        for (String id : newAchievements) {
+                            user.addAchievement(id);
+                        }
+                        // Update DB with new achievements
+                        DatabaseService.getInstance().updateUserAchievements(uid, user.getAchievements(), null);
+                    }
+                    
                     achievementList.clear();
                     achievementList.addAll(AchievementService.getAllAchievements(user.getAchievements()));
                     adapter.notifyDataSetChanged();

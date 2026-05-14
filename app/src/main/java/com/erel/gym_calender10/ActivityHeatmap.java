@@ -1,6 +1,7 @@
 package com.erel.gym_calender10;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -51,7 +52,14 @@ public class ActivityHeatmap extends AppCompatActivity {
 
         MaterialButton btnBackToDashboard = findViewById(R.id.btnBackToDashboard);
         btnBackToDashboard.setOnClickListener(v -> {
-            Intent intent = new Intent(ActivityHeatmap.this, UserDashboardActivity.class);
+            SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
+            boolean isAdmin = prefs.getBoolean("isAdmin", false);
+            Intent intent;
+            if (isAdmin) {
+                intent = new Intent(ActivityHeatmap.this, AdminPage.class);
+            } else {
+                intent = new Intent(ActivityHeatmap.this, UserDashboardActivity.class);
+            }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });

@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * מסך זה מציג את כל תוכניות האימונים של המשתמש ברשימה.
+ * המשתמש יכול לחפש תוכנית ספציפית לפי שם או לסנן את התוכניות לפי ימי השבוע.
+ */
 public class item_plan extends AppCompatActivity {
 
     private RecyclerView rvAllPlans;
@@ -31,9 +35,12 @@ public class item_plan extends AppCompatActivity {
     private MaterialToolbar toolbar;
     private EditText etSearchPlan;
     private ChipGroup cgDays;
-    private int selectedDayOfWeek = -1; // -1 = הכל
+    private int selectedDayOfWeek = -1; // -1 מייצג הצגת כל הימים
     private String currentSearchQuery = "";
 
+    /**
+     * פונקציה זו מאתחלת את המסך, מגדירה את רכיבי הממשק והפילטרים וטוענת את הנתונים.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +51,9 @@ public class item_plan extends AppCompatActivity {
         loadAllPlans();
     }
 
+    /**
+     * מאתחלת את ה-Views מה-XML, מגדירה את ה-RecyclerView ואת סרגל הכלים.
+     */
     private void initViews() {
         rvAllPlans = findViewById(R.id.rvAllPlans);
         rvAllPlans.setLayoutManager(new LinearLayoutManager(this));
@@ -58,7 +68,11 @@ public class item_plan extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
     }
 
+    /**
+     * מגדירה את המאזינים לשינויים בשדה החיפוש ובבחירת ימי השבוע (Chips).
+     */
     private void setupFilters() {
+        // מאזין לחיפוש טקסטואלי
         etSearchPlan.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -73,6 +87,7 @@ public class item_plan extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
+        // מאזין לבחירת יום בשבוע לסנון
         cgDays.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.chipSun) selectedDayOfWeek = Calendar.SUNDAY;
             else if (checkedId == R.id.chipMon) selectedDayOfWeek = Calendar.MONDAY;
@@ -87,12 +102,18 @@ public class item_plan extends AppCompatActivity {
         });
     }
 
+    /**
+     * מפעילה את הסינונים שנבחרו (חיפוש ויום בשבוע) על האדפטר של הרשימה.
+     */
     private void applyFilters() {
         if (planAdapter != null) {
             planAdapter.filter(currentSearchQuery, selectedDayOfWeek);
         }
     }
 
+    /**
+     * טוענת את כל תוכניות האימונים המשויכות למשתמש המחובר מהמסד נתונים.
+     */
     private void loadAllPlans() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -108,7 +129,7 @@ public class item_plan extends AppCompatActivity {
                     plansList.clear();
                     plansList.addAll(plans);
                     planAdapter.updateList(plansList);
-                    applyFilters(); 
+                    applyFilters(); // החלת סינונים קיימים על הרשימה החדשה
                 }
             }
 
@@ -119,6 +140,9 @@ public class item_plan extends AppCompatActivity {
         });
     }
 
+    /**
+     * נקראת בכל חזרה למסך. מבצעת טעינה מחדש של התוכניות כדי להציג עדכונים.
+     */
     @Override
     protected void onResume() {
         super.onResume();

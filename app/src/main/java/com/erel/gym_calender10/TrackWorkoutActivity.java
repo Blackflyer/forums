@@ -36,7 +36,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
-
+/**
+ * מחלקת TrackWorkoutActivity אחראית על מעקב אחר ביצוע אימון בזמן אמת.
+ * המשתמש יכול לבחור תוכנית, להזין תוצאות עבור כל תרגיל, להשתמש בטיימר מנוחה ולשמור את התקדמותו.
+ */
 public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutExerciseAdapter.OnExerciseClickListener, SetEntryBottomSheetFragment.OnEntryConfirmedListener {
 
     private AutoCompleteTextView autoCompletePlan;
@@ -53,6 +56,10 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
     private CountDownTimer countDownTimer;
     private Map<String, Float> personalBests = new HashMap<>();
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +77,10 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
 
         rvWorkoutExercises.setLayoutManager(new LinearLayoutManager(this));
 
+        // טעינת תוכניות האימון של המשתמש
         loadAllPlans();
 
+        // הגדרת תפריט בחירת תוכנית
         autoCompletePlan.setOnClickListener(v -> autoCompletePlan.showDropDown());
         autoCompletePlan.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) autoCompletePlan.showDropDown();
@@ -86,6 +95,9 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         btnSaveWorkout.setOnClickListener(v -> saveWorkoutProgress());
     }
 
+    /**
+     * טוענת את כל תוכניות האימון המשויכות למשתמש המחובר מתוך מסד הנתונים.
+     */
     private void loadAllPlans() {
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null) return;
@@ -110,9 +122,9 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
                             planNames
                     );
                     autoCompletePlan.setAdapter(adapter);
-                    autoCompletePlan.setThreshold(0); // Show results from the first character or focus
+                    autoCompletePlan.setThreshold(0); 
 
-                    // Auto-select plan if PLAN_ID was passed
+                    // בחירה אוטומטית של תוכנית אם נשלח מזהה ב-Intent
                     String targetPlanId = getIntent().getStringExtra("PLAN_ID");
                     if (targetPlanId != null) {
                         for (int i = 0; i < allPlans.size(); i++) {
@@ -138,14 +150,23 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         });
     }
 
+    /**
+     * מציגה את רשימת התרגילים הכלולים בתוכנית שנבחרה ומכינה את ה-Adapter.
+     * @param plan תוכנית האימון שנבחרה.
+     */
     private void displayPlanExercises(Plan plan) {
         if (plan.getPlan() != null) {
             workoutAdapter = new WorkoutExerciseAdapter(plan.getPlan(), this);
             rvWorkoutExercises.setAdapter(workoutAdapter);
+            // טעינת נתונים קודמים לכל תרגיל (נקודת ייחוס)
             loadPreviousData(plan);
         }
     }
 
+    /**
+     * טוענת את המשקלים והחזרות האחרונים שהמשתמש ביצע עבור כל תרגיל בתוכנית.
+     * @param plan התוכנית הנוכחית.
+     */
     private void loadPreviousData(Plan plan) {
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null || plan.getPlan() == null) return;
@@ -165,6 +186,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
                         lastWeights.put(ex.getId(), last.getWeight());
                         lastReps.put(ex.getId(), last.getReps());
 
+                        // מציאת שיא אישי
                         for (ProgressRecord r : records) {
                             if (r.getWeight() > maxWeight) maxWeight = r.getWeight();
                         }
@@ -188,6 +210,9 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         }
     }
 
+    /**
+     * נקרא כאשר משתמש לוחץ על תרגיל כדי להזין תוצאות.
+     */
     @Override
     public void onExerciseClick(Exercise exercise, float currentWeight, int currentReps) {
         SetEntryBottomSheetFragment bottomSheet = SetEntryBottomSheetFragment.newInstance(exercise.getId(), currentWeight, currentReps);
@@ -195,23 +220,27 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         bottomSheet.show(getSupportFragmentManager(), "SetEntryBottomSheet");
     }
 
+    /**
+     * נקרא לאחר שהמשתמש אישר את המשקל והחזרות בדיאלוג.
+     */
     @Override
     public void onEntryConfirmed(String exerciseId, float weight, int reps) {
         workoutAdapter.updateExerciseData(exerciseId, weight, reps);
         
-        // PR Celebration
+        // עדכון שיא אישי מקומי אם נשבר
         Float best = personalBests.get(exerciseId);
         if (weight > 0 && (best == null || weight > best)) {
-
-            personalBests.put(exerciseId, weight); // Update local PB
+            personalBests.put(exerciseId, weight); 
         }
 
-        // Auto Rest Timer
-        startRestTimer(60); // 60 seconds default
+        // הפעלת טיימר מנוחה אוטומטי (60 שניות)
+        startRestTimer(60); 
     }
 
-
-
+    /**
+     * מפעילה טיימר ספירה לאחור למנוחה בין סטים.
+     * @param seconds מספר השניות למנוחה.
+     */
     private void startRestTimer(int seconds) {
         if (countDownTimer != null) {
             countDownTimer.cancel();
@@ -229,11 +258,14 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
             public void onFinish() {
                 tvTimer.setText("00:00");
                 Toast.makeText(TrackWorkoutActivity.this, "המנוחה נגמרה! חזרה לעבודה", Toast.LENGTH_SHORT).show();
-                // Optionally hide after some time
             }
         }.start();
     }
 
+    /**
+     * שומרת את כל נתוני האימון שהוזנו למסד הנתונים.
+     * בודקת הישגים חדשים ומסיימת את האקטיביטי לאחר שמירה מוצלחת.
+     */
     private void saveWorkoutProgress() {
         if (selectedPlan == null || workoutAdapter == null) return;
 
@@ -252,6 +284,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         final boolean[] failed = {false};
         final float[] maxWeightEntered = {0};
 
+        // שמירה של כל תרגיל שבוצע כשיא/התקדמות חדשה
         for (Map.Entry<String, Float> entry : weights.entrySet()) {
             String exerciseId = entry.getKey();
             float weight = entry.getValue();
@@ -265,6 +298,7 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
                 public void onCompleted(Void v) {
                     savedCount[0]++;
                     if (savedCount[0] == totalToSave && !failed[0]) {
+                        // בדיקת הישגים רק לאחר שמירת כל הנתונים
                         checkForAchievements(userId, maxWeightEntered[0]);
                         Toast.makeText(TrackWorkoutActivity.this, "האימון נשמר בהצלחה!", Toast.LENGTH_SHORT).show();
                         finish();
@@ -282,6 +316,11 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         }
     }
 
+    /**
+     * בודקת האם המשקל שהורם באימון הנוכחי מזכה את המשתמש בהישגים (Achievements) חדשים.
+     * @param userId מזהה המשתמש.
+     * @param maxWeight המשקל המקסימלי שהורם באימון זה.
+     */
     private void checkForAchievements(String userId, float maxWeight) {
         databaseService.getUser(userId, new DatabaseService.DatabaseCallback<User>() {
             @Override
@@ -302,6 +341,9 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         });
     }
 
+    /**
+     * ניווט חזרה למסך הלובי המתאים לסוג המשתמש.
+     */
     private void navigateToDashboard() {
         SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("isAdmin", false);

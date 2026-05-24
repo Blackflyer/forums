@@ -14,12 +14,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * מחלקת SplashActivity מציגה מסך פתיחה (Splash Screen) עם לוגו ואנימציה בעת הפעלת האפליקציה.
+ * היא אחראית לבדוק האם המשתמש כבר מחובר ולנתב אותו למסך המתאים באופן אוטומטי.
+ */
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView ivLogo;
     private TextView tvAppName;
     public static final String MyPREFERENCES = "myPrefs";
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי. 
+     * היא מציגה את הממשק, מפעילה אנימציה ומגדירה השהיה למעבר למסך הבא.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,28 +37,30 @@ public class SplashActivity extends AppCompatActivity {
         ivLogo = findViewById(R.id.ivLogo);
         tvAppName = findViewById(R.id.tvAppName);
 
-        // Add a simple fade-in animation
+        // הוספת אנימציית הופעה פשוטה (Fade-in) למשך 1.5 שניות
         AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
         fadeIn.setDuration(1500);
         fadeIn.setFillAfter(true);
         ivLogo.startAnimation(fadeIn);
         tvAppName.startAnimation(fadeIn);
 
-        // Wait for 3 seconds and then decide where to go
+        // השהיה של 3 שניות לפני מעבר למסך הבא
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (isFinishing()) return;
 
                 try {
+                    // בדיקה האם קיים משתמש מחובר במערכת ה-Firebase
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     
                     if (currentUser != null) {
-                        // User is logged in, check if admin from SharedPreferences
+                        // המשתמש מחובר, נבדוק ב-SharedPreferences האם הוא מנהל
                         SharedPreferences sharedpreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
                         boolean isAdmin = sharedpreferences.getBoolean("isAdmin", false);
                         
                         Intent intent;
+                        // ניתוב למסך המתאים לפי סוג המשתמש
                         if (isAdmin) {
                             intent = new Intent(SplashActivity.this, AdminPage.class);
                         } else {
@@ -57,14 +68,14 @@ public class SplashActivity extends AppCompatActivity {
                         }
                         startActivity(intent);
                     } else {
-                        // No user logged in, go to MainActivity (Welcome screen)
+                        // לא נמצא משתמש מחובר, עוברים למסך הראשי (MainActivity) לבחירה בין התחברות להרשמה
                         startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     }
                 } catch (Exception e) {
-                    // In case of any Firebase initialization error, fallback to MainActivity
+                    // במקרה של שגיאה בלתי צפויה באתחול, עוברים למסך הראשי כברירת מחדל
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 }
-                finish(); // Close the splash activity
+                finish(); // סגירת מסך הפתיחה כך שלא ניתן יהיה לחזור אליו בלחיצת 'חזור'
             }
         }, 3000);
     }

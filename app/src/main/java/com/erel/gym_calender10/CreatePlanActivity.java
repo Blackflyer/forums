@@ -33,6 +33,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * מסך זה מאפשר למשתמש ליצור תוכנית אימונים חדשה או לערוך תוכנית קיימת.
+ * המשתמש בוחר תרגילים, מגדיר שם לתוכנית, תאריך ושעת אימון.
+ */
 public class CreatePlanActivity extends AppCompatActivity {
     private RecyclerView rvExercises;
     private EditText etSearch, etPlanName;
@@ -40,19 +44,23 @@ public class CreatePlanActivity extends AppCompatActivity {
     private TextView tvTitle;
     private ExerciseSelectAdapter adapter;
     private String selectedDate;
-    private String selectedTime = "12:00"; // default
+    private String selectedTime = "12:00"; // ברירת מחדל
     private boolean isEditMode = false;
     private String planIdToEdit = null;
     private Plan existingPlan = null;
 
     private static final int NOTIFICATION_PERMISSION_CODE = 1001;
 
+    /**
+     * פונקציה זו מאתחלת את המסך, בודקת האם מדובר בעריכה או ביצירה חדשה,
+     * ומגדירה את המאזינים לחיפוש ושמירה.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_plan);
 
-        // Get intent data
+        // קבלת נתונים מה-Intent (האם מדובר בעריכה ומהו התאריך שנבחר)
         isEditMode = getIntent().getBooleanExtra("EDIT_MODE", false);
         planIdToEdit = getIntent().getStringExtra("PLAN_ID");
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
@@ -67,7 +75,7 @@ public class CreatePlanActivity extends AppCompatActivity {
             btnSavePlan.setText("עדכן תוכנית");
             loadExistingPlan();
         } else {
-            // New Plan fallback date
+            // הגדרת תאריך ברירת מחדל (היום) במידה ולא נבחר תאריך
             if (selectedDate == null || selectedDate.isEmpty()) {
                 Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -78,9 +86,10 @@ public class CreatePlanActivity extends AppCompatActivity {
             loadExercisesFromDB();
         }
 
+        // בדיקת הרשאות להתראות עבור אנדרואיד 13 ומעלה
         checkNotificationPermission();
 
-        // Search listener
+        // מאזין לשינויים בשדה החיפוש לסינון תרגילים
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -95,6 +104,9 @@ public class CreatePlanActivity extends AppCompatActivity {
         findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
     }
 
+    /**
+     * טוענת תוכנית קיימת מהמסד נתונים לצורך עריכה.
+     */
     private void loadExistingPlan() {
         DatabaseService.getInstance().getPlanById(planIdToEdit, new DatabaseService.DatabaseCallback<Plan>() {
             @Override
@@ -105,7 +117,7 @@ public class CreatePlanActivity extends AppCompatActivity {
                     selectedDate = plan.getDate();
                     selectedTime = plan.getTime();
                     btnSelectTime.setText("בחר שעת אימון: " + selectedTime);
-                    loadExercisesFromDB(); // Then pre-select
+                    loadExercisesFromDB(); // טעינת התרגילים ולאחר מכן סימון הנבחרים
                 }
             }
 
@@ -121,6 +133,9 @@ public class CreatePlanActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * בודקת ומבקשת הרשאות להצגת התראות (עבור תזכורות אימון).
+     */
     private void checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -129,6 +144,9 @@ public class CreatePlanActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * מציגה דיאלוג לבחירת שעה עבור האימון המתוכנן.
+     */
     private void showTimePicker() {
         Calendar calendar = Calendar.getInstance();
         int hour = Integer.parseInt(selectedTime.split(":")[0]);
@@ -142,6 +160,9 @@ public class CreatePlanActivity extends AppCompatActivity {
         timePickerDialog.show();
     }
 
+    /**
+     * טוענת את כל רשימת התרגילים הזמינה מהמסד נתונים.
+     */
     private void loadExercisesFromDB() {
         DatabaseService.getInstance().getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
             @Override
@@ -149,6 +170,7 @@ public class CreatePlanActivity extends AppCompatActivity {
                 adapter = new ExerciseSelectAdapter(exercises);
                 rvExercises.setAdapter(adapter);
                 
+                // במידה ומדובר בעריכה, נסמן את התרגילים שכבר קיימים בתוכנית
                 if (isEditMode && existingPlan != null && existingPlan.getPlan() != null) {
                     adapter.setSelectedExercises(existingPlan.getPlan());
                 }
@@ -160,6 +182,10 @@ public class CreatePlanActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * שומרת את התוכנית החדשה או מעדכנת את הקיימת במסד הנתונים.
+     * לאחר השמירה, מתזמנת התראה ובודקת זכאות להישגים.
+     */
     private void saveOrUpdatePlan() {
         String name = etPlanName.getText().toString().trim();
 
@@ -184,7 +210,7 @@ public class CreatePlanActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
         String planId = isEditMode ? planIdToEdit : DatabaseService.getInstance().generatePlanId();
 
-        // Create Plan object
+        // יצירת אובייקט תוכנית
         Plan plan = new Plan(planId, userId, selectedDate, name, "General", selectedTime);
         plan.setPlan(new ArrayList<>(selected));
 
@@ -196,10 +222,10 @@ public class CreatePlanActivity extends AppCompatActivity {
             public void onCompleted(Void object) {
                 Toast.makeText(CreatePlanActivity.this, isEditMode ? "התוכנית עודכנה בהצלחה!" : "התוכנית נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
 
-                // Schedule push notifications
+                // תזמון התראות דחיפה לתזכורת על האימון
                 NotificationHelper.scheduleWorkoutNotifications(CreatePlanActivity.this, name, selectedDate, selectedTime);
 
-                // Check for achievements
+                // בדיקת הישגים רק במידה וזו תוכנית חדשה
                 if (!isEditMode) {
                     checkForAchievements(userId);
                 } else {
@@ -216,6 +242,10 @@ public class CreatePlanActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * בודקת האם המשתמש זכאי להישגים חדשים בעקבות יצירת התוכנית ומעדכנת את המסד נתונים.
+     * @param userId מזהה המשתמש.
+     */
     private void checkForAchievements(String userId) {
         DatabaseService.getInstance().getUser(userId, new DatabaseService.DatabaseCallback<com.erel.gym_calender10.module.User>() {
             @Override
@@ -252,6 +282,9 @@ public class CreatePlanActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * מאתחלת את רכיבי הממשק מה-XML.
+     */
     private void initViews() {
         rvExercises = findViewById(R.id.rvExercises);
         rvExercises.setLayoutManager(new LinearLayoutManager(this));
@@ -260,6 +293,6 @@ public class CreatePlanActivity extends AppCompatActivity {
         etPlanName = findViewById(R.id.etPlanName);
         btnSavePlan = findViewById(R.id.btnSavePlan);
         btnSelectTime = findViewById(R.id.btnSelectTime);
-        tvTitle = findViewById(R.id.tvTitle); // Assuming this ID exists or I should add it
+        tvTitle = findViewById(R.id.tvTitle); 
     }
 }

@@ -23,6 +23,10 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * מחלקת Plan_day מציגה את תוכניות האימון המתוכננות לתאריך ספציפי.
+ * המשתמש יכול לצפות באימונים הקיימים, להוסיף אימון חדש או לבחור תאריך אחר.
+ */
 public class Plan_day extends AppCompatActivity {
 
     private RecyclerView rvPlans;
@@ -32,16 +36,23 @@ public class Plan_day extends AppCompatActivity {
     private String selectedDate;
     private Button btnBackToCalendar;
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי. 
+     * היא מחלצת את התאריך הנבחר מה-Intent או משתמשת בתאריך הנוכחי כברירת מחדל.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan_day);
 
+        // קבלת התאריך שנשלח מהמסך הקודם
         selectedDate = getIntent().getStringExtra("SELECTED_DATE");
         if (selectedDate == null) {
             selectedDate = getIntent().getStringExtra("date");
         }
 
+        // הגדרת תאריך נוכחי אם לא התקבל תאריך
         if (selectedDate == null || selectedDate.isEmpty()) {
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -54,6 +65,9 @@ public class Plan_day extends AppCompatActivity {
         loadPlansForDate();
     }
 
+    /**
+     * פעולה המאתחלת את רכיבי הממשק, מגדירה את כותרת התאריך ומאזינים ללחיצות.
+     */
     private void initViews() {
         tvDateTitle = findViewById(R.id.tvDateTitle);
         tvEmptyState = findViewById(R.id.tvEmptyState);
@@ -65,6 +79,7 @@ public class Plan_day extends AppCompatActivity {
         tvDateTitle.setText("אימונים ל: " + selectedDate);
         rvPlans.setLayoutManager(new LinearLayoutManager(this));
 
+        // מעבר למסך יצירת תוכנית חדשה
         fabAddPlan.setOnClickListener(v -> {
             Intent intent = new Intent(Plan_day.this, CreatePlanActivity.class);
             intent.putExtra("SELECTED_DATE", selectedDate);
@@ -75,6 +90,7 @@ public class Plan_day extends AppCompatActivity {
             btnBackToCalendar.setOnClickListener(v -> finish());
         }
 
+        // פתיחת דיאלוג לבחירת תאריך חדש
         if (btnSearchDate != null) {
             btnSearchDate.setOnClickListener(v -> {
                 Calendar calendar = Calendar.getInstance();
@@ -87,7 +103,7 @@ public class Plan_day extends AppCompatActivity {
                         (view, selectedYear, selectedMonth, selectedDay) -> {
                             selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
                             tvDateTitle.setText("אימונים ל: " + selectedDate);
-                            loadPlansForDate();
+                            loadPlansForDate(); // טעינה מחדש של התוכניות לתאריך שנבחר
                         },
                         year, month, day);
                 datePickerDialog.show();
@@ -95,6 +111,9 @@ public class Plan_day extends AppCompatActivity {
         }
     }
 
+    /**
+     * טוענת את תוכניות האימון ממסד הנתונים עבור המשתמש המחובר והתאריך שנבחר.
+     */
     private void loadPlansForDate() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -104,9 +123,11 @@ public class Plan_day extends AppCompatActivity {
 
         String userId = currentUser.getUid();
 
+        // קריאה לשירות מסד הנתונים לקבלת רשימת תוכניות
         DatabaseService.getInstance().getPlansByDate(userId, selectedDate, new DatabaseService.DatabaseCallback<List<Plan>>() {
             @Override
             public void onCompleted(List<Plan> plans) {
+                // עדכון הממשק לפי תוצאות החיפוש
                 if (plans == null || plans.isEmpty()) {
                     rvPlans.setVisibility(View.GONE);
                     tvEmptyState.setVisibility(View.VISIBLE);

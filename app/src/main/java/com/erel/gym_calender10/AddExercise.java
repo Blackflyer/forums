@@ -36,6 +36,10 @@ import com.erel.gym_calender10.module.Exercise;
 import com.erel.gym_calender10.services.DatabaseService;
 import com.erel.gym_calender10.ImageUtil.ImageUtil;
 
+/**
+ * מסך זה משמש להוספה של תרגיל חדש למערכת או לעריכת תרגיל קיים.
+ * המנהל יכול להזין פרטים כגון שם התרגיל, תיאור, ציוד נדרש, קבוצת שרירים, סטים וחזרות.
+ */
 public class AddExercise extends AppCompatActivity {
 
 
@@ -48,23 +52,26 @@ public class AddExercise extends AppCompatActivity {
     private DatabaseService databaseService;
 
 
+    /**
+     * פונקציה זו נקראת בעת יצירת המסך. היא מאתחלת את התצוגה, בודקת אם מדובר בעריכה
+     * ומגדירה את הלוגיקה לשמירת התרגיל.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise);
 
-
-
+        // אתחול רכיבי הממשק
         InitViews();
 
-        /// request permission for the camera and storage
+        // בקשת הרשאות למצלמה ואחסון (במידה ונדרש בעתיד להעלאת תמונות)
         ImageUtil.requestPermission(this);
 
-        /// get the instance of the database service
+        // קבלת מופע של שירות מסד הנתונים
         databaseService = DatabaseService.getInstance();
 
 
-        // Check if we are in edit mode
+        // בדיקה האם הגענו למסך לצורך עריכת תרגיל קיים (על פי קיום ה-ID ב-Intent)
         Intent intent = getIntent();
         if (intent.hasExtra("EXERCISE_ID")) {
             editingExerciseId = intent.getStringExtra("EXERCISE_ID");
@@ -86,9 +93,7 @@ public class AddExercise extends AppCompatActivity {
         });
 
 
-
-
-
+        // הגדרת לוגיקה לשמירה או עדכון של תרגיל בעת לחיצה על הכפתור
         btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +108,7 @@ public class AddExercise extends AppCompatActivity {
                 if (exerciseName.isEmpty() || description.isEmpty() || equipment.isEmpty() ||
                         muscleGroup.isEmpty() || setsStr.isEmpty() || timesStr.isEmpty()) {
                     Toast.makeText(AddExercise.this, "אנא מלא את כל השדות", Toast.LENGTH_SHORT).show();
-                    return; // <<-- חובה להוסיף return כדי לעצור את ההמשך ולא לשמור תרגיל ריק
+                    return; 
                 }
 
                 // 2. בדיקת תקינות: סטים וחזרות חייבים להיות מספרים חיוביים
@@ -119,7 +124,7 @@ public class AddExercise extends AppCompatActivity {
                     return;
                 }
 
-                // 3. יצירת מזהה ושמירה ל-Firebase
+                // 3. יצירת מזהה (חדש או קיים) ושמירה ל-Firebase
                 String id = (editingExerciseId != null) ? editingExerciseId : databaseService.generateExerciseId();
                 Exercise newExercise = new Exercise(id, exerciseName, equipment, muscleGroup, description, setsStr, timesStr);
 
@@ -129,7 +134,7 @@ public class AddExercise extends AppCompatActivity {
                         String msg = (editingExerciseId != null) ? "התרגיל עודכן בהצלחה!" : "התרגיל נוסף בהצלחה!";
                         Toast.makeText(AddExercise.this, msg, Toast.LENGTH_SHORT).show();
 
-                        // מעבר חזרה למסך הקודם לאחר הצלחה
+                        // חזרה למסך הקודם לאחר הצלחה
                         finish();
                     }
 
@@ -143,6 +148,9 @@ public class AddExercise extends AppCompatActivity {
         });
     }
 
+    /**
+     * מאתחלת את כל רכיבי ה-View במסך מתוך קובץ ה-XML.
+     */
     private void InitViews() {
         etDescription = findViewById(R.id.etDescription);
         etEquipment = findViewById(R.id.etEquipment);
@@ -154,12 +162,4 @@ public class AddExercise extends AppCompatActivity {
         btnAddExercise = findViewById(R.id.AddExercise);
 
     }
-
-
-
-
-
-
-
-
 }

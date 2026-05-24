@@ -16,6 +16,10 @@ import com.erel.gym_calender10.services.DatabaseService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * מסך זה מציג את רשימת כל התרגילים המנוהלים במערכת.
+ * המנהל יכול לצפות ברשימה, לנווט להוספת תרגיל חדש או לבחור תרגיל קיים לעדכון.
+ */
 public class ExerciseListActivity extends AppCompatActivity {
 
     private RecyclerView rvExercises;
@@ -23,6 +27,9 @@ public class ExerciseListActivity extends AppCompatActivity {
     private ImageButton btnBack, btnAddExercise;
     private DatabaseService databaseService;
 
+    /**
+     * פונקציה זו מאתחלת את המסך וטוענת את רשימת התרגילים הראשונית.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,12 +40,19 @@ public class ExerciseListActivity extends AppCompatActivity {
         loadExercises();
     }
 
+    /**
+     * נקראת כאשר המשתמש חוזר למסך. היא מבטיחה שרשימת התרגילים תהיה מעודכנת
+     * במידה ובוצעו שינויים (הוספה/עריכה/מחיקה) במסכים קודמים.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        loadExercises(); // Reload in case an exercise was updated
+        loadExercises(); 
     }
 
+    /**
+     * מאתחלת את רכיבי הממשק, מגדירה את האדפטר ל-RecyclerView ומקשרת מאזינים לכפתורים.
+     */
     private void initViews() {
         rvExercises = findViewById(R.id.rvExercises);
         btnBack = findViewById(R.id.btnBack);
@@ -50,11 +64,15 @@ public class ExerciseListActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
         
+        // מעבר למסך הוספת תרגיל חדש
         btnAddExercise.setOnClickListener(v -> {
             startActivity(new Intent(ExerciseListActivity.this, AddExercise.class));
         });
     }
 
+    /**
+     * פונה לשירות מסד הנתונים כדי לקבל את רשימת התרגילים המעודכנת ומציגה אותה.
+     */
     private void loadExercises() {
         databaseService.getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
             @Override

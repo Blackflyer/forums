@@ -34,6 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * מחלקת Progress_Graph מציגה את התקדמות המשתמש באמצעות גרפים ויזואליים.
+ * המחלקה כוללת גרף קווי המציג שינוי ב-1RM (משקל מקסימלי לחזרה אחת) לאורך זמן,
+ * וגרף עוגה המציג את התפלגות נפח האימונים לפי קבוצות שריר.
+ */
 public class Progress_Graph extends AppCompatActivity {
 
     private Spinner spinnerExercises;
@@ -41,6 +46,10 @@ public class Progress_Graph extends AppCompatActivity {
     private PieChart pieChart;
     private List<Exercise> exerciseList;
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +60,17 @@ public class Progress_Graph extends AppCompatActivity {
         pieChart = findViewById(R.id.pieChartProgress);
         findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
 
+        // הגדרת מראה הגרפים
         setupChartAppearance();
+        // טעינת התרגילים לבחירה
         loadExercisesIntoSpinner();
     }
 
+    /**
+     * הגדרת המראה והמאפיינים הטכניים של הגרפים (LineChart ו-PieChart).
+     */
     private void setupChartAppearance() {
+        // הגדרות גרף קווי
         lineChart.setDrawGridBackground(false);
         Description lineDescription = new Description();
         lineDescription.setText("התקדמות 1RM (ק\"ג)");
@@ -65,6 +80,7 @@ public class Progress_Graph extends AppCompatActivity {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
 
+        // הגדרות גרף עוגה
         Description pieDescription = new Description();
         pieDescription.setText("נפח אימונים לפי קבוצת שריר");
         pieChart.setDescription(pieDescription);
@@ -77,6 +93,10 @@ public class Progress_Graph extends AppCompatActivity {
         loadMuscleVolumeData();
     }
 
+    /**
+     * טוענת את נתוני נפח האימונים (משקל * חזרות) עבור כל קבוצת שריר.
+     * הנתונים נאספים מכל התרגילים שהמשתמש ביצע.
+     */
     private void loadMuscleVolumeData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null || exerciseList == null) return;
@@ -91,6 +111,7 @@ public class Progress_Graph extends AppCompatActivity {
                     if (records != null) {
                         float totalVolume = 0;
                         for (ProgressRecord r : records) {
+                            // חישוב נפח: משקל כפול חזרות
                             totalVolume += (r.getWeight() * (r.getReps() > 0 ? r.getReps() : 1));
                         }
                         String muscle = ex.getMuscleGroup();
@@ -99,6 +120,7 @@ public class Progress_Graph extends AppCompatActivity {
                     }
                     
                     fetchedCount[0]++;
+                    // עדכון הגרף רק לאחר שכל נתוני התרגילים נטענו
                     if (fetchedCount[0] == exerciseList.size()) {
                         updatePieChart(volumeByMuscle);
                     }
@@ -115,6 +137,10 @@ public class Progress_Graph extends AppCompatActivity {
         }
     }
 
+    /**
+     * מעדכנת את גרף העוגה עם נתוני הנפח שחושבו.
+     * @param data מפה המקשרת בין שם קבוצת שריר לערך הנפח הכולל.
+     */
     private void updatePieChart(Map<String, Float> data) {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
         for (Map.Entry<String, Float> entry : data.entrySet()) {
@@ -131,9 +157,13 @@ public class Progress_Graph extends AppCompatActivity {
 
         PieData pieData = new PieData(pieDataSet);
         pieChart.setData(pieData);
-        pieChart.invalidate();
+        pieChart.invalidate(); // רענון הגרף
     }
 
+    /**
+     * טוענת את רשימת התרגילים הקיימת במסד הנתונים לתוך ה-Spinner.
+     * מאפשרת למשתמש לבחור תרגיל לצפייה בגרף ההתקדמות שלו.
+     */
     private void loadExercisesIntoSpinner() {
         DatabaseService.getInstance().getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
             @Override
@@ -164,7 +194,7 @@ public class Progress_Graph extends AppCompatActivity {
                         public void onNothingSelected(AdapterView<?> parent) {}
                     });
 
-                    // Load initial volume data
+                    // טעינת נתוני הנפח לאחר קבלת רשימת התרגילים
                     loadMuscleVolumeData();
                 }
             }
@@ -176,6 +206,10 @@ public class Progress_Graph extends AppCompatActivity {
         });
     }
 
+    /**
+     * טוענת את נתוני ההתקדמות עבור תרגיל ספציפי ומעדכנת את הגרף הקווי.
+     * @param exerciseId מזהה התרגיל שנבחר.
+     */
     private void loadGraphDataForExercise(String exerciseId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
@@ -190,8 +224,7 @@ public class Progress_Graph extends AppCompatActivity {
                         float weight = records.get(i).getWeight();
                         int reps = records.get(i).getReps();
                         
-                        // Brzycki formula: 1RM = weight * (36 / (37 - reps)) 
-                        // Simplified: weight * (1 + 0.0333 * reps)
+                        // חישוב 1RM משוער לפי נוסחת Brzycki: weight * (1 + 0.0333 * reps)
                         float estimated1RM = weight * (1 + 0.0333f * reps);
 
                         lineEntries.add(new Entry(i + 1, estimated1RM));
@@ -200,7 +233,7 @@ public class Progress_Graph extends AppCompatActivity {
                     Toast.makeText(Progress_Graph.this, "אין עדיין נתונים לתרגיל זה", Toast.LENGTH_SHORT).show();
                 }
 
-                // Update LineChart
+                // עדכון והצגת הנתונים בגרף הקווי
                 LineDataSet lineDataSet = new LineDataSet(lineEntries, "1RM משוער (ק\"ג)");
                 lineDataSet.setColor(Color.parseColor("#2196F3"));
                 lineDataSet.setLineWidth(3f);
@@ -220,6 +253,9 @@ public class Progress_Graph extends AppCompatActivity {
         });
     }
 
+    /**
+     * מבצעת ניווט חזרה למסך הלובי (Dashboard) המתאים לפי סוג המשתמש.
+     */
     private void navigateToDashboard() {
         SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("isAdmin", false);

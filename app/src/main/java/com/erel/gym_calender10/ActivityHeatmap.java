@@ -31,6 +31,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * מסך זה מציג מפת חום (Heatmap) של פעילות המשתמש בשנה האחרונה.
+ * הוא מחשב ומציג סטטיסטיקות כמו סך הכל אימונים, רצף נוכחי ורצף שיא.
+ */
 public class ActivityHeatmap extends AppCompatActivity {
 
     private RecyclerView rvHeatmap;
@@ -38,6 +42,9 @@ public class ActivityHeatmap extends AppCompatActivity {
     private DatabaseService databaseService;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
+    /**
+     * פונקציה זו מאתחלת את המסך, מגדירה את רכיבי הממשק ואת כפתור החזרה למסך הראשי.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +57,7 @@ public class ActivityHeatmap extends AppCompatActivity {
 
         databaseService = DatabaseService.getInstance();
 
+        // הגדרת כפתור חזרה לדאשבורד לפי סוג המשתמש (אדמין או משתמש רגיל)
         MaterialButton btnBackToDashboard = findViewById(R.id.btnBackToDashboard);
         btnBackToDashboard.setOnClickListener(v -> {
             SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
@@ -67,6 +75,9 @@ public class ActivityHeatmap extends AppCompatActivity {
         loadWorkoutData();
     }
 
+    /**
+     * טוענת את נתוני המשתמש מהמסד נתונים כדי לקבל את רשימת האימונים שבוצעו.
+     */
     private void loadWorkoutData() {
         String userId = FirebaseAuth.getInstance().getUid();
         if (userId == null) return;
@@ -81,11 +92,15 @@ public class ActivityHeatmap extends AppCompatActivity {
 
             @Override
             public void onFailed(Exception e) {
-                // Handle error
+                // טיפול בשגיאה בטעינה
             }
         });
     }
 
+    /**
+     * מעבדת את רשימת התוכניות/אימונים ליצירת מפה של תאריכים וכמות אימונים.
+     * @param plans רשימת התוכניות של המשתמש.
+     */
     private void processWorkouts(List<Plan> plans) {
         Map<String, Integer> workoutCounts = new HashMap<>();
         List<Date> workoutDates = new ArrayList<>();
@@ -93,6 +108,7 @@ public class ActivityHeatmap extends AppCompatActivity {
         for (Plan plan : plans) {
             String dateStr = plan.getDate();
             if (dateStr == null) continue;
+            // ספירת כמות אימונים לכל יום
             workoutCounts.put(dateStr, workoutCounts.getOrDefault(dateStr, 0) + 1);
             try {
                 workoutDates.add(sdf.parse(dateStr));
@@ -106,6 +122,10 @@ public class ActivityHeatmap extends AppCompatActivity {
         setupHeatmap(workoutCounts);
     }
 
+    /**
+     * מחשבת את רצף האימונים (כמה ימים רצופים המשתמש התאמן).
+     * @param dates רשימת תאריכי האימונים.
+     */
     private void calculateStreaks(List<Date> dates) {
         if (dates.isEmpty()) return;
         Collections.sort(dates);
@@ -122,6 +142,7 @@ public class ActivityHeatmap extends AppCompatActivity {
         cal.set(Calendar.MILLISECOND, 0);
         Date today = cal.getTime();
 
+        // חישוב רצף השיא
         Date lastDate = null;
         for (Date d : dates) {
             if (lastDate != null) {
@@ -140,7 +161,7 @@ public class ActivityHeatmap extends AppCompatActivity {
         }
         if (tempStreak > bestStreak) bestStreak = tempStreak;
 
-        // Calculate current streak from today backwards
+        // חישוב רצף נוכחי מהיום לאחור
         currentStreak = 0;
         cal.setTime(today);
         while (true) {
@@ -153,7 +174,7 @@ public class ActivityHeatmap extends AppCompatActivity {
                 }
             }
             if (!found) {
-                // Check if it was yesterday (allow 1 day gap if still today)
+                // בדיקה אם המשתמש התאמן אתמול במקרה שהיום עדיין לא התאמן
                 if (currentStreak == 0) {
                      cal.add(Calendar.DATE, -1);
                      for (Date d : dates) {
@@ -173,16 +194,21 @@ public class ActivityHeatmap extends AppCompatActivity {
         tvBestStreak.setText(String.valueOf(bestStreak));
     }
 
+    /**
+     * מכינה את הנתונים עבור האדפטר של מפת החום.
+     * @param workoutCounts מפה של תאריך וכמות אימונים.
+     */
     private void setupHeatmap(Map<String, Integer> workoutCounts) {
         List<Integer> intensities = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -1); // Start from a year ago
+        cal.add(Calendar.YEAR, -1); // התחלה מלפני שנה
         
-        // Adjust to start of week (Sunday)
+        // התאמה לתחילת שבוע (יום ראשון)
         while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
             cal.add(Calendar.DATE, -1);
         }
 
+        // יצירת רשימה של 364 ימים עם רמות עצימות
         for (int i = 0; i < 364; i++) {
             String dateStr = sdf.format(cal.getTime());
             intensities.add(workoutCounts.getOrDefault(dateStr, 0));
@@ -190,10 +216,14 @@ public class ActivityHeatmap extends AppCompatActivity {
         }
 
         HeatmapAdapter adapter = new HeatmapAdapter(intensities);
+        // תצוגת גריד אופקית עם 7 שורות (ימי השבוע)
         rvHeatmap.setLayoutManager(new GridLayoutManager(this, 7, GridLayoutManager.HORIZONTAL, false));
         rvHeatmap.setAdapter(adapter);
     }
 
+    /**
+     * אדפטר לניהול תצוגת הריבועים במפת החום.
+     */
     static class HeatmapAdapter extends RecyclerView.Adapter<HeatmapAdapter.ViewHolder> {
         private List<Integer> intensities;
 
@@ -205,6 +235,7 @@ public class ActivityHeatmap extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View v = new View(parent.getContext());
+            // הגדרת גודל ומרחק לכל ריבוע
             int size = (int) (12 * parent.getContext().getResources().getDisplayMetrics().density);
             int margin = (int) (2 * parent.getContext().getResources().getDisplayMetrics().density);
             ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(size, size);
@@ -216,6 +247,7 @@ public class ActivityHeatmap extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             int intensity = intensities.get(position);
+            // קביעת צבע הריבוע לפי כמות האימונים באותו יום
             if (intensity == 0) holder.itemView.setBackgroundColor(Color.parseColor("#EBEDF0"));
             else if (intensity == 1) holder.itemView.setBackgroundColor(Color.parseColor("#9BE9A8"));
             else if (intensity == 2) holder.itemView.setBackgroundColor(Color.parseColor("#40C463"));

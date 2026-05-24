@@ -16,6 +16,9 @@ import com.erel.gym_calender10.services.DatabaseService;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * מסך זה מאפשר למשתמש לערוך את פרטי הפרופיל האישיים שלו, כגון שם פרטי, שם משפחה ומספר טלפון.
+ */
 public class EditProfileActivity extends AppCompatActivity {
 
     private TextInputEditText etFirstName, etLastName, etPhone, etEmail;
@@ -25,6 +28,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private DatabaseService databaseService;
     private User currentUser;
 
+    /**
+     * פונקציה זו מאתחלת את המסך, מגדירה את המאזינים לכפתורי השמירה והחזרה, וטוענת את נתוני המשתמש.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +51,9 @@ public class EditProfileActivity extends AppCompatActivity {
         findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
     }
 
+    /**
+     * מנווטת את המשתמש חזרה לדף הבית המתאים לו (אדמין או משתמש רגיל) על סמך ההגדרות שנשמרו.
+     */
     private void navigateToDashboard() {
         SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("isAdmin", false);
@@ -59,6 +68,9 @@ public class EditProfileActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * טוענת את נתוני המשתמש המחובר מהמסד נתונים ומציגה אותם בשדות הטקסט המתאימים.
+     */
     private void loadUserData() {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) {
@@ -93,6 +105,9 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * אוספת את הנתונים החדשים מהשדות, מבצעת בדיקת תקינות ושומרת את השינויים במסד הנתונים.
+     */
     private void saveProfileChanges() {
         if (currentUser == null) return;
 
@@ -100,20 +115,22 @@ public class EditProfileActivity extends AppCompatActivity {
         String lastName = etLastName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
 
+        // בדיקה שכל השדות הנדרשים מולאו
         if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) || TextUtils.isEmpty(phone)) {
             Toast.makeText(this, "נא למלא את כל השדות", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Update the current user object
+        // עדכון אובייקט המשתמש בנתונים החדשים
         currentUser.setFname(firstName);
         currentUser.setLname(lastName);
         currentUser.setPhone(phone);
-        // Note: Email is not updated here to avoid syncing issues with Firebase Auth
+        // הערה: כתובת האימייל לא מעודכנת כאן כדי למנוע בעיות סנכרון עם מנגנון האימות של Firebase
 
         progressBar.setVisibility(View.VISIBLE);
         btnSaveProfile.setEnabled(false);
 
+        // עדכון הנתונים במסד הנתונים
         databaseService.updateUser(currentUser, new DatabaseService.DatabaseCallback<Void>() {
             @Override
             public void onCompleted(Void object) {

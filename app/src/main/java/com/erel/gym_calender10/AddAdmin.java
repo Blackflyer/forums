@@ -19,6 +19,9 @@ import com.erel.gym_calender10.services.DatabaseService;
 
 import java.util.List;
 
+/**
+ * מסך זה מאפשר למנהלי המערכת לחפש משתמשים קיימים ולקדם אותם לתפקיד מנהל.
+ */
 public class AddAdmin extends AppCompatActivity {
 
     private EditText etSearchUser;
@@ -28,6 +31,9 @@ public class AddAdmin extends AppCompatActivity {
     private UsersAdapter userAdapter;
     private User selectedUser;
 
+    /**
+     * פונקציה זו מאתחלת את המסך, מגדירה את המאזינים לשינויי טקסט בחיפוש ואת כפתורי הפעולה.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +51,7 @@ public class AddAdmin extends AppCompatActivity {
         setupRecyclerView();
         loadUsers();
 
+        // הוספת מאזין לחיפוש משתמשים בזמן אמת
         etSearchUser.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -60,6 +67,7 @@ public class AddAdmin extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
+        // פעולת כפתור הקידום למנהל
         btnPromoteAdmin.setOnClickListener(v -> {
             if (selectedUser != null) {
                 promoteUserToAdmin(selectedUser);
@@ -67,24 +75,31 @@ public class AddAdmin extends AppCompatActivity {
         });
     }
 
+    /**
+     * מגדירה את ה-RecyclerView ואת פעולת הבחירה במשתמש מתוך הרשימה.
+     */
     private void setupRecyclerView() {
         rcUsers.setLayoutManager(new LinearLayoutManager(this));
         userAdapter = new UsersAdapter(new UsersAdapter.OnUserClickListener() {
             @Override
             public void onUserClick(User user) {
                 selectedUser = user;
+                // הצגת כפתור הקידום ועדכון הטקסט שלו לפי המשתמש שנבחר
                 btnPromoteAdmin.setVisibility(View.VISIBLE);
                 btnPromoteAdmin.setText("הפוך את " + user.getFname() + " למנהל");
             }
 
             @Override
             public void onLongUserClick(User user) {
-                // לא רלוונטי כאן
+                // לא ממומש במסך זה
             }
         });
         rcUsers.setAdapter(userAdapter);
     }
 
+    /**
+     * טוענת את רשימת כל המשתמשים הרשומים באפליקציה מהמסד נתונים.
+     */
     private void loadUsers() {
         databaseService.getUserList(new DatabaseService.DatabaseCallback<List<User>>() {
             @Override
@@ -103,6 +118,10 @@ public class AddAdmin extends AppCompatActivity {
         });
     }
 
+    /**
+     * מעדכנת את הסטטוס של המשתמש הנבחר למנהל (isAdmin = true) במסד הנתונים.
+     * @param user המשתמש אותו רוצים לקדם.
+     */
     private void promoteUserToAdmin(User user) {
         databaseService.updateUserAdminStatus(user.getId(), true, new DatabaseService.DatabaseCallback<Void>() {
             @Override

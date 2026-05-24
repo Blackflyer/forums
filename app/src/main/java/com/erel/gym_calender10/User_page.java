@@ -29,6 +29,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * מחלקת User_page מציגה את לוח השנה האישי של המשתמש.
+ * היא מאפשרת למשתמש לראות את ימי האימון המתוכננים שלו, לצפות ברשימת אימונים קרובים,
+ * ולעבור לפירוט אימונים לפי בחירת יום בלוח השנה.
+ */
 public class User_page extends AppCompatActivity {
 
     private RecyclerView rvUpcomingPlans;
@@ -36,6 +41,10 @@ public class User_page extends AppCompatActivity {
     private List<Plan> upcomingPlansList = new ArrayList<>();
     private final SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy", Locale.getDefault());
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +55,9 @@ public class User_page extends AppCompatActivity {
         loadUpcomingPlans();
     }
 
+    /**
+     * מאתחלת את רכיבי הממשק, ה-RecyclerView וה-Adapter.
+     */
     private void initViews() {
         rvUpcomingPlans = findViewById(R.id.rvUpcomingPlans);
         rvUpcomingPlans.setLayoutManager(new LinearLayoutManager(this));
@@ -55,6 +67,9 @@ public class User_page extends AppCompatActivity {
         findViewById(R.id.btn_go_dashboard).setOnClickListener(v -> navigateToDashboard());
     }
 
+    /**
+     * מבצעת ניווט חזרה למסך הלובי (Dashboard) המתאים לפי סוג המשתמש.
+     */
     private void navigateToDashboard() {
         SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("isAdmin", false);
@@ -69,6 +84,10 @@ public class User_page extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * מגדירה את לוח השנה ומאזין ללחיצה על יום מסוים.
+     * בעת לחיצה, המשתמש מועבר למסך Plan_day המציג את האימונים לאותו יום.
+     */
     private void setupCalendar() {
         CalendarView calendarView = findViewById(R.id.calendarView);
 
@@ -80,12 +99,17 @@ public class User_page extends AppCompatActivity {
 
             String date = day + "/" + month + "/" + year;
 
+            // מעבר למסך פירוט אימונים לתאריך הנבחר
             Intent intent = new Intent(User_page.this, Plan_day.class);
             intent.putExtra("SELECTED_DATE", date);
             startActivity(intent);
         });
     }
 
+    /**
+     * טוענת את כל תוכניות האימון של המשתמש המחובר ממסד הנתונים.
+     * התוכניות משמשות לסימון בלוח השנה ולהצגת רשימת האימונים הקרובים.
+     */
     private void loadUpcomingPlans() {
         if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -96,7 +120,9 @@ public class User_page extends AppCompatActivity {
                 if (user != null && user.getMaarachedPlans() != null) {
                     List<Plan> allPlans = user.getMaarachedPlans().getPlanArray();
                     if (allPlans != null) {
+                        // סינון ומיון לאימונים קרובים
                         filterAndSortPlans(allPlans);
+                        // עדכון לוח השנה בסימונים
                         updateCalendarWithPlans(allPlans);
                     }
                 }
@@ -109,11 +135,15 @@ public class User_page extends AppCompatActivity {
         });
     }
 
+    /**
+     * מעדכנת את לוח השנה עם אירועים (Events) עבור כל יום שבו מתוכנן אימון.
+     * @param allPlans רשימת כל תוכניות האימון של המשתמש.
+     */
     private void updateCalendarWithPlans(List<Plan> allPlans) {
         CalendarView calendarView = findViewById(R.id.calendarView);
         List<EventDay> events = new ArrayList<>();
 
-        // Add today as a special event
+        // הוספת היום הנוכחי כאירוע מיוחד
         events.add(new EventDay(Calendar.getInstance(), R.drawable.ic_launcher_background));
 
         for (Plan plan : allPlans) {
@@ -122,7 +152,7 @@ public class User_page extends AppCompatActivity {
                 if (date != null) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
-                    // Add an icon for each plan day
+                    // הוספת אייקון לכל יום שבו יש אימון מתוכנן
                     events.add(new EventDay(calendar, R.drawable.ic_launcher_foreground));
                 }
             } catch (ParseException e) {
@@ -132,6 +162,10 @@ public class User_page extends AppCompatActivity {
         calendarView.setEvents(events);
     }
 
+    /**
+     * מסננת את רשימת האימונים כך שישארו רק אימונים מהיום והלאה, וממיינת אותם לפי תאריך (הקרוב ביותר ראשון).
+     * @param allPlans רשימת כל התוכניות לסינון ומיון.
+     */
     private void filterAndSortPlans(List<Plan> allPlans) {
         Date today = getStartOfDay(new Date());
         upcomingPlansList.clear();
@@ -139,6 +173,7 @@ public class User_page extends AppCompatActivity {
         for (Plan plan : allPlans) {
             try {
                 Date planDate = sdf.parse(plan.getDate());
+                // בדיקה האם התאריך הוא היום או בעתיד
                 if (planDate != null && (planDate.after(today) || planDate.equals(today))) {
                     upcomingPlansList.add(plan);
                 }
@@ -147,7 +182,7 @@ public class User_page extends AppCompatActivity {
             }
         }
 
-        // Sort by date: closest first
+        // מיון הרשימה לפי תאריך: מהקרוב לרחוק
         Collections.sort(upcomingPlansList, (p1, p2) -> {
             try {
                 Date d1 = sdf.parse(p1.getDate());
@@ -158,9 +193,16 @@ public class User_page extends AppCompatActivity {
             }
         });
 
+        // עדכון ה-Adapter עם הרשימה החדשה
         planAdapter.updateList(upcomingPlansList);
     }
 
+    /**
+     * מחזירה אובייקט Date המייצג את תחילת היום (שעה 00:00:00) עבור תאריך נתון.
+     * משמש להשוואה מדויקת בין תאריכים ללא התחשבות בשעה.
+     * @param date התאריך לחישוב.
+     * @return תאריך המייצג את תחילת אותו יום.
+     */
     private Date getStartOfDay(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

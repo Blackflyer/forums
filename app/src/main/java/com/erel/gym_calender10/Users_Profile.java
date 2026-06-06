@@ -104,7 +104,7 @@ public class Users_Profile extends AppCompatActivity {
                     tvProfilePhone.setText("טלפון: " + (user.getPhone() != null ? user.getPhone() : "לא הוזן"));
 
                     if (user.getMaarachedPlans() != null && user.getMaarachedPlans().getPlanArray() != null) {
-                        planAdapter = new PlanAdapter(user.getMaarachedPlans().getPlanArray());
+                        planAdapter = new PlanAdapter(user.getMaarachedPlans().getPlanArray(), null);
                         rvProfilePlans.setAdapter(planAdapter);
                     }
                 }

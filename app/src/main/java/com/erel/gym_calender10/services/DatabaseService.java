@@ -233,6 +233,13 @@ public class DatabaseService {
     }
 
     /**
+     * מוחקת תרגיל מה-Database לפי מזהה.
+     */
+    public void deleteExercise(@NotNull final String exerciseId, @Nullable final DatabaseCallback<Void> callback) {
+        deleteData(EXERCISE_PATH + "/" + exerciseId, callback);
+    }
+
+    /**
      * מעדכנת נתוני משתמש קיים.
      */
     public void updateUser(@NotNull final User user, @Nullable final DatabaseCallback<Void> callback) {
@@ -389,6 +396,42 @@ public class DatabaseService {
      */
     public void getPlanById(@NotNull final String planId, @NotNull final DatabaseCallback<Plan> callback) {
         getData(PLANS_PATH + "/" + planId, Plan.class, callback);
+    }
+
+    /**
+     * מוחקת תוכנית אימון מה-Database (גם מהנתיב הכללי וגם מהמשתמש).
+     */
+    public void deletePlan(@NotNull final String userId, @NotNull final String planId, @Nullable final DatabaseCallback<Void> callback) {
+        // 1. מחיקה מהנתיב הכללי
+        deleteData(PLANS_PATH + "/" + planId, null);
+
+        // 2. הסרה מרשימת התוכניות של המשתמש באמצעות טרנזקציה
+        DatabaseReference userPlansRef = databaseReference
+                .child(USERS_PATH)
+                .child(userId)
+                .child("maarachedPlans");
+
+        userPlansRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                ListOfPlans listOfPlans = currentData.getValue(ListOfPlans.class);
+                if (listOfPlans != null) {
+                    listOfPlans.removePlan(planId);
+                    currentData.setValue(listOfPlans);
+                }
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                if (error != null) {
+                    if (callback != null) callback.onFailed(error.toException());
+                } else {
+                    if (callback != null) callback.onCompleted(null);
+                }
+            }
+        });
     }
 
     /**

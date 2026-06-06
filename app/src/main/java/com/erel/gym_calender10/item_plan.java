@@ -1,5 +1,6 @@
 package com.erel.gym_calender10;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +27,7 @@ import java.util.List;
  * מסך זה מציג את כל תוכניות האימונים של המשתמש ברשימה.
  * המשתמש יכול לחפש תוכנית ספציפית לפי שם או לסנן את התוכניות לפי ימי השבוע.
  */
-public class item_plan extends AppCompatActivity {
+public class item_plan extends AppCompatActivity implements PlanAdapter.OnPlanDeleteListener {
 
     private RecyclerView rvAllPlans;
     private PlanAdapter planAdapter;
@@ -55,7 +56,7 @@ public class item_plan extends AppCompatActivity {
     private void initViews() {
         rvAllPlans = findViewById(R.id.rvAllPlans);
         rvAllPlans.setLayoutManager(new LinearLayoutManager(this));
-        planAdapter = new PlanAdapter(plansList);
+        planAdapter = new PlanAdapter(plansList, this);
         rvAllPlans.setAdapter(planAdapter);
 
         etSearchPlan = findViewById(R.id.etSearchPlan);
@@ -164,4 +165,49 @@ public class item_plan extends AppCompatActivity {
         super.onResume();
         loadAllPlans();
     }
-}
+
+    /**
+     * נקרא כאשר נבחרה תוכנית למחיקה מהאדפטר.
+     */
+    @Override
+    public void onPlanDelete(Plan plan) {
+        showDeleteConfirmationDialog(plan);
+    }
+
+    /**
+     * מציגה דיאלוג אישור לפני מחיקת תוכנית אימון.
+     * @param plan התוכנית למחיקה.
+     */
+    private void showDeleteConfirmationDialog(Plan plan) {
+        new AlertDialog.Builder(this)
+                .setTitle("מחיקת תוכנית")
+                .setMessage("האם אתה בטוח שברצונך למחוק את התוכנית \"" + plan.getPlanName() + "\"?\nפעולה זו אינה ניתנת לביטול.")
+                .setPositiveButton("מחק", (dialog, which) -> {
+                    deletePlanFromDatabase(plan);
+                })
+                .setNegativeButton("ביטול", null)
+                .show();
+    }
+
+    /**
+     * מוחקת את התוכנית ממסד הנתונים ומעדכנת את הרשימה.
+     * @param plan התוכנית למחיקה.
+     */
+    private void deletePlanFromDatabase(Plan plan) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        DatabaseService.getInstance().deletePlan(user.getUid(), plan.getPlanId(), new DatabaseService.DatabaseCallback<Void>() {
+            @Override
+            public void onCompleted(Void object) {
+                Toast.makeText(item_plan.this, "התוכנית נמחקה בהצלחה", Toast.LENGTH_SHORT).show();
+                loadAllPlans();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Toast.makeText(item_plan.this, "שגיאה במחיקת התוכנית", Toast.LENGTH_SHORT).show();
+            }
+        });
+        }
+        }

@@ -61,7 +61,7 @@ public class User_page extends AppCompatActivity {
     private void initViews() {
         rvUpcomingPlans = findViewById(R.id.rvUpcomingPlans);
         rvUpcomingPlans.setLayoutManager(new LinearLayoutManager(this));
-        planAdapter = new PlanAdapter(upcomingPlansList);
+        planAdapter = new PlanAdapter(upcomingPlansList, null);
         rvUpcomingPlans.setAdapter(planAdapter);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());

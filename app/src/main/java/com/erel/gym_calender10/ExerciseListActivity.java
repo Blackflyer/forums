@@ -1,5 +1,6 @@
 package com.erel.gym_calender10;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
@@ -20,7 +21,7 @@ import java.util.List;
  * מסך זה מציג את רשימת כל התרגילים המנוהלים במערכת.
  * המנהל יכול לצפות ברשימה, לנווט להוספת תרגיל חדש או לבחור תרגיל קיים לעדכון.
  */
-public class ExerciseListActivity extends AppCompatActivity {
+public class ExerciseListActivity extends AppCompatActivity implements ManageExerciseAdapter.OnExerciseDeleteListener {
 
     private RecyclerView rvExercises;
     private ManageExerciseAdapter adapter;
@@ -59,7 +60,7 @@ public class ExerciseListActivity extends AppCompatActivity {
         btnAddExercise = findViewById(R.id.btnAddExercise);
 
         rvExercises.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ManageExerciseAdapter(this, new ArrayList<>());
+        adapter = new ManageExerciseAdapter(this, new ArrayList<>(), this);
         rvExercises.setAdapter(adapter);
 
         btnBack.setOnClickListener(v -> finish());
@@ -93,6 +94,48 @@ public class ExerciseListActivity extends AppCompatActivity {
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(ExerciseListActivity.this, "שגיאה בטעינת תרגילים", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * נקרא כאשר נבחר תרגיל למחיקה מהאדפטר.
+     */
+    @Override
+    public void onExerciseDelete(Exercise exercise) {
+        showDeleteConfirmationDialog(exercise);
+    }
+
+    /**
+     * מציגה דיאלוג אישור לפני מחיקת תרגיל.
+     * @param exercise התרגיל למחיקה.
+     */
+    private void showDeleteConfirmationDialog(Exercise exercise) {
+        new AlertDialog.Builder(this)
+                .setTitle("מחיקת תרגיל")
+                .setMessage("האם אתה בטוח שברצונך למחוק את התרגיל \"" + exercise.getName() + "\"?\nפעולה זו תמחק אותו לצמיתות מהמאגר.")
+                .setPositiveButton("מחק", (dialog, which) -> {
+                    deleteExerciseFromDatabase(exercise);
+                })
+                .setNegativeButton("ביטול", null)
+                .show();
+    }
+
+    /**
+     * מוחקת את התרגיל ממסד הנתונים ומעדכנת את הרשימה.
+     * @param exercise התרגיל למחיקה.
+     */
+    private void deleteExerciseFromDatabase(Exercise exercise) {
+        databaseService.deleteExercise(exercise.getId(), new DatabaseService.DatabaseCallback<Void>() {
+            @Override
+            public void onCompleted(Void object) {
+                Toast.makeText(ExerciseListActivity.this, "התרגיל נמחק בהצלחה", Toast.LENGTH_SHORT).show();
+                loadExercises();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                Toast.makeText(ExerciseListActivity.this, "שגיאה במחיקת התרגיל", Toast.LENGTH_SHORT).show();
             }
         });
     }

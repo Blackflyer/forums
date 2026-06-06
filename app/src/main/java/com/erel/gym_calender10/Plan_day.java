@@ -36,6 +36,7 @@ public class Plan_day extends AppCompatActivity {
     private String selectedDate;
     private ImageButton btnBack;
 
+
     /**
      * פעולה המופעלת בעת יצירת האקטיביטי. 
      * היא מחלצת את התאריך הנבחר מה-Intent או משתמשת בתאריך הנוכחי כברירת מחדל.
@@ -138,7 +139,7 @@ public class Plan_day extends AppCompatActivity {
                 } else {
                     tvEmptyState.setVisibility(View.GONE);
                     rvPlans.setVisibility(View.VISIBLE);
-                    adapter = new PlanAdapter(plans);
+                    adapter = new PlanAdapter(plans, null);
                     rvPlans.setAdapter(adapter);
                 }
             }

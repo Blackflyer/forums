@@ -21,15 +21,21 @@ public class ManageExerciseAdapter extends RecyclerView.Adapter<ManageExerciseAd
 
     private List<Exercise> exerciseList;
     private Context context;
+    private OnExerciseDeleteListener deleteListener;
+
+    public interface OnExerciseDeleteListener {
+        void onExerciseDelete(Exercise exercise);
+    }
 
     /**
      * בנאי למתאם ניהול תרגילים.
      * @param context הקשר האקטיביטי.
      * @param exerciseList רשימת התרגילים לניהול.
      */
-    public ManageExerciseAdapter(Context context, List<Exercise> exerciseList) {
+    public ManageExerciseAdapter(Context context, List<Exercise> exerciseList, OnExerciseDeleteListener deleteListener) {
         this.context = context;
         this.exerciseList = exerciseList;
+        this.deleteListener = deleteListener;
     }
 
     /**
@@ -44,7 +50,7 @@ public class ManageExerciseAdapter extends RecyclerView.Adapter<ManageExerciseAd
     }
 
     /**
-     * מקשר את נתוני התרגיל לתצוגה ומגדיר מאזין לכפתור עריכה.
+     * מקשר את נתוני התרגיל לתצוגה ומגדירה מאזין לכפתור עריכה ולחיצה ארוכה למחיקה.
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -63,6 +69,13 @@ public class ManageExerciseAdapter extends RecyclerView.Adapter<ManageExerciseAd
             intent.putExtra("EXERCISE_SETS", ex.getSets());
             intent.putExtra("EXERCISE_TIMES", ex.getTimes());
             context.startActivity(intent);
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onExerciseDelete(ex);
+            }
+            return true;
         });
     }
 

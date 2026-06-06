@@ -27,14 +27,20 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
     private List<Plan> fullList;
     private List<Plan> displayedList;
     private SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy", Locale.getDefault());
+    private OnPlanDeleteListener deleteListener;
+
+    public interface OnPlanDeleteListener {
+        void onPlanDelete(Plan plan);
+    }
 
     /**
      * בנאי למתאם תוכניות אימון.
      * @param plansList רשימת התוכניות להצגה.
      */
-    public PlanAdapter(List<Plan> plansList) {
+    public PlanAdapter(List<Plan> plansList, OnPlanDeleteListener deleteListener) {
         this.fullList = new ArrayList<>(plansList);
         this.displayedList = new ArrayList<>(plansList);
+        this.deleteListener = deleteListener;
         sortListByDate();
     }
 
@@ -76,6 +82,13 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
             intent.putExtra("EDIT_MODE", true);
             intent.putExtra("PLAN_ID", plan.getPlanId());
             v.getContext().startActivity(intent);
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onPlanDelete(plan);
+            }
+            return true;
         });
     }
 

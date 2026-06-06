@@ -54,6 +54,22 @@ public class ListOfPlans {
         this.planArray.add(plan);
     }
 
+    /**
+     * מסירה תוכנית מהרשימה לפי המזהה שלה.
+     * @param planId המזהה של התוכנית להסרה.
+     */
+    public void removePlan(String planId) {
+        if (this.planArray != null) {
+            for (int i = 0; i < planArray.size(); i++) {
+                if (planArray.get(i).getPlanId() != null && 
+                    planArray.get(i).getPlanId().equals(planId)) {
+                    planArray.remove(i);
+                    return;
+                }
+            }
+        }
+    }
+
     /** @return מזהה המשתמש. */
     public String getUserId() {
         return userId;

@@ -16,6 +16,12 @@ import com.erel.gym_calender10.R;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
+    /**
+     * מופעלת כאשר מתקבל שידור (Broadcast) עבור התראה מתוכננת.
+     * בונה ומציגה את ההתראה למשתמש עם הכותרת וההודעה המתאימים.
+     * @param context ההקשר בו השידור פועל.
+     * @param intent ה-Intent שמכיל את נתוני ההתראה (כותרת והודעה).
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         String title = intent.getStringExtra("title");

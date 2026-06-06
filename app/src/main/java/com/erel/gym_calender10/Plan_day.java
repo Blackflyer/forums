@@ -125,6 +125,10 @@ public class Plan_day extends AppCompatActivity {
 
         // קריאה לשירות מסד הנתונים לקבלת רשימת תוכניות
         DatabaseService.getInstance().getPlansByDate(userId, selectedDate, new DatabaseService.DatabaseCallback<List<Plan>>() {
+            /**
+             * מבוצע לאחר שליפת רשימת התוכניות לתאריך המבוקש.
+             * @param plans רשימת התוכניות שהתקבלה.
+             */
             @Override
             public void onCompleted(List<Plan> plans) {
                 // עדכון הממשק לפי תוצאות החיפוש
@@ -139,6 +143,10 @@ public class Plan_day extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת התוכניות לפי תאריך.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(Plan_day.this, "שגיאה בטעינת אימונים: " + e.getMessage(), Toast.LENGTH_SHORT).show();

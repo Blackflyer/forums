@@ -109,6 +109,10 @@ public class CreatePlanActivity extends AppCompatActivity {
      */
     private void loadExistingPlan() {
         DatabaseService.getInstance().getPlanById(planIdToEdit, new DatabaseService.DatabaseCallback<Plan>() {
+            /**
+             * מבוצע לאחר שליפת התוכנית בהצלחה.
+             * @param plan אובייקט התוכנית שהתקבל.
+             */
             @Override
             public void onCompleted(Plan plan) {
                 if (plan != null) {
@@ -121,6 +125,10 @@ public class CreatePlanActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת התוכנית.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(CreatePlanActivity.this, "שגיאה בטעינת התוכנית", Toast.LENGTH_SHORT).show();
@@ -129,6 +137,9 @@ public class CreatePlanActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * סוגר את המסך הנוכחי וחוזר למסך הקודם (הדאשבורד).
+     */
     private void navigateToDashboard() {
         finish();
     }
@@ -165,6 +176,10 @@ public class CreatePlanActivity extends AppCompatActivity {
      */
     private void loadExercisesFromDB() {
         DatabaseService.getInstance().getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
+            /**
+             * מבוצע לאחר שליפת רשימת התרגילים בהצלחה.
+             * @param exercises רשימת התרגילים שהתקבלה.
+             */
             @Override
             public void onCompleted(List<Exercise> exercises) {
                 adapter = new ExerciseSelectAdapter(exercises);
@@ -175,6 +190,11 @@ public class CreatePlanActivity extends AppCompatActivity {
                     adapter.setSelectedExercises(existingPlan.getPlan());
                 }
             }
+
+            /**
+             * מבוצע במקרה של שגיאה בשליפת רשימת התרגילים.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(CreatePlanActivity.this, "שגיאה בטעינת תרגילים", Toast.LENGTH_SHORT).show();
@@ -218,6 +238,10 @@ public class CreatePlanActivity extends AppCompatActivity {
         btnSavePlan.setText("שומר...");
 
         DatabaseService.getInstance().createNewPlan(plan, new DatabaseService.DatabaseCallback<Void>() {
+            /**
+             * מבוצע לאחר שמירת התוכנית בהצלחה.
+             * @param object פרמטר ריק.
+             */
             @Override
             public void onCompleted(Void object) {
                 Toast.makeText(CreatePlanActivity.this, isEditMode ? "התוכנית עודכנה בהצלחה!" : "התוכנית נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
@@ -233,6 +257,10 @@ public class CreatePlanActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשמירת התוכנית.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 btnSavePlan.setEnabled(true);
@@ -248,6 +276,10 @@ public class CreatePlanActivity extends AppCompatActivity {
      */
     private void checkForAchievements(String userId) {
         DatabaseService.getInstance().getUser(userId, new DatabaseService.DatabaseCallback<com.erel.gym_calender10.module.User>() {
+            /**
+             * מבוצע לאחר קבלת נתוני המשתמש בהצלחה לצורך בדיקת הישגים.
+             * @param user אובייקט המשתמש שהתקבל.
+             */
             @Override
             public void onCompleted(com.erel.gym_calender10.module.User user) {
                 if (user != null) {
@@ -258,10 +290,19 @@ public class CreatePlanActivity extends AppCompatActivity {
                             Toast.makeText(CreatePlanActivity.this, "🏆 הישג חדש: " + AchievementService.getAchievementName(achievementId), Toast.LENGTH_LONG).show();
                         }
                         DatabaseService.getInstance().updateUserAchievements(userId, user.getAchievements(), new DatabaseService.DatabaseCallback<Void>() {
+                            /**
+                             * מבוצע לאחר עדכון רשימת ההישגים של המשתמש.
+                             * @param object פרמטר ריק.
+                             */
                             @Override
                             public void onCompleted(Void object) {
                                 finish();
                             }
+
+                            /**
+                             * מבוצע במקרה של שגיאה בעדכון ההישגים.
+                             * @param e השגיאה שהתרחשה.
+                             */
                             @Override
                             public void onFailed(Exception e) {
                                 finish();
@@ -275,6 +316,10 @@ public class CreatePlanActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת נתוני המשתמש לבדיקת הישגים.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 finish();

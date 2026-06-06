@@ -32,6 +32,9 @@ public class Users_list extends AppCompatActivity {
     private RecyclerView usersList;
     private EditText etSearchUser;
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,9 @@ public class Users_list extends AppCompatActivity {
         setupRecyclerView();
     }
 
+    /**
+     * מגדירה את שולי המערכת (סטטוס בר וניווט) כדי שהתוכן לא יוסתר.
+     */
     private void setupSystemBars() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -51,6 +57,9 @@ public class Users_list extends AppCompatActivity {
         });
     }
 
+    /**
+     * מאתחלת את רכיבי הממשק, שירות מסד הנתונים ומגדירה מאזין לחיפוש משתמשים.
+     */
     private void initViews() {
         databaseService = DatabaseService.getInstance();
         usersList = findViewById(R.id.rcUsers);
@@ -58,7 +67,7 @@ public class Users_list extends AppCompatActivity {
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        // הוספת מאזין לשורת החיפוש
+        // הוספת מאזין לשורת החיפוש לסינון הרשימה בזמן אמת
         etSearchUser.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -75,6 +84,9 @@ public class Users_list extends AppCompatActivity {
         });
     }
 
+    /**
+     * מגדירה את ה-RecyclerView להצגת רשימת המשתמשים עם מאזיני לחיצה.
+     */
     private void setupRecyclerView() {
         usersList.setLayoutManager(new LinearLayoutManager(this));
 
@@ -94,6 +106,10 @@ public class Users_list extends AppCompatActivity {
         usersList.setAdapter(userAdapter);
     }
 
+    /**
+     * מציגה דיאלוג אישור לפני מחיקת משתמש מהמערכת.
+     * @param user המשתמש אותו רוצים למחוק.
+     */
     private void showDeleteConfirmationDialog(User user) {
         new AlertDialog.Builder(this)
                 .setTitle("מחיקת מתאמן")
@@ -105,6 +121,10 @@ public class Users_list extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * מוחקת את המשתמש ממסד הנתונים ומעדכנת את הרשימה.
+     * @param user המשתמש למחיקה.
+     */
     private void deleteUserFromDatabase(User user) {
         databaseService.deleteUser(user.getId(), new DatabaseService.DatabaseCallback<Void>() {
             @Override
@@ -121,12 +141,18 @@ public class Users_list extends AppCompatActivity {
         });
     }
 
+    /**
+     * מופעלת כאשר האקטיביטי חוזרת לקדמת הבמה. טוענת את המשתמשים מחדש.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         loadUsers();
     }
 
+    /**
+     * טוענת את רשימת המשתמשים ממסד הנתונים ומעדכנת את ה-Adapter.
+     */
     private void loadUsers() {
         databaseService.getUserList(new DatabaseService.DatabaseCallback<List<User>>() {
             @Override

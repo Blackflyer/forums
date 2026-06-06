@@ -70,6 +70,10 @@ public class ActivityHeatmap extends AppCompatActivity {
         if (userId == null) return;
 
         databaseService.getUser(userId, new DatabaseService.DatabaseCallback<User>() {
+            /**
+             * מבוצע לאחר קבלת נתוני המשתמש מהשרת.
+             * @param user המשתמש שהתקבל.
+             */
             @Override
             public void onCompleted(User user) {
                 if (user != null && user.getMaarachedPlans() != null && user.getMaarachedPlans().getPlanArray() != null) {
@@ -77,6 +81,10 @@ public class ActivityHeatmap extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בטעינת נתוני המשתמש.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 // טיפול בשגיאה בטעינה
@@ -214,10 +222,17 @@ public class ActivityHeatmap extends AppCompatActivity {
     static class HeatmapAdapter extends RecyclerView.Adapter<HeatmapAdapter.ViewHolder> {
         private List<Integer> intensities;
 
+        /**
+         * בנאי האדפטר המקבל את רשימת רמות העצימות לכל יום.
+         * @param intensities רשימת מספרים המייצגת כמות אימונים ביום.
+         */
         HeatmapAdapter(List<Integer> intensities) {
             this.intensities = intensities;
         }
 
+        /**
+         * יוצר View חדש עבור כל ריבוע במפת החום.
+         */
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -231,6 +246,9 @@ public class ActivityHeatmap extends AppCompatActivity {
             return new ViewHolder(v);
         }
 
+        /**
+         * מקשר בין הנתונים ל-View וקובע את צבע הריבוע לפי רמת העצימות.
+         */
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             int intensity = intensities.get(position);
@@ -242,11 +260,17 @@ public class ActivityHeatmap extends AppCompatActivity {
             else holder.itemView.setBackgroundColor(Color.parseColor("#216E39"));
         }
 
+        /**
+         * מחזיר את כמות האלמנטים במפת החום.
+         */
         @Override
         public int getItemCount() {
             return intensities.size();
         }
 
+        /**
+         * מחזיק את ה-View של כל ריבוע.
+         */
         class ViewHolder extends RecyclerView.ViewHolder {
             ViewHolder(View itemView) { super(itemView); }
         }

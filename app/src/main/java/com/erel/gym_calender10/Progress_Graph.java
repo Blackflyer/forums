@@ -106,6 +106,10 @@ public class Progress_Graph extends AppCompatActivity {
 
         for (Exercise ex : exerciseList) {
             DatabaseService.getInstance().getExerciseProgress(user.getUid(), ex.getId(), new DatabaseService.DatabaseCallback<List<ProgressRecord>>() {
+                /**
+                 * מבוצע לאחר שליפת נתוני ההתקדמות עבור תרגיל מסוים.
+                 * @param records רשימת שיאי ההתקדמות.
+                 */
                 @Override
                 public void onCompleted(List<ProgressRecord> records) {
                     if (records != null) {
@@ -126,6 +130,10 @@ public class Progress_Graph extends AppCompatActivity {
                     }
                 }
 
+                /**
+                 * מבוצע במקרה של שגיאה בשליפת נתוני ההתקדמות לתרגיל.
+                 * @param e השגיאה שהתרחשה.
+                 */
                 @Override
                 public void onFailed(Exception e) {
                     fetchedCount[0]++;
@@ -166,6 +174,10 @@ public class Progress_Graph extends AppCompatActivity {
      */
     private void loadExercisesIntoSpinner() {
         DatabaseService.getInstance().getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
+            /**
+             * מבוצע לאחר קבלת רשימת התרגילים בהצלחה.
+             * @param exercises רשימת התרגילים שהתקבלה.
+             */
             @Override
             public void onCompleted(List<Exercise> exercises) {
                 if (exercises != null && !exercises.isEmpty()) {
@@ -184,12 +196,18 @@ public class Progress_Graph extends AppCompatActivity {
                     spinnerExercises.setAdapter(adapter);
 
                     spinnerExercises.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        /**
+                         * מבוצע כאשר נבחר תרגיל מהרשימה הנגללת.
+                         */
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             Exercise selectedExercise = exerciseList.get(position);
                             loadGraphDataForExercise(selectedExercise.getId());
                         }
 
+                        /**
+                         * מבוצע כאשר לא נבחר דבר (לא רלוונטי כאן).
+                         */
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {}
                     });
@@ -199,6 +217,10 @@ public class Progress_Graph extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת רשימת התרגילים.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(Progress_Graph.this, "שגיאה בטעינת תרגילים", Toast.LENGTH_SHORT).show();
@@ -215,6 +237,10 @@ public class Progress_Graph extends AppCompatActivity {
         if (user == null) return;
 
         DatabaseService.getInstance().getExerciseProgress(user.getUid(), exerciseId, new DatabaseService.DatabaseCallback<List<ProgressRecord>>() {
+            /**
+             * מבוצע לאחר שליפת נתוני ההתקדמות של התרגיל שנבחר.
+             * @param records רשימת רשומות ההתקדמות.
+             */
             @Override
             public void onCompleted(List<ProgressRecord> records) {
                 ArrayList<Entry> lineEntries = new ArrayList<>();
@@ -246,6 +272,10 @@ public class Progress_Graph extends AppCompatActivity {
                 lineChart.invalidate();
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת נתוני הגרף.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(Progress_Graph.this, "שגיאה בטעינת נתוני הגרף", Toast.LENGTH_SHORT).show();

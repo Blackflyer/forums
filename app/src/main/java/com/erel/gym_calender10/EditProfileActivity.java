@@ -64,6 +64,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
         progressBar.setVisibility(View.VISIBLE);
         databaseService.getUser(uid, new DatabaseService.DatabaseCallback<User>() {
+            /**
+             * מבוצע לאחר קבלת נתוני המשתמש מהשרת.
+             * @param user אובייקט המשתמש שהתקבל.
+             */
             @Override
             public void onCompleted(User user) {
                 progressBar.setVisibility(View.GONE);
@@ -79,6 +83,10 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת נתוני המשתמש.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 progressBar.setVisibility(View.GONE);
@@ -115,6 +123,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // עדכון הנתונים במסד הנתונים
         databaseService.updateUser(currentUser, new DatabaseService.DatabaseCallback<Void>() {
+            /**
+             * מבוצע לאחר עדכון הפרופיל בהצלחה.
+             * @param object פרמטר ריק.
+             */
             @Override
             public void onCompleted(Void object) {
                 progressBar.setVisibility(View.GONE);
@@ -123,6 +135,10 @@ public class EditProfileActivity extends AppCompatActivity {
                 finish();
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בעדכון הפרופיל.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 progressBar.setVisibility(View.GONE);

@@ -25,6 +25,10 @@ public class NotificationHelper {
     private static final String CHANNEL_NAME = "Workout Reminders";
     private static final String CHANNEL_DESC = "Notifications for upcoming workouts";
 
+    /**
+     * יוצרת ערוץ התראות (Notification Channel) עבור האפליקציה (נדרש עבור אנדרואיד 8.0 ומעלה).
+     * @param context ההקשר של האפליקציה.
+     */
     public static void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -41,6 +45,13 @@ public class NotificationHelper {
         }
     }
 
+    /**
+     * קובעת התראות עבור אימון מתוכנן: התראה בזמן האימון ותזכורת 24 שעות לפני.
+     * @param context ההקשר של האפליקציה.
+     * @param planName שם תוכנית האימון.
+     * @param dateStr תאריך האימון (בפורמט d/M/yyyy).
+     * @param timeStr שעת האימון (בפורמט HH:mm).
+     */
     public static void scheduleWorkoutNotifications(Context context, String planName, String dateStr, String timeStr) {
         SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy HH:mm", Locale.getDefault());
         try {

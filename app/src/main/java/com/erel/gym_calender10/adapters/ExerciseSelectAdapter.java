@@ -20,12 +20,19 @@ public class ExerciseSelectAdapter extends RecyclerView.Adapter<ExerciseSelectAd
     private List<Exercise> displayedList;   // הרשימה שמוצגת כרגע
     private List<Exercise> selectedExercises = new ArrayList<>(); // תרגילים שנבחרו
 
+    /**
+     * בנאי למתאם בחירת תרגילים.
+     * @param exercises רשימת התרגילים המלאה לבחירה.
+     */
     public ExerciseSelectAdapter(List<Exercise> exercises) {
         this.fullList = new ArrayList<>(exercises);
         this.displayedList = new ArrayList<>(exercises);
     }
 
-    // פונקציית הסינון (Search)
+    /**
+     * מסננת את רשימת התרגילים לפי מחרוזת חיפוש.
+     * @param query מחרוזת החיפוש.
+     */
     public void filter(String query) {
         displayedList.clear();
         if (query.isEmpty()) {
@@ -42,10 +49,18 @@ public class ExerciseSelectAdapter extends RecyclerView.Adapter<ExerciseSelectAd
         notifyDataSetChanged();
     }
 
+    /**
+     * מחזירה את רשימת התרגילים שנבחרו על ידי המשתמש.
+     * @return רשימת תרגילים נבחרים.
+     */
     public List<Exercise> getSelectedExercises() {
         return selectedExercises;
     }
 
+    /**
+     * מגדירה אילו תרגילים מסומנים כנבחרים מראש.
+     * @param selected רשימת התרגילים לסימון.
+     */
     public void setSelectedExercises(List<Exercise> selected) {
         this.selectedExercises.clear();
         if (selected == null) return;
@@ -60,6 +75,9 @@ public class ExerciseSelectAdapter extends RecyclerView.Adapter<ExerciseSelectAd
         notifyDataSetChanged();
     }
 
+    /**
+     * יוצר ViewHolder עבור שורת תרגיל הניתנת לבחירה.
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -69,6 +87,9 @@ public class ExerciseSelectAdapter extends RecyclerView.Adapter<ExerciseSelectAd
         return new ViewHolder(v);
     }
 
+    /**
+     * מקשר את נתוני התרגיל לתצוגה ומנהל את לוגיקת הבחירה (לחיצה על פריט).
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Exercise ex = displayedList.get(position);
@@ -91,6 +112,9 @@ public class ExerciseSelectAdapter extends RecyclerView.Adapter<ExerciseSelectAd
         });
     }
 
+    /**
+     * מחזיר את מספר התרגילים המוצגים כרגע.
+     */
     @Override
     public int getItemCount() {
         return displayedList.size();

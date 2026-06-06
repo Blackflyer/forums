@@ -46,6 +46,10 @@ public class DatabaseService {
         databaseReference = firebaseDatabase.getReference();
     }
 
+    /**
+     * מחזירה מופע יחיד (Singleton) של מחלקת השירות.
+     * @return מופע של DatabaseService.
+     */
     public static DatabaseService getInstance() {
         if (instance == null) {
             instance = new DatabaseService();
@@ -54,6 +58,12 @@ public class DatabaseService {
     }
 
     // region Generic Methods
+    /**
+     * פעולה גנרית לכתיבת נתונים לנתיב מסוים בבסיס הנתונים.
+     * @param path הנתיב ב-Firebase.
+     * @param data האובייקט לשמירה.
+     * @param callback פונקציית חזרה לעדכון הצלחה/כישלון.
+     */
     private void writeData(@NotNull final String path, @NotNull final Object data, final @Nullable DatabaseCallback<Void> callback) {
         databaseReference.child(path).setValue(data, (error, ref) -> {
             if (error != null) {
@@ -64,6 +74,11 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * פעולה גנרית למחיקת נתונים מנתיב מסוים.
+     * @param path הנתיב למחיקה.
+     * @param callback פונקציית חזרה.
+     */
     private void deleteData(@NotNull final String path, @Nullable final DatabaseCallback<Void> callback) {
         databaseReference.child(path).removeValue((error, ref) -> {
             if (error != null) {
@@ -74,6 +89,12 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * פעולה גנרית לקבלת אובייקט בודד מנתיב מסוים.
+     * @param path הנתיב ב-Firebase.
+     * @param clazz סוג המחלקה של האובייקט.
+     * @param callback פונקציית חזרה עם האובייקט שהתקבל.
+     */
     private <T> void getData(@NotNull final String path, @NotNull final Class<T> clazz, @NotNull final DatabaseCallback<T> callback) {
         databaseReference.child(path).get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -84,6 +105,12 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * פעולה גנרית לקבלת רשימת אובייקטים מנתיב מסוים.
+     * @param path הנתיב ב-Firebase.
+     * @param clazz סוג המחלקה של האובייקטים ברשימה.
+     * @param callback פונקציית חזרה עם רשימת האובייקטים.
+     */
     private <T> void getDataList(@NotNull final String path, @NotNull final Class<T> clazz, @NotNull final DatabaseCallback<List<T>> callback) {
         databaseReference.child(path).get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -99,12 +126,22 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * מייצרת מזהה ייחודי (ID) חדש עבור נתיב מסוים בבסיס הנתונים.
+     * @param path הנתיב עבורו נדרש ה-ID.
+     * @return מחרוזת מזהה ייחודית.
+     */
     public String generateNewId(@NotNull final String path) {
         return databaseReference.child(path).push().getKey();
     }
     // endregion
 
     // region User Section
+    /**
+     * יוצרת משתמש חדש במערכת (Firebase Auth + Database).
+     * @param user אובייקט המשתמש.
+     * @param callback פונקציית חזרה עם ה-UID של המשתמש שנוצר.
+     */
     public void createNewUser(@NotNull final User user, @Nullable final DatabaseCallback<String> callback) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
@@ -129,6 +166,12 @@ public class DatabaseService {
                     }
                 });
     }
+    
+    /**
+     * יוצרת מנהל חדש במערכת (Firebase Auth + Database).
+     * @param user אובייקט המשתמש.
+     * @param callback פונקציית חזרה עם ה-UID.
+     */
     public void createNewAdmin(@NotNull final User user, @Nullable final DatabaseCallback<String> callback) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
@@ -154,6 +197,9 @@ public class DatabaseService {
                 });
     }
 
+    /**
+     * מבצעת התחברות למערכת עם אימייל וסיסמה.
+     */
     public void LoginUser(@NotNull final String email, final String password, @Nullable final DatabaseCallback<String> callback) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -165,16 +211,30 @@ public class DatabaseService {
                 });
     }
 
+    /**
+     * מקבלת נתוני משתמש לפי UID.
+     */
     public void getUser(@NotNull final String uid, @NotNull final DatabaseCallback<User> callback) {
         getData(USERS_PATH + "/" + uid, User.class, callback);
     }
+    
+    /**
+     * מקבלת את רשימת כל המשתמשים במערכת.
+     */
     public void getUserList(@NotNull final DatabaseCallback<List<User>> callback) {
         getDataList(USERS_PATH, User.class, callback);
     }
+    
+    /**
+     * מוחקת משתמש מה-Database לפי UID.
+     */
     public void deleteUser(@NotNull final String uid, @Nullable final DatabaseCallback<Void> callback) {
         deleteData(USERS_PATH + "/" + uid, callback);
     }
 
+    /**
+     * מעדכנת נתוני משתמש קיים.
+     */
     public void updateUser(@NotNull final User user, @Nullable final DatabaseCallback<Void> callback) {
         if (user.getId() != null) {
             writeData(USERS_PATH + "/" + user.getId(), user, callback);
@@ -183,6 +243,9 @@ public class DatabaseService {
         }
     }
 
+    /**
+     * מעדכנת את רשימת ההישגים של המשתמש.
+     */
     public void updateUserAchievements(@NotNull final String uid, final List<String> achievements, @Nullable final DatabaseCallback<Void> callback) {
         databaseReference.child(USERS_PATH).child(uid).child("achievements").setValue(achievements, (error, ref) -> {
             if (error != null) {
@@ -193,6 +256,9 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * מעדכנת האם משתמש הוא מנהל או לא.
+     */
     public void updateUserAdminStatus(@NotNull final String uid, final boolean isAdmin, @Nullable final DatabaseCallback<Void> callback) {
         databaseReference.child(USERS_PATH).child(uid).child("admin").setValue(isAdmin, (error, ref) -> {
             if (error != null) {
@@ -205,6 +271,9 @@ public class DatabaseService {
     // endregion
 
     // region Exercise Section
+    /**
+     * יוצרת תרגיל חדש בבסיס הנתונים הכללי.
+     */
     public void createNewExercise(@NotNull final Exercise exercise, @Nullable final DatabaseCallback<Void> callback) {
         if (exercise.getId() == null) {
             exercise.setId(generateNewId(EXERCISE_PATH));
@@ -212,31 +281,38 @@ public class DatabaseService {
         writeData(EXERCISE_PATH + "/" + exercise.getId(), exercise, callback);
     }
 
+    /**
+     * מקבלת את רשימת כל התרגילים הקיימים במערכת.
+     */
     public void getExerciseList(@NotNull final DatabaseCallback<List<Exercise>> callback) {
         getDataList(EXERCISE_PATH, Exercise.class, callback);
     }
 
+    /**
+     * מייצרת מזהה חדש עבור תרגיל.
+     */
     public String generateExerciseId() {
         return generateNewId(EXERCISE_PATH);
     }
     // endregion
 
     // region Plan Section
-    // בתוך DatabaseService.java
-
+    /**
+     * יוצרת תוכנית אימון חדשה, שומרת אותה כללית וגם משייכת אותה למשתמש הספציפי.
+     */
     public void createNewPlan(@NotNull final Plan plan, @Nullable final DatabaseCallback<Void> callback) {
         if (plan.getPlanId() == null || plan.getPlanId().isEmpty()) {
             plan.setPlanId(generateNewId(PLANS_PATH));
         }
 
-        // 1. שמירה בנתיב הכללי (כפי שהיה)
+        // 1. שמירה בנתיב הכללי
         writeData(PLANS_PATH + "/" + plan.getPlanId(), plan, null);
 
-        // 2. עדכון רשימת התוכניות בתוך אובייקט המשתמש
+        // 2. עדכון רשימת התוכניות בתוך אובייקט המשתמש באמצעות טרנזקציה (למניעת התנגשויות)
         DatabaseReference userPlansRef = databaseReference
                 .child(USERS_PATH)
                 .child(plan.getUserId())
-                .child("maarachedPlans"); // שימי לב לאותיות קטנות/גדולות לפי הגדרת השדה ב-User
+                .child("maarachedPlans");
 
         userPlansRef.runTransaction(new Transaction.Handler() {
             @NonNull
@@ -264,6 +340,9 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * מחפשת תוכניות אימון המשויכות למשתמש בתאריך מסוים.
+     */
     public void getPlansByDate(@NotNull final String userId, @NotNull final String date, @NotNull final DatabaseCallback<List<Plan>> callback) {
         databaseReference.child(USERS_PATH).child(userId).child("maarachedPlans").child("planArray")
                 .get().addOnCompleteListener(task -> {
@@ -283,6 +362,9 @@ public class DatabaseService {
                 });
     }
 
+    /**
+     * מקבלת את כל תוכניות האימון המשויכות למשתמש.
+     */
     public void getAllPlans(@NotNull final String userId, @NotNull final DatabaseCallback<List<Plan>> callback) {
         databaseReference.child(USERS_PATH).child(userId).child("maarachedPlans").child("planArray")
                 .get().addOnCompleteListener(task -> {
@@ -302,17 +384,26 @@ public class DatabaseService {
                 });
     }
 
+    /**
+     * מקבלת פרטי תוכנית אימון לפי ה-ID שלה.
+     */
     public void getPlanById(@NotNull final String planId, @NotNull final DatabaseCallback<Plan> callback) {
         getData(PLANS_PATH + "/" + planId, Plan.class, callback);
     }
 
+    /**
+     * מייצרת מזהה חדש עבור תוכנית.
+     */
     public String generatePlanId() {
         return generateNewId(PLANS_PATH);
     }
     // endregion
+    
     // --- אזור מעקב התקדמות (Progress Tracking) ---
 
-    // שמירת משקל של תרגיל שבוצע
+    /**
+     * שומרת תיעוד של ביצוע תרגיל (משקל וחזרות) בתוך היסטוריית ההתקדמות של המשתמש.
+     */
     public void saveExerciseProgress(String userId, String exerciseId, ProgressRecord record, @Nullable final DatabaseCallback<Void> callback) {
         // נייצר ID ייחודי לביצוע הזה
         String recordId = databaseReference.child(USERS_PATH).child(userId).child("progressLogs").child(exerciseId).push().getKey();
@@ -329,7 +420,9 @@ public class DatabaseService {
         }
     }
 
-    // שליפת היסטוריית המשקלים של תרגיל מסוים עבור משתמש
+    /**
+     * שולפת את היסטוריית ההתקדמות של משתמש עבור תרגיל ספציפי.
+     */
     public void getExerciseProgress(String userId, String exerciseId, @NotNull final DatabaseCallback<List<ProgressRecord>> callback) {
         databaseReference.child(USERS_PATH).child(userId).child("progressLogs").child(exerciseId)
                 .get().addOnCompleteListener(task -> {

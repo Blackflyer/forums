@@ -29,31 +29,56 @@ public class WorkoutExerciseAdapter extends RecyclerView.Adapter<WorkoutExercise
     private Map<String, Integer> reps = new HashMap<>();
     private OnExerciseClickListener clickListener;
 
+    /**
+     * בנאי למתאם תרגילי האימון.
+     * @param exercises רשימת התרגילים באימון.
+     * @param clickListener מאזין ללחיצות על תרגיל להזנת נתונים.
+     */
     public WorkoutExerciseAdapter(List<Exercise> exercises, OnExerciseClickListener clickListener) {
         this.exercises = exercises;
         this.clickListener = clickListener;
     }
 
+    /**
+     * מחזיר מפה של משקלים שהוזנו לכל תרגיל.
+     */
     public Map<String, Float> getWeights() {
         return weights;
     }
 
+    /**
+     * מחזיר מפה של חזרות שהוזנו לכל תרגיל.
+     */
     public Map<String, Integer> getReps() {
         return reps;
     }
 
+    /**
+     * מעדכן את נתוני המשקל והחזרות עבור תרגיל ספציפי ומרענן את התצוגה.
+     * @param exerciseId מזהה התרגיל.
+     * @param weight המשקל החדש.
+     * @param repCount מספר החזרות החדש.
+     */
     public void updateExerciseData(String exerciseId, float weight, int repCount) {
         weights.put(exerciseId, weight);
         reps.put(exerciseId, repCount);
         notifyDataSetChanged();
     }
 
+    /**
+     * מגדירה נתונים התחלתיים למשקלים וחזרות (למשל מאימון קודם).
+     * @param initialWeights מפת משקלים התחלתית.
+     * @param initialReps מפת חזרות התחלתית.
+     */
     public void setInitialData(Map<String, Float> initialWeights, Map<String, Integer> initialReps) {
         this.weights.putAll(initialWeights);
         this.reps.putAll(initialReps);
         notifyDataSetChanged();
     }
 
+    /**
+     * יוצר ViewHolder עבור פריט תרגיל בביצוע אימון.
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,6 +87,9 @@ public class WorkoutExerciseAdapter extends RecyclerView.Adapter<WorkoutExercise
         return new ViewHolder(v);
     }
 
+    /**
+     * מקשר את נתוני התרגיל והערכים שהוזנו (משקל/חזרות) לתצוגה.
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Exercise ex = exercises.get(position);
@@ -80,6 +108,9 @@ public class WorkoutExerciseAdapter extends RecyclerView.Adapter<WorkoutExercise
         });
     }
 
+    /**
+     * מחזיר את מספר התרגילים ברשימה.
+     */
     @Override
     public int getItemCount() {
         return exercises != null ? exercises.size() : 0;

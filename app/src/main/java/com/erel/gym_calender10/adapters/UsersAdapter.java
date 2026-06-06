@@ -27,12 +27,19 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     private List<User> userListFull;
     private final OnUserClickListener onUserClickListener;
 
+    /**
+     * בנאי למתאם המשתמשים.
+     * @param onUserClickListener מאזין ללחיצות על משתמשים.
+     */
     public UsersAdapter(@Nullable final OnUserClickListener onUserClickListener) {
         this.userList = new ArrayList<>();
         this.userListFull = new ArrayList<>();
         this.onUserClickListener = onUserClickListener;
     }
 
+    /**
+     * יוצר ViewHolder עבור פריט משתמש ברשימה.
+     */
     @NonNull
     @Override
     public UsersAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,6 +47,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
+    /**
+     * מקשר את נתוני המשתמש לתצוגה ומגדיר מאזיני לחיצה קצרה וארוכה.
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = userList.get(position);
@@ -81,11 +91,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         });
     }
 
+    /**
+     * מחזיר את מספר המשתמשים המוצגים ברשימה.
+     */
     @Override
     public int getItemCount() {
         return userList.size();
     }
 
+    /**
+     * מעדכן את רשימת המשתמשים ומרענן את התצוגה.
+     * @param users רשימת המשתמשים החדשה.
+     */
     public void setUserList(List<User> users) {
         userList.clear();
         userList.addAll(users);
@@ -93,12 +110,20 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    /**
+     * מוסיף משתמש בודד לרשימה.
+     * @param user המשתמש להוספה.
+     */
     public void addUser(User user) {
         userList.add(user);
         userListFull.add(user); // גיבוי
         notifyItemInserted(userList.size() - 1);
     }
 
+    /**
+     * מעדכן נתונים של משתמש קיים ברשימה.
+     * @param user המשתמש עם הנתונים המעודכנים.
+     */
     public void updateUser(User user) {
         int index = userList.indexOf(user);
         if (index == -1) return;
@@ -112,6 +137,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         notifyItemChanged(index);
     }
 
+    /**
+     * מסיר משתמש מהרשימה.
+     * @param user המשתמש להסרה.
+     */
     public void removeUser(User user) {
         int index = userList.indexOf(user);
         if (index == -1) return;
@@ -120,7 +149,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         notifyItemRemoved(index);
     }
 
-    // --- הפונקציה החדשה לסינון (חיפוש) ---
+    /**
+     * מסננת את רשימת המשתמשים לפי מחרוזת חיפוש (בשם או באימייל).
+     * @param text מחרוזת החיפוש.
+     */
     public void filter(String text) {
         userList.clear();
         if (text == null || text.isEmpty()) {

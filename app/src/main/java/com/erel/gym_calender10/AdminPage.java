@@ -28,6 +28,10 @@ public class AdminPage extends AppCompatActivity {
     private MaterialButton btnGoUsersList, btnGoAddExercise, btnGoAddAdmin;
     private MaterialCardView cardTrackWorkout, cardMyPlans, cardAnalytics, cardHeatmap, cardProfile;
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,9 @@ public class AdminPage extends AppCompatActivity {
         setupClickListeners();
     }
 
+    /**
+     * פעולה המאתחלת את רכיבי הממשק ומקשרת אותם למשתני הקוד.
+     */
     private void initViews() {
         btnEditProfile = findViewById(R.id.btnEditProfile);
         calendarView = findViewById(R.id.calendarView);
@@ -51,6 +58,9 @@ public class AdminPage extends AppCompatActivity {
         cardProfile = findViewById(R.id.cardProfile);
     }
 
+    /**
+     * מגדירה את לוח השנה, מוסיפה אירועים ומטפלת בלחיצה על יום בלוח השנה.
+     */
     private void setupCalendar() {
         List<EventDay> events = new ArrayList<>();
         events.add(new EventDay(Calendar.getInstance(), R.drawable.ic_launcher_background));
@@ -70,6 +80,9 @@ public class AdminPage extends AppCompatActivity {
         });
     }
 
+    /**
+     * מגדירה מאזיני לחיצה עבור כל הכפתורים והכרטיסיות במסך הניהול.
+     */
     private void setupClickListeners() {
         btnEditProfile.setOnClickListener(v -> {
             startActivity(new Intent(AdminPage.this, EditProfileActivity.class));

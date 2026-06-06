@@ -18,10 +18,17 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
 
     private List<Achievement> achievementList;
 
+    /**
+     * בנאי למתאם ההישגים.
+     * @param achievementList רשימת ההישגים להצגה.
+     */
     public AchievementAdapter(List<Achievement> achievementList) {
         this.achievementList = achievementList;
     }
 
+    /**
+     * יוצר ViewHolder חדש עבור פריט ברשימה.
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -29,6 +36,9 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         return new ViewHolder(view);
     }
 
+    /**
+     * מקשר את הנתונים של הישג ספציפי ל-ViewHolder (לתצוגה).
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Achievement achievement = achievementList.get(position);
@@ -47,6 +57,9 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         }
     }
 
+    /**
+     * מחזיר את מספר הפריטים ברשימה.
+     */
     @Override
     public int getItemCount() {
         return achievementList.size();

@@ -22,11 +22,19 @@ public class ManageExerciseAdapter extends RecyclerView.Adapter<ManageExerciseAd
     private List<Exercise> exerciseList;
     private Context context;
 
+    /**
+     * בנאי למתאם ניהול תרגילים.
+     * @param context הקשר האקטיביטי.
+     * @param exerciseList רשימת התרגילים לניהול.
+     */
     public ManageExerciseAdapter(Context context, List<Exercise> exerciseList) {
         this.context = context;
         this.exerciseList = exerciseList;
     }
 
+    /**
+     * יוצר ViewHolder עבור שורת ניהול תרגיל (עריכה).
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,6 +43,9 @@ public class ManageExerciseAdapter extends RecyclerView.Adapter<ManageExerciseAd
         return new ViewHolder(v);
     }
 
+    /**
+     * מקשר את נתוני התרגיל לתצוגה ומגדיר מאזין לכפתור עריכה.
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Exercise ex = exerciseList.get(position);
@@ -55,11 +66,18 @@ public class ManageExerciseAdapter extends RecyclerView.Adapter<ManageExerciseAd
         });
     }
 
+    /**
+     * מחזיר את מספר התרגילים ברשימה.
+     */
     @Override
     public int getItemCount() {
         return exerciseList.size();
     }
 
+    /**
+     * מעדכן את רשימת התרגילים ומרענן את התצוגה.
+     * @param newList הרשימה החדשה.
+     */
     public void updateList(List<Exercise> newList) {
         this.exerciseList = newList;
         notifyDataSetChanged();

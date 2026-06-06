@@ -28,12 +28,19 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
     private List<Plan> displayedList;
     private SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy", Locale.getDefault());
 
+    /**
+     * בנאי למתאם תוכניות אימון.
+     * @param plansList רשימת התוכניות להצגה.
+     */
     public PlanAdapter(List<Plan> plansList) {
         this.fullList = new ArrayList<>(plansList);
         this.displayedList = new ArrayList<>(plansList);
         sortListByDate();
     }
 
+    /**
+     * יוצר ViewHolder עבור פריט תוכנית ברשימה.
+     */
     @NonNull
     @Override
     public PlanViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,6 +48,9 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         return new PlanViewHolder(view);
     }
 
+    /**
+     * מקשר את נתוני התוכנית לתצוגה ומגדיר מאזיני לחיצה למעקב אחרי אימון ועריכת תוכנית.
+     */
     @Override
     public void onBindViewHolder(@NonNull PlanViewHolder holder, int position) {
         Plan plan = displayedList.get(position);
@@ -69,11 +79,18 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         });
     }
 
+    /**
+     * מחזיר את מספר התוכניות המוצגות.
+     */
     @Override
     public int getItemCount() {
         return displayedList.size();
     }
 
+    /**
+     * מעדכן את רשימת התוכניות, ממיין אותן לפי תאריך ומרענן את התצוגה.
+     * @param newList הרשימה החדשה.
+     */
     public void updateList(List<Plan> newList) {
         this.fullList = new ArrayList<>(newList);
         sortListByDate();
@@ -81,6 +98,9 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         notifyDataSetChanged();
     }
 
+    /**
+     * ממיין את רשימת התוכניות לפי תאריך, מהחדש ביותר לישן ביותר.
+     */
     private void sortListByDate() {
         Collections.sort(fullList, (p1, p2) -> {
             try {
@@ -91,6 +111,11 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanViewHolder
         });
     }
 
+    /**
+     * מסננת את רשימת התוכניות לפי שם ויום בשבוע.
+     * @param query מחרוזת לחיפוש בשם התוכנית.
+     * @param dayOfWeek היום בשבוע לסינון (או -1 לכל הימים).
+     */
     public void filter(String query, int dayOfWeek) {
         displayedList.clear();
         String lowerQuery = query.toLowerCase().trim();

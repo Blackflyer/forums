@@ -83,6 +83,10 @@ public class AddAdmin extends AppCompatActivity {
     private void setupRecyclerView() {
         rcUsers.setLayoutManager(new LinearLayoutManager(this));
         userAdapter = new UsersAdapter(new UsersAdapter.OnUserClickListener() {
+            /**
+             * מבוצע בעת לחיצה על משתמש ברשימה.
+             * @param user המשתמש שנבחר.
+             */
             @Override
             public void onUserClick(User user) {
                 selectedUser = user;
@@ -91,6 +95,10 @@ public class AddAdmin extends AppCompatActivity {
                 btnPromoteAdmin.setText("הפוך את " + user.getFname() + " למנהל");
             }
 
+            /**
+             * מבוצע בעת לחיצה ארוכה על משתמש ברשימה.
+             * @param user המשתמש עליו נלחץ.
+             */
             @Override
             public void onLongUserClick(User user) {
                 // לא ממומש במסך זה
@@ -104,6 +112,10 @@ public class AddAdmin extends AppCompatActivity {
      */
     private void loadUsers() {
         databaseService.getUserList(new DatabaseService.DatabaseCallback<List<User>>() {
+            /**
+             * מבוצע לאחר קבלת רשימת המשתמשים בהצלחה.
+             * @param users רשימת המשתמשים שהתקבלה.
+             */
             @Override
             public void onCompleted(List<User> users) {
                 if (users != null && !users.isEmpty()) {
@@ -112,6 +124,10 @@ public class AddAdmin extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בטעינת רשימת המשתמשים.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Log.e("AddAdmin", "Failed to load users", e);
@@ -126,12 +142,20 @@ public class AddAdmin extends AppCompatActivity {
      */
     private void promoteUserToAdmin(User user) {
         databaseService.updateUserAdminStatus(user.getId(), true, new DatabaseService.DatabaseCallback<Void>() {
+            /**
+             * מבוצע לאחר עדכון סטטוס המנהל בהצלחה.
+             * @param v פרמטר ריק.
+             */
             @Override
             public void onCompleted(Void v) {
                 Toast.makeText(AddAdmin.this, user.getFname() + " קודם למנהל בהצלחה!", Toast.LENGTH_LONG).show();
                 finish();
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בעדכון סטטוס המנהל.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Log.e("AddAdmin", "Failed to promote user", e);

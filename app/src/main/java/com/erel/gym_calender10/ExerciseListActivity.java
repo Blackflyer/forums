@@ -75,6 +75,10 @@ public class ExerciseListActivity extends AppCompatActivity {
      */
     private void loadExercises() {
         databaseService.getExerciseList(new DatabaseService.DatabaseCallback<List<Exercise>>() {
+            /**
+             * מבוצע לאחר קבלת רשימת התרגילים בהצלחה.
+             * @param exercises רשימת התרגילים שהתקבלה.
+             */
             @Override
             public void onCompleted(List<Exercise> exercises) {
                 if (exercises != null) {
@@ -82,6 +86,10 @@ public class ExerciseListActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת רשימת התרגילים.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(ExerciseListActivity.this, "שגיאה בטעינת תרגילים", Toast.LENGTH_SHORT).show();

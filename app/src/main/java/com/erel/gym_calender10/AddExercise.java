@@ -96,6 +96,10 @@ public class AddExercise extends AppCompatActivity {
 
         // הגדרת לוגיקה לשמירה או עדכון של תרגיל בעת לחיצה על הכפתור
         btnAddExercise.setOnClickListener(new View.OnClickListener() {
+            /**
+             * מבוצע בעת לחיצה על כפתור הוספת/עדכון תרגיל.
+             * אוסף את הנתונים מהשדות, בודק תקינות ושומר במסד הנתונים.
+             */
             @Override
             public void onClick(View v) {
                 String exerciseName = etExerciseName.getText().toString().trim();
@@ -130,6 +134,10 @@ public class AddExercise extends AppCompatActivity {
                 Exercise newExercise = new Exercise(id, exerciseName, equipment, muscleGroup, description, setsStr, timesStr);
 
                 databaseService.createNewExercise(newExercise, new DatabaseService.DatabaseCallback<Void>() {
+                    /**
+                     * מבוצע לאחר שמירת התרגיל בהצלחה.
+                     * @param object פרמטר ריק.
+                     */
                     @Override
                     public void onCompleted(Void object) {
                         String msg = (editingExerciseId != null) ? "התרגיל עודכן בהצלחה!" : "התרגיל נוסף בהצלחה!";
@@ -139,6 +147,10 @@ public class AddExercise extends AppCompatActivity {
                         finish();
                     }
 
+                    /**
+                     * מבוצע במקרה של שגיאה בשמירת התרגיל.
+                     * @param e השגיאה שהתרחשה.
+                     */
                     @Override
                     public void onFailed(Exception e) {
                         Log.e("TAG", "Failed to add/update item", e);

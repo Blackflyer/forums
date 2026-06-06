@@ -27,6 +27,11 @@ public class Users_Profile extends AppCompatActivity {
     private PlanAdapter planAdapter;
     private DatabaseService databaseService;
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי.
+     * מאתחלת את שירות מסד הנתונים, רכיבי התצוגה, וטוענת את נתוני המשתמש.
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +54,9 @@ public class Users_Profile extends AppCompatActivity {
         });
     }
 
+    /**
+     * מאתחלת את רכיבי הממשק (TextViews, Buttons, RecyclerView) ומגדירה מאזיני לחיצה.
+     */
     private void initViews() {
         tvProfileName = findViewById(R.id.tvProfileName);
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
@@ -76,6 +84,9 @@ public class Users_Profile extends AppCompatActivity {
         });
     }
 
+    /**
+     * טוענת את נתוני המשתמש המחובר מ-Firebase ומהמסד הנתונים ומציגה אותם בממשק.
+     */
     private void loadUserData() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {

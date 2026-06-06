@@ -70,21 +70,33 @@ public class item_plan extends AppCompatActivity {
     private void setupFilters() {
         // מאזין לחיפוש טקסטואלי
         etSearchPlan.addTextChangedListener(new TextWatcher() {
+            /**
+             * מבוצע לפני שינוי הטקסט.
+             */
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
+            /**
+             * מבוצע בעת שינוי הטקסט - מעדכן את הפילטר.
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 currentSearchQuery = s.toString();
                 applyFilters();
             }
 
+            /**
+             * מבוצע לאחר שינוי הטקסט.
+             */
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
         // מאזין לבחירת יום בשבוע לסנון
         cgDays.setOnCheckedChangeListener((group, checkedId) -> {
+            /**
+             * מבוצע בעת שינוי הבחירה ב-ChipGroup של הימים.
+             */
             if (checkedId == R.id.chipSun) selectedDayOfWeek = Calendar.SUNDAY;
             else if (checkedId == R.id.chipMon) selectedDayOfWeek = Calendar.MONDAY;
             else if (checkedId == R.id.chipTue) selectedDayOfWeek = Calendar.TUESDAY;
@@ -119,6 +131,10 @@ public class item_plan extends AppCompatActivity {
         }
 
         DatabaseService.getInstance().getAllPlans(user.getUid(), new DatabaseService.DatabaseCallback<List<Plan>>() {
+            /**
+             * מבוצע לאחר קבלת רשימת כל התוכניות של המשתמש.
+             * @param plans רשימת התוכניות שהתקבלה.
+             */
             @Override
             public void onCompleted(List<Plan> plans) {
                 if (plans != null) {
@@ -129,6 +145,10 @@ public class item_plan extends AppCompatActivity {
                 }
             }
 
+            /**
+             * מבוצע במקרה של שגיאה בשליפת התוכניות.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 Toast.makeText(item_plan.this, "שגיאה בטעינת תוכניות", Toast.LENGTH_SHORT).show();

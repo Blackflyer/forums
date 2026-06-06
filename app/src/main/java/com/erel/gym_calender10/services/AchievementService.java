@@ -8,6 +8,12 @@ import java.util.List;
 
 public class AchievementService {
 
+    /**
+     * בודקת אילו הישגים חדשים המשתמש צבר על סמך נתוניו והמשקל האחרון שהרים.
+     * @param user המשתמש לבדיקה.
+     * @param lastWeight המשקל האחרון שתועד באימון.
+     * @return רשימת מזהים של הישגים חדשים שנפתחו.
+     */
     public static List<String> checkAchievements(User user, float lastWeight) {
         List<String> newAchievements = new ArrayList<>();
         List<String> current = user.getAchievements();
@@ -37,6 +43,11 @@ public class AchievementService {
         return newAchievements;
     }
 
+    /**
+     * מחזירה את השם התצוגתי של הישג לפי המזהה שלו.
+     * @param id מזהה ההישג.
+     * @return שם ההישג בעברית.
+     */
     public static String getAchievementName(String id) {
         switch (id) {
             case "first_workout": return "אימון ראשון!";
@@ -46,6 +57,11 @@ public class AchievementService {
         }
     }
 
+    /**
+     * מחזירה רשימה של כל ההישגים האפשריים במערכת עם מצב הנעילה שלהם עבור משתמש ספציפי.
+     * @param unlockedIds רשימת מזהי ההישגים שהמשתמש כבר פתח.
+     * @return רשימה של אובייקטי Achievement.
+     */
     public static List<com.erel.gym_calender10.module.Achievement> getAllAchievements(List<String> unlockedIds) {
         List<com.erel.gym_calender10.module.Achievement> list = new ArrayList<>();
         if (unlockedIds == null) unlockedIds = new ArrayList<>();

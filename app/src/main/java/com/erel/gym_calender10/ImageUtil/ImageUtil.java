@@ -15,13 +15,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 
-/// Utility class for image operations
-/// Contains methods for requesting permissions, converting images to base64 and vice versa
+/**
+ * מחלקת עזר (Utility) לפעולות הקשורות בתמונות.
+ * כוללת שיטות לבקשת הרשאות, המרת תמונות למחרוזת Base64 ופענוחן בחזרה.
+ */
 public class ImageUtil {
 
-    /// Request permissions for camera and storage
-    /// @param activity The activity to request permissions from
-    /// @see ActivityCompat#requestPermissions(Activity, String[], int)
+    /**
+     * מבקשת הרשאות מצלמה ואחסון מהמשתמש.
+     * @param activity האקטיביטי ממנה מתבצעת הבקשה.
+     */
     public static void requestPermission(@NotNull Activity activity) {
         // Request permissions for camera and storage
         ActivityCompat.requestPermissions(activity,
@@ -32,9 +35,11 @@ public class ImageUtil {
                 }, 1);
     }
 
-    /// Convert an image to a base64 string
-    /// @param postImage The image to convert
-    /// @return The base64 string representation of the image
+    /**
+     * ממירה תמונה מתוך ImageView למחרוזת בפורמט Base64.
+     * @param postImage ה-ImageView המכיל את התמונה.
+     * @return מחרוזת Base64 המייצגת את התמונה, או null אם התמונה ריקה.
+     */
     public static @Nullable String convertTo64Base(@NotNull final ImageView postImage) {
         if (postImage.getDrawable() == null) {
             return null;
@@ -46,9 +51,11 @@ public class ImageUtil {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
-    /// Convert a base64 string to an image
-    /// @param base64Code The base64 string to convert
-    /// @return The image represented by the base64 string
+    /**
+     * ממירה מחרוזת בפורמט Base64 בחזרה לאובייקט Bitmap של תמונה.
+     * @param base64Code המחרוזת המקודדת ב-Base64.
+     * @return אובייקט Bitmap של התמונה, או null אם המחרוזת ריקה.
+     */
     public static @Nullable Bitmap convertFrom64base(@NotNull final String base64Code) {
         if (base64Code.isEmpty()) {
             return null;

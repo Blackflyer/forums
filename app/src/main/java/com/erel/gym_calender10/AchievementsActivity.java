@@ -59,6 +59,10 @@ public class AchievementsActivity extends AppCompatActivity {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         DatabaseService.getInstance().getUser(uid, new DatabaseService.DatabaseCallback<User>() {
+            /**
+             * פונקציה זו מבוצעת לאחר קבלת נתוני המשתמש בהצלחה.
+             * @param user אובייקט המשתמש שהתקבל.
+             */
             @Override
             public void onCompleted(User user) {
                 if (user != null) {
@@ -79,6 +83,10 @@ public class AchievementsActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * פונקציה זו מבוצעת במקרה של כישלון בשליפת נתוני המשתמש.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 // הצגת הודעת שגיאה במקרה של כישלון בטעינה

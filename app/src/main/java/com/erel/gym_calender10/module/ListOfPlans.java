@@ -6,23 +6,36 @@ public class ListOfPlans {
     private String userId;
     private ArrayList<Plan> planArray;
 
-    // 1. בנאי ריק - חובה עבור Firebase!
+    /**
+     * בנאי ריק הנדרש עבור עבודה עם Firebase. מאתחל רשימה ריקה של תוכניות.
+     */
     public ListOfPlans() {
         this.planArray = new ArrayList<>();
     }
 
-    // 2. בנאי חדש שמקבל רק את ה-ID (לזה שקראת לו בקוד שלך)
+    /**
+     * בנאי המקבל מזהה משתמש ומאתחל רשימה ריקה.
+     * @param userId מזהה המשתמש.
+     */
     public ListOfPlans(String userId) {
         this.userId = userId;
         this.planArray = new ArrayList<>(); // חובה לאתחל את הרשימה שלא תהיה null
     }
 
+    /**
+     * בנאי מלא המקבל מזהה משתמש ורשימת תוכניות.
+     * @param userId מזהה המשתמש.
+     * @param planArray רשימת התוכניות.
+     */
     public ListOfPlans(String userId, ArrayList<Plan> planArray) {
         this.userId = userId;
         this.planArray = planArray;
     }
 
-    // 3. פונקציית ההוספה שחסרה לך (addPlan)
+    /**
+     * מוסיפה תוכנית חדשה לרשימה. אם התוכנית כבר קיימת (לפי מזהה), היא תעודכן.
+     * @param plan התוכנית להוספה או עדכון.
+     */
     public void addPlan(Plan plan) {
         // נוודא שהרשימה קיימת לפני שמוסיפים אליה
         if (this.planArray == null) {
@@ -41,19 +54,22 @@ public class ListOfPlans {
         this.planArray.add(plan);
     }
 
-    // --- Getters & Setters ---
+    /** @return מזהה המשתמש. */
     public String getUserId() {
         return userId;
     }
 
+    /** @param userId הגדרת מזהה המשתמש. */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
+    /** @return רשימת תוכניות האימון. */
     public ArrayList<Plan> getPlanArray() {
         return planArray;
     }
 
+    /** @param planArray הגדרת רשימת תוכניות האימון. */
     public void setPlanArray(ArrayList<Plan> planArray) {
         this.planArray = planArray;
     }

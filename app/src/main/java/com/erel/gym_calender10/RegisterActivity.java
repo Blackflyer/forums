@@ -123,6 +123,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
      */
     private void createUserInDatabase(User user) {
         databaseService.createNewUser(user, new DatabaseService.DatabaseCallback<String>() {
+            /**
+             * מבוצע לאחר יצירת המשתמש בהצלחה במסד הנתונים.
+             * @param uid מזהה המשתמש הייחודי שנוצר.
+             */
             @Override
             public void onCompleted(String uid) {
                 user.setId(uid);
@@ -142,6 +146,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(mainIntent);
             }
 
+            /**
+             * מבוצע במקרה של שגיאה במהלך יצירת המשתמש.
+             * @param e השגיאה שהתרחשה.
+             */
             @Override
             public void onFailed(Exception e) {
                 if (btnRegister != null) {

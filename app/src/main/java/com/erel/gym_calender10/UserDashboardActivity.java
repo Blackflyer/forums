@@ -10,6 +10,11 @@ import com.google.android.material.card.MaterialCardView;
 
 public class UserDashboardActivity extends AppCompatActivity {
 
+    /**
+     * פעולה המופעלת בעת יצירת האקטיביטי. 
+     * מאתחלת את ממשק המשתמש ומגדירה מאזיני לחיצה למעבר למסכים השונים (אימונים, תוכניות, פרופיל וכו').
+     * @param savedInstanceState מצב המערכת השמור.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

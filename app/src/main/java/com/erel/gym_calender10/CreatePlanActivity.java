@@ -101,7 +101,7 @@ public class CreatePlanActivity extends AppCompatActivity {
 
         btnSelectTime.setOnClickListener(v -> showTimePicker());
         btnSavePlan.setOnClickListener(v -> saveOrUpdatePlan());
-        findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
+        findViewById(R.id.btnBack).setOnClickListener(v -> navigateToDashboard());
     }
 
     /**

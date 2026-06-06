@@ -16,6 +16,16 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start|center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/primaryColor"
+                android:contentDescription="חזרה" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

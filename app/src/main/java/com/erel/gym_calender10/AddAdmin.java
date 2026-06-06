@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +27,8 @@ public class AddAdmin extends AppCompatActivity {
 
     private EditText etSearchUser;
     private RecyclerView rcUsers;
-    private Button btnPromoteAdmin, btnBackFromAdmin;
+    private Button btnPromoteAdmin;
+    private ImageButton btnBack;
     private DatabaseService databaseService;
     private UsersAdapter userAdapter;
     private User selectedUser;
@@ -44,9 +46,9 @@ public class AddAdmin extends AppCompatActivity {
         etSearchUser = findViewById(R.id.etSearchUser);
         rcUsers = findViewById(R.id.rcUsers);
         btnPromoteAdmin = findViewById(R.id.btnPromoteAdmin);
-        btnBackFromAdmin = findViewById(R.id.btnBackFromAdmin);
+        btnBack = findViewById(R.id.btnBack);
 
-        btnBackFromAdmin.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> finish());
 
         setupRecyclerView();
         loadUsers();

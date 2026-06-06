@@ -54,7 +54,7 @@ public class Users_Profile extends AppCompatActivity {
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
         tvProfilePhone = findViewById(R.id.tvProfilePhone);
         btnLogout = findViewById(R.id.btnLogout);
-        btnBack = findViewById(R.id.btnBackFromProfile);
+        btnBack = findViewById(R.id.btnBack);
         rvProfilePlans = findViewById(R.id.rvProfilePlans);
         Button btnViewProgress = findViewById(R.id.btnViewProgress);
         ImageButton btnEditProfile = findViewById(R.id.btnEditProfile);

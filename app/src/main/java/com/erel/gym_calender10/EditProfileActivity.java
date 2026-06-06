@@ -48,24 +48,7 @@ public class EditProfileActivity extends AppCompatActivity {
         loadUserData();
 
         btnSaveProfile.setOnClickListener(v -> saveProfileChanges());
-        findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
-    }
-
-    /**
-     * מנווטת את המשתמש חזרה לדף הבית המתאים לו (אדמין או משתמש רגיל) על סמך ההגדרות שנשמרו.
-     */
-    private void navigateToDashboard() {
-        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-        boolean isAdmin = prefs.getBoolean("isAdmin", false);
-        Intent intent;
-        if (isAdmin) {
-            intent = new Intent(this, AdminPage.class);
-        } else {
-            intent = new Intent(this, UserDashboardActivity.class);
-        }
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish();
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
     /**

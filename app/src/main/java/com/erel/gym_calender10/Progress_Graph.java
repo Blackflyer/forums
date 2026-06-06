@@ -58,7 +58,7 @@ public class Progress_Graph extends AppCompatActivity {
         spinnerExercises = findViewById(R.id.spinnerExercises);
         lineChart = findViewById(R.id.lineChartProgress);
         pieChart = findViewById(R.id.pieChartProgress);
-        findViewById(R.id.btnBackToDashboard).setOnClickListener(v -> navigateToDashboard());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         // הגדרת מראה הגרפים
         setupChartAppearance();
@@ -251,22 +251,5 @@ public class Progress_Graph extends AppCompatActivity {
                 Toast.makeText(Progress_Graph.this, "שגיאה בטעינת נתוני הגרף", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    /**
-     * מבצעת ניווט חזרה למסך הלובי (Dashboard) המתאים לפי סוג המשתמש.
-     */
-    private void navigateToDashboard() {
-        SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-        boolean isAdmin = prefs.getBoolean("isAdmin", false);
-        Intent intent;
-        if (isAdmin) {
-            intent = new Intent(this, AdminPage.class);
-        } else {
-            intent = new Intent(this, UserDashboardActivity.class);
-        }
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish();
     }
 }

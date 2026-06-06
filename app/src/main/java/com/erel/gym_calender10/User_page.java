@@ -64,6 +64,7 @@ public class User_page extends AppCompatActivity {
         planAdapter = new PlanAdapter(upcomingPlansList);
         rvUpcomingPlans.setAdapter(planAdapter);
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         findViewById(R.id.btn_go_dashboard).setOnClickListener(v -> navigateToDashboard());
     }
 

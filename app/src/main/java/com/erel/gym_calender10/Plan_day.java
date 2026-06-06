@@ -34,7 +34,7 @@ public class Plan_day extends AppCompatActivity {
     private FloatingActionButton fabAddPlan;
     private PlanAdapter adapter;
     private String selectedDate;
-    private Button btnBackToCalendar;
+    private ImageButton btnBack;
 
     /**
      * פעולה המופעלת בעת יצירת האקטיביטי. 
@@ -73,7 +73,7 @@ public class Plan_day extends AppCompatActivity {
         tvEmptyState = findViewById(R.id.tvEmptyState);
         rvPlans = findViewById(R.id.rvPlans);
         fabAddPlan = findViewById(R.id.fabAddPlan);
-        btnBackToCalendar = findViewById(R.id.btnBackTocalender);
+        btnBack = findViewById(R.id.btnBack);
         ImageButton btnSearchDate = findViewById(R.id.btnSearchDate);
 
         tvDateTitle.setText("אימונים ל: " + selectedDate);
@@ -86,8 +86,8 @@ public class Plan_day extends AppCompatActivity {
             startActivity(intent);
         });
 
-        if (btnBackToCalendar != null) {
-            btnBackToCalendar.setOnClickListener(v -> finish());
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
         }
 
         // פתיחת דיאלוג לבחירת תאריך חדש

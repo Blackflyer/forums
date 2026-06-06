@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/backgroundColor">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <FrameLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primaryColor"
-        app:title="התוכניות שלי"
-        app:titleTextColor="@android:color/white" />
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="חזרה" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="התוכניות שלי"
+            android:textColor="@color/primaryColor"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-black" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,8 +67,7 @@
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/cgDays"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:singleSelection="true">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipAll"

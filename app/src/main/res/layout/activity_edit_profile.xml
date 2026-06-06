@@ -69,9 +69,6 @@
             android:inputType="phone" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Note: We might not allow updating email directly via DB as it requires re-auth in Firebase Auth, 
-         but we'll show it or allow it if the user wants to update just the DB copy. Usually email/password 
-         require special Firebase Auth handling. Let's provide it for DB copy for now. -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilEmail"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -86,7 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:enabled="false" /> <!-- Disabled by default to prevent easy email out-of-sync with Auth -->
+            android:enabled="false" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -99,11 +96,12 @@
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/tilEmail" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBackToDashboard"
+    <Button
+        android:id="@+id/btnBack"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="חזרה לאזור האישי"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

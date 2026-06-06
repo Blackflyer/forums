@@ -7,36 +7,43 @@
     android:background="#F5F5F5"
     tools:context=".Plan_day">
 
-    <LinearLayout
-        android:id="@+id/headerLayout"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/btnSearchDate"
+            android:id="@+id/btnBack"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="חיפוש לפי תאריך"
-            android:src="@android:drawable/ic_menu_search"
-            app:tint="#2196F3" />
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/primaryColor"
+            android:contentDescription="חזרה" />
 
         <TextView
             android:id="@+id/tvDateTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_gravity="center"
             android:text="אימונים לתאריך"
-            android:textColor="#333333"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:textColor="@color/primaryColor"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-black" />
+
+        <ImageButton
+            android:id="@+id/btnSearchDate"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="חיפוש לפי תאריך"
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="@color/primaryColor" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvEmptyState"
@@ -60,7 +67,7 @@
         android:clipToPadding="false"
         android:paddingBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddPlan"
@@ -72,14 +79,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="#FFFFFF" />
-
-    <Button
-        android:id="@+id/btnBackTocalender"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:text="חזור ללוח השנה"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

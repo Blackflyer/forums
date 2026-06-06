@@ -12,7 +12,6 @@ import com.erel.gym_calender10.module.Achievement;
 import com.erel.gym_calender10.module.User;
 import com.erel.gym_calender10.services.AchievementService;
 import com.erel.gym_calender10.services.DatabaseService;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -38,10 +37,8 @@ public class AchievementsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_achievements);
 
-        // הגדרת סרגל הכלים וכפתור החזרה
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        // הגדרת כפתור החזרה
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         // אתחול רשימת ההישגים
         rvAchievements = findViewById(R.id.rvAchievements);

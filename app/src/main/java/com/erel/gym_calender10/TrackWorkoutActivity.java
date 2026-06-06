@@ -341,9 +341,6 @@ public class TrackWorkoutActivity extends AppCompatActivity implements WorkoutEx
         });
     }
 
-    /**
-     * ניווט חזרה למסך הלובי המתאים לסוג המשתמש.
-     */
     private void navigateToDashboard() {
         SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("isAdmin", false);

@@ -3,7 +3,7 @@ package com.erel.gym_calender10.module;
 import java.util.ArrayList;
 
 public class ListOfPlans {
-    private String UserId;
+    private String userId;
     private ArrayList<Plan> planArray;
 
     // 1. בנאי ריק - חובה עבור Firebase!
@@ -13,12 +13,12 @@ public class ListOfPlans {
 
     // 2. בנאי חדש שמקבל רק את ה-ID (לזה שקראת לו בקוד שלך)
     public ListOfPlans(String userId) {
-        this.UserId = userId;
+        this.userId = userId;
         this.planArray = new ArrayList<>(); // חובה לאתחל את הרשימה שלא תהיה null
     }
 
     public ListOfPlans(String userId, ArrayList<Plan> planArray) {
-        this.UserId = userId;
+        this.userId = userId;
         this.planArray = planArray;
     }
 
@@ -28,7 +28,7 @@ public class ListOfPlans {
         if (this.planArray == null) {
             this.planArray = new ArrayList<>();
         }
-        
+
         // בדיקה אם התוכנית כבר קיימת לפי ה-ID, ואם כן - החלפה שלה (בשביל עריכה)
         for (int i = 0; i < planArray.size(); i++) {
             if (planArray.get(i).getPlanId() != null && 
@@ -37,17 +37,17 @@ public class ListOfPlans {
                 return;
             }
         }
-        
+
         this.planArray.add(plan);
     }
 
     // --- Getters & Setters ---
     public String getUserId() {
-        return UserId;
+        return userId;
     }
 
     public void setUserId(String userId) {
-        UserId = userId;
+        this.userId = userId;
     }
 
     public ArrayList<Plan> getPlanArray() {

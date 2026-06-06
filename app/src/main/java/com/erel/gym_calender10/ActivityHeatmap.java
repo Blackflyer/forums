@@ -57,20 +57,7 @@ public class ActivityHeatmap extends AppCompatActivity {
 
         databaseService = DatabaseService.getInstance();
 
-        // הגדרת כפתור חזרה לדאשבורד לפי סוג המשתמש (אדמין או משתמש רגיל)
-        MaterialButton btnBackToDashboard = findViewById(R.id.btnBackToDashboard);
-        btnBackToDashboard.setOnClickListener(v -> {
-            SharedPreferences prefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
-            boolean isAdmin = prefs.getBoolean("isAdmin", false);
-            Intent intent;
-            if (isAdmin) {
-                intent = new Intent(ActivityHeatmap.this, AdminPage.class);
-            } else {
-                intent = new Intent(ActivityHeatmap.this, UserDashboardActivity.class);
-            }
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-        });
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         loadWorkoutData();
     }

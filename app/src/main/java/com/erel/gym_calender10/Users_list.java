@@ -1,12 +1,12 @@
 package com.erel.gym_calender10;
 
 import android.app.AlertDialog;
-import android.content.Intent; // חובה לייבא
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button; // חובה לייבא
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,7 +31,6 @@ public class Users_list extends AppCompatActivity {
     private DatabaseService databaseService;
     private RecyclerView usersList;
     private EditText etSearchUser;
-    private Button btnBackToAdmin; // הוספת הכפתור
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +55,8 @@ public class Users_list extends AppCompatActivity {
         databaseService = DatabaseService.getInstance();
         usersList = findViewById(R.id.rcUsers);
         etSearchUser = findViewById(R.id.etSearchUser);
-        btnBackToAdmin = findViewById(R.id.btnBackToAdmin); // חיבור ה-Button מה-XML
 
-        // כפתור חזרה לעמוד מנהל
-        btnBackToAdmin.setOnClickListener(v -> {
-            // הדרך הטובה ביותר לחזור אחורה היא פשוט לסגור את ה-Activity הנוכחי:
-            finish();
-
-            // (אם מסיבה כלשהי זה לא עובד לך, אפשר להשתמש ב-Intent הבא במקום finish)
-            // Intent intent = new Intent(Users_list.this, AdminPage.class);
-            // startActivity(intent);
-            // finish();
-        });
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         // הוספת מאזין לשורת החיפוש
         etSearchUser.addTextChangedListener(new TextWatcher() {

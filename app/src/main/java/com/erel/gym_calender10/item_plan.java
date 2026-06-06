@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.erel.gym_calender10.adapters.PlanAdapter;
 import com.erel.gym_calender10.module.Plan;
 import com.erel.gym_calender10.services.DatabaseService;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,7 +31,6 @@ public class item_plan extends AppCompatActivity {
     private RecyclerView rvAllPlans;
     private PlanAdapter planAdapter;
     private List<Plan> plansList = new ArrayList<>();
-    private MaterialToolbar toolbar;
     private EditText etSearchPlan;
     private ChipGroup cgDays;
     private int selectedDayOfWeek = -1; // -1 מייצג הצגת כל הימים
@@ -63,9 +61,7 @@ public class item_plan extends AppCompatActivity {
         etSearchPlan = findViewById(R.id.etSearchPlan);
         cgDays = findViewById(R.id.cgDays);
 
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
     /**

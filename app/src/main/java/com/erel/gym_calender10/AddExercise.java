@@ -45,7 +45,8 @@ public class AddExercise extends AppCompatActivity {
 
     private EditText etExerciseName, etDescription, etEquipment, etMuscleGroup,etSets,etTimes;
 
-    private Button  btnAddExercise, btnBackpage;
+    private Button  btnAddExercise;
+    private ImageButton btnBack;
 
     private String editingExerciseId = null;
 
@@ -86,9 +87,9 @@ public class AddExercise extends AppCompatActivity {
         }
 
 
-        btnBackpage = findViewById(R.id.btnBack);
+        btnBack = findViewById(R.id.btnBack);
 
-        btnBackpage.setOnClickListener(v -> {
+        btnBack.setOnClickListener(v -> {
             finish();
         });
 

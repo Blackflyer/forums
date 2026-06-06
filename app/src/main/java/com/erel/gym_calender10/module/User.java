@@ -11,7 +11,7 @@ public class User {
     String phone;
     String email;
     String password;
-    ListOfPlans MaarachedPlans;
+    ListOfPlans maarachedPlans;
     Boolean isAdmin;
     List<String> achievements = new ArrayList<>();
 
@@ -23,25 +23,25 @@ public class User {
         this.password = password;
         this.phone = phone;
         this.isAdmin = false;
-        this.MaarachedPlans = new ListOfPlans();
+        this.maarachedPlans = new ListOfPlans();
         this.achievements = new ArrayList<>();
     }
 
     public User() {}
 
     public void addNewPlanToUser(Plan plan) {
-        if (this.MaarachedPlans == null) {
-            this.MaarachedPlans = new ListOfPlans();
+        if (this.maarachedPlans == null) {
+            this.maarachedPlans = new ListOfPlans();
         }
-        this.MaarachedPlans.addPlan(plan);
+        this.maarachedPlans.addPlan(plan);
     }
 
     public ListOfPlans getMaarachedPlans() {
-        return MaarachedPlans;
+        return maarachedPlans;
     }
 
     public void setMaarachedPlans(ListOfPlans maarachedPlans) {
-        MaarachedPlans = maarachedPlans;
+        this.maarachedPlans = maarachedPlans;
     }
 
     public Boolean getAdmin() {
@@ -124,7 +124,7 @@ public class User {
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", MaarachedPlans=" + MaarachedPlans +
+                ", maarachedPlans=" + maarachedPlans +
                 ", isAdmin=" + isAdmin +
                 ", achievements=" + achievements +
                 '}';
